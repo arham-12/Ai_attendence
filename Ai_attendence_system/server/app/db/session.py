@@ -10,3 +10,4 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # Create tables in the database
 Base.metadata.create_all(bind=engine)
+

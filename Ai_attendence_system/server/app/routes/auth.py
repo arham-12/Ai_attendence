@@ -1,13 +1,12 @@
-
-from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
+import os 
 from sqlalchemy.orm import Session
+from sqlalchemy.exc import IntegrityError
 from app.db.session import SessionLocal, engine
-from app.db.models import Student , Admin, Teacher
+from app.db.models import Student , Admin, Teacher ,Programs
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from app.schemas.schemas import StudentLoginSchema, AdminLoginSchema, TeacherLoginSchema
 from app.services.funtcions_for_auth import get_password_hash, verify_password, create_access_token
-from typing import Optional
-import base64
-import os 
+
 
 
 auth_router = APIRouter()
@@ -23,66 +22,85 @@ def get_db():
 UPLOAD_DIR = "static/images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-@auth_router.post("/register")
+@auth_router.post("/register-student/")
 async def register_student(
-    name: str=Form(...),
+    name: str = Form(...),
     email: str = Form(...),
     rollno: str = Form(...),
     password: str = Form(...),
     confirm_password: str = Form(...),
+    program_name: str = Form(...),
+    section: str = Form(None),
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
-    """
-    Register a new student.
-
-    Args:
-        name (str): The name of the student.
-        email (str): The email of the student.
-        rollno (str): The roll number of the student.
-        password (str): The password of the student.
-        confirm_password (str): The password confirmation of the student.
-        image (UploadFile): The image file of the student.
-
-    Returns:
-        dict: A dictionary containing the response message.
-
-    Raises:
-        HTTPException: If the passwords do not match or if the student already exists.
-    """
-    # Validate passwords match
+    # Ensure the passwords match
     if password != confirm_password:
         raise HTTPException(status_code=400, detail="Passwords do not match")
 
-    # Check if the student already exists
-    existing_student = db.query(Student).filter(
-        (Student.email == email) | (Student.rollno == rollno)).first()
-    if existing_student:
-        raise HTTPException(status_code=400, detail="Email or Roll No already exists")
-    
-    hashed_password = get_password_hash(password)
-    image_path = None
+    # Ensure the upload directory exists
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-    if image:
-        file_location = os.path.join(UPLOAD_DIR, image.filename)
+    # Define the image file path with a unique name (e.g., using the student's roll number)
+    image_filename = f"{rollno}.jpg"  # You can also use other formats or unique IDs
+    image_path = os.path.join(UPLOAD_DIR, image_filename)
+
+    # Save the uploaded image file to the server
+    with open(image_path, "wb") as image_file:
+        content = await image.read()  # Read the file content
+        image_file.write(content)  # Save the binary content to a file
+
+    # Check if the student already exists by email or roll number
+    existing_student = db.query(Student).filter(
+        (Student.email == email) | (Student.rollno == rollno)
+    ).first()
+
+    if existing_student:
+        # If the student is already present, raise an error
+        raise HTTPException(status_code=400, detail="Student with this email or roll number already exists.")
+
+    # Find or create the program
+    program = db.query(Programs).filter(
+        Programs.program == program_name,
+        Programs.section == section
+    ).first()
+
+    if not program:
+        # If the program doesn't exist, create it
+        program = Programs(
+            program=program_name,
+            section=section,
+            timming="morning"  # or any other relevant value
+        )
+        db.add(program)
         try:
-            with open(file_location, "wb") as buffer:
-                buffer.write(await image.read())
-            image_path = file_location
-        except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error saving file: {e}")
+            db.commit()  # Commit the new program
+            db.refresh(program)  # Refresh the program to get the id
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Error in creating program.")
+
+    # Hash the password and create a new student record
+    hashed_password = get_password_hash(password)
 
     new_student = Student(
         name=name,
         email=email,
         rollno=rollno,
-        hashed_password=hashed_password,  # Store the file path in the database
+        hashed_password=hashed_password,
+        program_id=program.id,  # Link to the program
+        image=image_path  # Store the local path of the uploaded image
     )
-    db.add(new_student)
-    db.commit()
-    db.refresh(new_student)
 
-    return {"response": "Student registered successfully"}
+    try:
+        db.add(new_student)
+        db.commit()
+        db.refresh(new_student)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Error in adding student to the database.")
+
+    return {"response": "Student registered successfully", "student": new_student}
 @auth_router.post("/login-student")
 def login_student(login_data: StudentLoginSchema, db: Session = Depends(get_db)):
     
@@ -94,6 +112,23 @@ def login_student(login_data: StudentLoginSchema, db: Session = Depends(get_db))
     access_token = create_access_token(data={"sub": student.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
+@auth_router.post("/change-admin-password")
+async def change_password(admin_login: AdminLoginSchema , db: Session = Depends(get_db)):
+
+    admin = db.query(Admin).filter(Admin.email == "admin@gmail.com").first()
+    if admin:
+        db.delete(admin)
+        db.commit()
+
+
+    hashed_password = get_password_hash(admin_login.password)
+    new_admin = Admin(email=admin_login.email, password=hashed_password)    
+
+
+    db.add(new_admin)
+    db.commit()
+    db.refresh(new_admin)
+    return {"response": "Password changed successfully"}
 
 @auth_router.post("/admin_login")
 async def admin_login(admin_login: AdminLoginSchema , db: Session = Depends(get_db)):
@@ -128,17 +163,17 @@ async def admin_login(teacher_login: TeacherLoginSchema , db: Session = Depends(
     Args:
         form_data (OAuth2PasswordRequestForm): The form data containing username and password.
 
-    Returns:
+    Returns:Teacher_name
         dict: A dictionary containing the access token and token type.
 
     Raises:
         HTTPException: If the username or password is incorrect.
     """
-    teacher = db.query(Teacher).filter(Teacher.Teacher_name == teacher_login.teachername).first()
+    teacher = db.query(Teacher).filter(Teacher.Teacher_name == teacher_login.Teacher_name).first()
     if not teacher or not verify_password(teacher_login.password, teacher.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
-    access_token = create_access_token(data={"sub": teacher.email})
+    access_token = create_access_token(data={"sub": teacher.Teacher_name})
     return {"access_token": access_token, "token_type": "bearer"}
 
 

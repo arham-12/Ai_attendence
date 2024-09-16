@@ -4,8 +4,8 @@ import Sidebar from './components/admin/sidebar';
 import Dashboard from './components/admin/dashboard';
 import AdminLogin from './components/admin/admin_login';  // Capitalize component name as per convention
 import Schedule from './components/admin/schedul';
-import ManageStudents from './components/admin/manage_students';
-import SettingsPage from './components/admin/Settings';
+import SettingsComponent from './components/admin/Settings';
+import ContentRetriever from './components/admin/smart_search';
 const App = () => {
   // State to manage user authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,8 +27,8 @@ const App = () => {
 
         <Route path="/" element={<Dashboard/>} />
         <Route path="/schedule" element={<Schedule/>} />
-        <Route path="/manage-students" element={<ManageStudents/>} />
-        <Route path="/settings" element={<SettingsPage/>} />
+        <Route path="/search-content" element={<ContentRetriever/>} />
+        <Route path="/settings" element={<SettingsComponent/>} />
         {/* <Route index element={<Dashboard/>} /> */}
         {/* If authenticated, show dashboard with sidebar */}
         {/* {isAuthenticated ? (
