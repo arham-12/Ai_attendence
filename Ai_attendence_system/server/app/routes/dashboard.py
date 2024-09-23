@@ -1,9 +1,7 @@
 from fastapi import APIRouter
 from app.db.models import Student , Teacher
 from app.db.session import SessionLocal
-
 from fastapi import Depends
-
 from sqlalchemy.orm import Session
 
 

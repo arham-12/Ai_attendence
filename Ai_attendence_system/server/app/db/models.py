@@ -1,5 +1,5 @@
 # SQLAlchemy models
-from sqlalchemy import Column, Integer, String , ForeignKey
+from sqlalchemy import Column, Integer, String , ForeignKey,DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.orm import relationship
@@ -46,3 +46,22 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     Teacher_name= Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
+class Attendance(Base):
+    __tablename__ = 'attendances'
+
+    id = Column(Integer, primary_key=True, index=True)
+    
+    student_id = Column(Integer, ForeignKey('students.id'), nullable=False)
+    program_id = Column(Integer, ForeignKey('programs.id'), nullable=False)
+    
+    # Lecture name or ID
+    lecture = Column(String, nullable=False)
+    
+    # Attendance status: 'Present' or 'Absent'
+    attendance_status = Column(String, nullable=False)
+    
+    timestamp = Column(DateTime, nullable=False)
+
+    # Relationships
+    student = relationship('Student')
+    program = relationship('Programs')
