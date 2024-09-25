@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
-
+// import 'components/multi_step.dart';
 import "components/registeration.dart";
-import 'components/login.dart';
+// import 'components/login.dart';
+import 'components/multy_step_form.dart';
 import 'package:get/get.dart';
 // import 'components/costom_stepper.dart';
 // import 'components/multy_step_form.dart';
-
+// import 'components/test.dart';
+import './pages/personal_details.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -21,7 +23,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       getPages: [
-        GetPage(name: '/', page: () => LoginScreen()), // Home route
+        GetPage(name: '/', page: () => MultiStepFormPage()), // Home route
         GetPage(name: '/second', page: () => RegisterPage(),transition: Transition.fade, ),
          // Second page route
       ],

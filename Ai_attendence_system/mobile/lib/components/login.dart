@@ -21,6 +21,8 @@ class _LoginScreenState extends State<LoginScreen> {
           height: 300,
           decoration: const BoxDecoration(
             color: Colors.blue,
+            borderRadius: BorderRadius.only(bottomLeft: Radius.circular(50),bottomRight: Radius.circular(50))
+
             // gradient: LinearGradient(
             //   colors: [Color.fromARGB(255, 2, 61, 163), Color.fromARGB(255, 30, 136, 235)], // Background gradient colors
             //   begin: Alignment.topCenter,
