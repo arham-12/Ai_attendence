@@ -2,7 +2,7 @@ import os
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.db.session import SessionLocal, engine
-from app.db.models import Student , Admin, Teacher ,Programs
+from app.db.models import Student , Admin, Teacher , Program
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from app.schemas.schemas import StudentLoginSchema, AdminLoginSchema, TeacherLoginSchema
 from app.services.funtcions_for_auth import get_password_hash, verify_password, create_access_token
@@ -31,6 +31,8 @@ async def register_student(
     confirm_password: str = Form(...),
     program_name: str = Form(...),
     section: str = Form(None),
+    semester: str = Form(...),
+    timming: str = Form(...),
     image: UploadFile = File(...),
     db: Session = Depends(get_db)
 ):
@@ -60,17 +62,18 @@ async def register_student(
         raise HTTPException(status_code=400, detail="Student with this email or roll number already exists.")
 
     # Find or create the program
-    program = db.query(Programs).filter(
-        Programs.program == program_name,
-        Programs.section == section
+    program = db.query(Program).filter(
+        Program.name == program_name,
+        Program.section == section
     ).first()
 
     if not program:
         # If the program doesn't exist, create it
-        program = Programs(
-            program=program_name,
+        program = Program(
+            name=program_name,
             section=section,
-            timming="morning"  # or any other relevant value
+            timing=timming,
+            semester=semester  # or any other relevant value
         )
         db.add(program)
         try:
@@ -102,15 +105,15 @@ async def register_student(
 
     return {"response": "Student registered successfully", "student": new_student}
 @auth_router.post("/login-student")
-def login_student(login_data: StudentLoginSchema, db: Session = Depends(get_db)):
+def login_student(StudentLogin: StudentLoginSchema, db: Session = Depends(get_db)):
     
 
-    student = db.query(Student).filter(Student.email == login_data.email).first()
-    if not student or not verify_password(login_data.password, student.hashed_password):
-        raise HTTPException(status_code=400, detail="Invalid email or password")
+    student = db.query(Student).filter(Student.email == StudentLogin.email).first()
+    if not student or not verify_password(StudentLogin.password, student.hashed_password):
+        raise HTTPException(status_code=400, detail="Please enter valid email or password")
     
     access_token = create_access_token(data={"sub": student.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer", "status": "student"}
 
 @auth_router.post("/change-admin-password")
 async def change_password(admin_login: AdminLoginSchema , db: Session = Depends(get_db)):
@@ -174,7 +177,7 @@ async def admin_login(teacher_login: TeacherLoginSchema , db: Session = Depends(
         raise HTTPException(status_code=400, detail="Invalid username or password")
     
     access_token = create_access_token(data={"sub": teacher.Teacher_name})
-    return {"access_token": access_token, "token_type": "bearer"}
+    return {"access_token": access_token, "token_type": "bearer","status":"teacher"}
 
 
 

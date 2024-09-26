@@ -13,39 +13,72 @@ class AcademicDetailsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Academic Details')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            CustomTextField(
-              label: 'Degree Program',
-              onChanged: (value) => controller.degreeProgram.value = value,
-            ),
-            CustomTextField(
-              label: 'Roll No',
-              onChanged: (value) => controller.rollNo.value = value,
-            ),
-            CustomTextField(
-              label: 'Section',
-              onChanged: (value) => controller.section.value = value,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                if (controller.isAcademicDetailsValid()) {
-                  pageController.nextPage(
-                    duration: Duration(milliseconds: 300),
-                    curve: Curves.easeIn,
-                  );
-                } else {
-                  Get.snackbar('Error', 'Please fill all fields correctly.');
-                }
-              },
-              child: Text('Next'),
-            ),
-          ],
+      // appBar: AppBar(title: Text('Academic Details')),
+      body: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
         ),
+        child: ListView(
+            children: [
+              Column(
+                children: [
+                  Container(
+                      width: 150,
+                      height: 45,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.blue,
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(child: Text('Acdemic Details', style: TextStyle(color: Colors.white ,fontSize: 15),)),
+                      ),
+                    ),
+                ],
+              ),
+                Column(
+                  children: [
+                    SizedBox(height: 16),
+              CustomTextField(
+                label: 'Degree Program',
+                keyboardType: TextInputType.name,
+                onChanged: (value) => controller.degreeProgram.value = value,
+              ),
+              CustomTextField(
+                label: 'Roll No',
+                keyboardType: TextInputType.name,
+                onChanged: (value) => controller.rollNo.value = value,
+              ),
+              CustomTextField(
+                label: 'Section',
+                keyboardType: TextInputType.name,
+                onChanged: (value) => controller.section.value = value,
+              ),
+              CustomTextField(
+                label: 'Semester',
+                keyboardType: TextInputType.name,
+                onChanged: (value) => controller.sememter.value = value,
+              ),
+               SizedBox(height: 16),
+
+              ElevatedButton(
+                onPressed: () {
+                  if (controller.isAcademicDetailsValid()) {
+                    pageController.nextPage(
+                      duration: Duration(milliseconds: 300),
+                      curve: Curves.easeIn,
+                    );
+                  } else {
+                    Get.snackbar('Error', 'Please fill all fields correctly.');
+                  }
+                },
+                child: Text('Next'),
+              ),
+                  ]
+                )
+            ],
+          ),
       ),
-    );
+      );
   }
 }

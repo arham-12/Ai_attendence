@@ -31,7 +31,7 @@ class ClassSchema(BaseModel):
 
 
 class StudentLoginSchema(BaseModel):
-    RollNo: str
+    email: str
     password: str
 
 class StudentResponseSchema(BaseModel):
