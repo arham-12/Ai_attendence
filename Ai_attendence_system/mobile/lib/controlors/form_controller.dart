@@ -9,7 +9,7 @@ class FormController extends GetxController {
   var degreeProgram = ''.obs;
   var rollNo = ''.obs;
   var section = ''.obs;
-  var sememter = ''.obs;
+  var semester = 0.obs;
   var imagePath = ''.obs;
 
   bool isPersonalDetailsValid() {
@@ -24,7 +24,7 @@ class FormController extends GetxController {
     return degreeProgram.value.isNotEmpty &&
         rollNo.value.isNotEmpty &&
         section.value.isNotEmpty&&
-        sememter.value.isNotEmpty;
+        semester.value >= 1 && semester.value <= 8;
   }
 
   // Function to submit form data to the backend server
@@ -45,7 +45,7 @@ class FormController extends GetxController {
         'degreeProgram': degreeProgram.value,
         'rollNo': rollNo.value,
         'section': section.value,
-        'sememter': sememter.value,
+        'sememter': semester.value,
         // If imagePath is not empty, add the file to the form data
         if (imagePath.value.isNotEmpty)
           'image': await dio.MultipartFile.fromFile(imagePath.value, filename: 'image.jpg'),

@@ -35,14 +35,14 @@ class MultiStepFormPage extends StatelessWidget {
           ListView(
               children: [
                 Container(
-            margin: EdgeInsets.only(top:MediaQuery.of(context).size.height/10,),
+            margin: EdgeInsets.only(top:MediaQuery.of(context).size.height/11,),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Center(
                           child: Text(
                             'Rigister',
-                            style: TextStyle(fontSize: 32, color: Colors.white),
+                            style: Theme.of(context).textTheme.headlineLarge,
                             
                             
                           ),
@@ -53,7 +53,7 @@ class MultiStepFormPage extends StatelessWidget {
             
                   padding: EdgeInsets.all(32.0),
                   height: MediaQuery.of(context).size.height * 0.7,
-                  width: MediaQuery.of(context).size.width * 0.8,
+                  width: MediaQuery.of(context).size.width * 0.9,
                   decoration: BoxDecoration(
                     color: Colors.white,
                     borderRadius: BorderRadius.circular(8.0),

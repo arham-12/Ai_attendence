@@ -36,11 +36,11 @@ class PersonalDetailsPage extends StatelessWidget {
                         height: 45,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
-                          color: Colors.blue,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                                       
                           // padding: const EdgeInsets.all(8.0),
-                          child: Center(child: Text('Personal Details', style: TextStyle(color: Colors.white ,fontSize: 15),)),
+                          child: Center(child: Text('Personal Details', style: Theme.of(context).textTheme.bodyLarge,)),
                       
                       ),
                     ],
@@ -72,6 +72,7 @@ class PersonalDetailsPage extends StatelessWidget {
                   ),
                   SizedBox(height: 16),
                   ElevatedButton(
+                    style: Theme.of(context).elevatedButtonTheme.style,
                     onPressed: () {
                       if (controller.isPersonalDetailsValid()) {
                         pageController.nextPage(

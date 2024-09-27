@@ -67,13 +67,13 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        color: Colors.blue[50],
+        color: Theme.of(context).colorScheme.secondary,
         child: Stack(
           children: [
             Container(
               height: MediaQuery.of(context).size.height / 3,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
+              decoration: BoxDecoration(
+                color: Theme.of(context).colorScheme.primary,
               ),
             ),
             Container(
@@ -85,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   Center(
                     child: Text(
                       'Login',
-                      style: TextStyle(fontSize: 32, color: Colors.white),
+                      style: Theme.of(context).textTheme.headlineLarge,
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -111,10 +111,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         Center(
                     child: ToggleButtons(
-                      borderRadius: BorderRadius.circular(10),
-                      fillColor: Colors.blue[100],
-                      selectedColor: Colors.blue,
-                      color: Colors.black,
+                      borderRadius: BorderRadius.circular(30),
+                      fillColor: Theme.of(context).colorScheme.primary,
+                      selectedColor: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.onSecondary,
                       isSelected: [isStudent, !isStudent],
                       onPressed: (index) {
                         setState(() {
@@ -148,10 +148,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 20),
                         ElevatedButton(
                           onPressed: handleLogin,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blueAccent,
-                            foregroundColor: Colors.white,
-                          ),
+                          style: Theme.of(context).elevatedButtonTheme.style,
                           child: const Text('Login'),
                         ),
                         const SizedBox(height: 20),
@@ -161,12 +158,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 20),
                   Center(
                     child: TextButton(
+                      style: Theme.of(context).textButtonTheme.style,
                       onPressed: () {
                         Get.toNamed('/second');
                       },
                       child: Text(
-                        "CREATE ACCOUNT IF YOU ARE NEW",
-                        style: TextStyle(color: Colors.blue),
+                        "CREATE PROFILE",
+                        // style: TextStyle(color: Colors.blue),
                       ),
                     ),
                   ),

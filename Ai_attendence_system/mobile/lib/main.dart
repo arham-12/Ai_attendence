@@ -29,7 +29,11 @@ class MyApp extends StatelessWidget {
                // Define the main color scheme for the app
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
-           // Primary color based on seed
+          primary: Colors.blue,
+          primaryFixedDim: Colors.blue[100],
+          secondary: Colors.blue[50],
+          secondaryFixedDim: Colors.grey[500],
+          onSecondary: Colors.grey[900],           // Primary color based on seed
           brightness: Brightness.light, // Light theme, can switch to dark
         ),
 
@@ -85,27 +89,6 @@ class MyApp extends StatelessWidget {
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
         ),
-
-        // Input Decoration Theme for TextFields
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.grey[200],
-          contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none,
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.transparent),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.blueAccent, width: 2),
-          ),
-          labelStyle: const TextStyle(color: Colors.blueAccent),
-        ),
-
         // Custom card theme
         cardTheme: CardTheme(
           elevation: 4,
@@ -151,7 +134,7 @@ class MyApp extends StatelessWidget {
           headlineLarge : TextStyle(
             fontSize: 28,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Colors.white,
           ),
           headlineMedium: TextStyle(
             fontSize: 18,
@@ -165,7 +148,7 @@ class MyApp extends StatelessWidget {
           ),
           bodyLarge: TextStyle(
             fontSize: 14,
-            color: Colors.black54,
+            color: Colors.white,
           ),
           bodyMedium: TextStyle(
             fontSize: 12,

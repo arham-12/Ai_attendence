@@ -46,6 +46,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         focusNode: _focusNode,
         obscureText: widget.obscureText,
         keyboardType: widget.keyboardType,
+        style: TextStyle(color: _isFocused ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.secondaryFixedDim),
         decoration: InputDecoration(
           labelText: widget.label,
           filled: true,
