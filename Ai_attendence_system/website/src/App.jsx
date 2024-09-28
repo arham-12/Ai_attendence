@@ -4,7 +4,10 @@ import Sidebar from './components/admin/sidebar';
 import Dashboard from './components/admin/dashboard';
 import AdminLogin from './components/admin/admin_login';  // Capitalize component name as per convention
 import Schedule from './components/admin/schedul';
-import SettingsComponent from './components/admin/Settings';
+// import ParentComponent from './components/admin_settings/setttings_navbar';
+import Settings from './components/admin_settings/Settings';
+import StepForm from './components/admin_settings/department_section';
+import ManageStudents from './components/admin_settings/manage_students';
 import ContentRetriever from './components/admin/smart_search';
 const App = () => {
   // State to manage user authentication
@@ -28,7 +31,16 @@ const App = () => {
         <Route path="/" element={<Dashboard/>} />
         <Route path="/schedule" element={<Schedule/>} />
         <Route path="/search-content" element={<ContentRetriever/>} />
-        <Route path="/settings" element={<SettingsComponent/>} />
+        <Route path="/settings" element={<Settings/>} >
+        <Route index element={<StepForm/>} />
+        <Route path='students' element={<ManageStudents/>} />
+        {/* <Route path="teachers" element={<DepartmentSection/>} /> */}
+        {/* <Route path="admin-settings" element={<DepartmentSection/>} /> */}
+        
+        
+        </Route>
+        {/* <Route path="department" element={<DepartmentSection/>} /> */}
+        
         {/* <Route index element={<Dashboard/>} /> */}
         {/* If authenticated, show dashboard with sidebar */}
         {/* {isAuthenticated ? (

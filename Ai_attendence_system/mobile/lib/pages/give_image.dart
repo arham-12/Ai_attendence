@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:camera/camera.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../controlors/form_controller.dart';
 import 'dart:io';
 
@@ -11,43 +12,75 @@ class GiveImagePage extends StatefulWidget {
 
 class _GiveImagePageState extends State<GiveImagePage> {
   final FormController controller = Get.find<FormController>();
-  CameraController? _controller;
+  CameraController? _cameraController;
   Future<void>? _initializeControllerFuture;
+  RxBool isCameraInitialized = false.obs;
+  RxBool showCapturedImage = false.obs;
 
   @override
   void initState() {
     super.initState();
-    _initializeCamera();
+    _checkPermissionsAndInitializeCamera();
+  }
+
+  Future<void> _checkPermissionsAndInitializeCamera() async {
+    // Request camera permission
+    var status = await Permission.camera.request();
+    if (status.isGranted) {
+      _initializeCamera();
+    } else {
+      Get.snackbar('Permission Denied', 'Camera access is required to take pictures.');
+    }
   }
 
   Future<void> _initializeCamera() async {
-    // Obtain a list of available cameras
-    final cameras = await availableCameras();
-    // Get the front camera
-    final frontCamera = cameras.firstWhere((camera) => camera.lensDirection == CameraLensDirection.front);
+    try {
+      final cameras = await availableCameras();
+      final frontCamera = cameras.firstWhere(
+          (camera) => camera.lensDirection == CameraLensDirection.front,
+          orElse: () => cameras.first); // Use the first camera if front not found
 
-    // Initialize the camera controller
-    _controller = CameraController(frontCamera, ResolutionPreset.medium);
-    _initializeControllerFuture = _controller!.initialize();
+      _cameraController = CameraController(frontCamera, ResolutionPreset.medium);
+      _initializeControllerFuture = _cameraController!.initialize();
+      await _initializeControllerFuture; // Wait for the camera to initialize
+      isCameraInitialized.value = true;
+      showCapturedImage.value = false;
+    } catch (e) {
+      Get.snackbar('Error', 'Failed to initialize camera: $e');
+      print('Camera initialization error: $e');
+    }
   }
 
   @override
   void dispose() {
-    _controller?.dispose();
+    _cameraController?.dispose();
     super.dispose();
   }
 
   Future<void> _captureImage() async {
     try {
       await _initializeControllerFuture; // Ensure the camera is initialized
-
-      final image = await _controller?.takePicture(); // Capture the image
+      final image = await _cameraController?.takePicture(); // Capture the image
       if (image != null) {
         controller.imagePath.value = image.path; // Update the image path
+        _stopCamera(); // Stop the camera after capturing the image
+        showCapturedImage.value = true; // Show the captured image
       }
     } catch (e) {
-      print(e); // Handle errors
+      Get.snackbar('Error', 'Failed to capture image: $e');
+      print('Capture image error: $e');
     }
+  }
+
+  void _stopCamera() {
+    _cameraController?.dispose();
+    isCameraInitialized.value = false;
+  }
+
+  void _retakeImage() {
+    controller.imagePath.value = ''; // Clear previous image path
+    showCapturedImage.value = false; // Hide the captured image and retake button
+    _initializeCamera(); // Reinitialize the camera for retaking the image
   }
 
   @override
@@ -57,6 +90,7 @@ class _GiveImagePageState extends State<GiveImagePage> {
         decoration: BoxDecoration(color: Colors.white),
         child: Center(
           child: ListView(
+            padding: EdgeInsets.all(16),
             children: [
               Column(
                 children: [
@@ -78,62 +112,93 @@ class _GiveImagePageState extends State<GiveImagePage> {
               ),
               SizedBox(height: 16),
               Obx(() {
-                return controller.imagePath.value.isNotEmpty
-                    ? Image.file(File(controller.imagePath.value))
-                    : Text('No image selected.');
+                // Proper use of Obx with observable variables
+                if (showCapturedImage.value && controller.imagePath.value.isNotEmpty) {
+                  return Column(
+                    children: [
+                      Container(
+                        width: 300,
+                        height: 300,
+                        child: Image.file(File(controller.imagePath.value)),
+                      ),
+                      SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _retakeImage,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.camera_alt),
+                            SizedBox(width: 8),
+                            Text('Retake Image'),
+                          ],
+                        ),
+                      ),
+                    ],
+                  );
+                } else {
+                  return Text('No image selected.');
+                }
               }),
               SizedBox(height: 16),
-               FutureBuilder<void>(
-                future: _initializeControllerFuture,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.done) {
-                    return ClipOval(
-                      child: SizedBox(
-                        width: 200, // Specify the diameter of the circle
-                        height: 200,
-                        child: CameraPreview(_controller!), // Show the camera preview
-                      ),
-                    );
-                  } else {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                },
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await _captureImage();
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.camera_alt), // Camera icon
-                    SizedBox(width: 8),
-                    Text('Capture Image'),
-                  ],
-                ),
-              ),
-              SizedBox(height: 16),
-              Column(
-                children: [
-                  ElevatedButton(
-                    style: Theme.of(context).elevatedButtonTheme.style,
-                    onPressed: () {
-                      if (controller.isPersonalDetailsValid() &&
-                          controller.isAcademicDetailsValid()) {
-                        controller.submitFormData();
-                        Get.snackbar('Success', 'Registration Completed');
-                        Get.toNamed('/');
+              Obx(() {
+                // Proper use of Obx for camera preview
+                if (isCameraInitialized.value && !showCapturedImage.value) {
+                  return FutureBuilder<void>(
+                    future: _initializeControllerFuture,
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.done) {
+                        return ClipOval(
+                          child: SizedBox(
+                            width: 300,
+                            height: 300,
+                            child: CameraPreview(_cameraController!),
+                          ),
+                        );
                       } else {
-                        Get.snackbar('Validation Error',
-                            'Please fill all required fields correctly');
+                        return Center(child: CircularProgressIndicator());
                       }
                     },
-                    child: Text('Submit'),
-                  ),
-                ],
+                  );
+                } else {
+                  return SizedBox.shrink(); // Empty space when conditions are not met
+                }
+              }),
+              SizedBox(height: 16),
+              Obx(() {
+                // Proper use of Obx for Capture Image button
+                if (isCameraInitialized.value && !showCapturedImage.value) {
+                  return ElevatedButton(
+                    onPressed: _captureImage,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.camera_alt),
+                        SizedBox(width: 8),
+                        Text('Capture Image'),
+                      ],
+                    ),
+                  );
+                } else {
+                  return SizedBox.shrink();
+                }
+              }),
+              SizedBox(height: 16),
+              ElevatedButton(
+                style: Theme.of(context).elevatedButtonTheme.style,
+                onPressed: () {
+                  if (controller.isPersonalDetailsValid() &&
+                      controller.isAcademicDetailsValid()) {
+                    controller.submitFormData();
+                    Get.snackbar('Success', 'Registration Completed');
+                    Get.toNamed('/');
+                  } else {
+                    Get.snackbar('Validation Error',
+                        'Please fill all required fields correctly');
+                  }
+                },
+                child: Text('Submit'),
               ),
               SizedBox(height: 16),
-             
             ],
           ),
         ),

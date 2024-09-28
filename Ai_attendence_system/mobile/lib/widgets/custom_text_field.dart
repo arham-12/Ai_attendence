@@ -46,11 +46,19 @@ class _CustomTextFieldState extends State<CustomTextField> {
         focusNode: _focusNode,
         obscureText: widget.obscureText,
         keyboardType: widget.keyboardType,
-        style: TextStyle(color: _isFocused ? Theme.of(context).colorScheme.onSecondary : Theme.of(context).colorScheme.secondaryFixedDim),
+        style: TextStyle(
+          color: _isFocused
+              ? Theme.of(context).colorScheme.onSecondary
+              : Theme.of(context).colorScheme.secondaryFixedDim,
+        ),
         decoration: InputDecoration(
           labelText: widget.label,
+          hintText: _isFocused ? widget.label : widget.label, // Hint appears when unfocused, disappears on input
+          floatingLabelBehavior: FloatingLabelBehavior.never, // Keeps label at the same position
           filled: true,
-          labelStyle: TextStyle(color: _isFocused ? Colors.blue : Colors.grey[500]),
+          labelStyle: TextStyle(
+            color: _isFocused ? Colors.blue : Colors.grey[500],
+          ),
           fillColor: _isFocused ? Colors.blue[50] : Colors.grey[150], // Change fill color on focus
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(8),

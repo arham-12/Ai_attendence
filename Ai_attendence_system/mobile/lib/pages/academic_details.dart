@@ -48,11 +48,14 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: Container(
+        height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
+          
           color: Colors.white,
         ),
-        child: ListView(
+        child: Column(
           children: [
             Column(
               children: [
@@ -75,87 +78,90 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                 ),
               ],
             ),
+            SizedBox(height: 16),
             Column(
               children: [
-                SizedBox(height: 16),
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+                // SizedBox(height: 16),
+              
+                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Select Degree Program',
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      SizedBox(height: 10),
-                      Obx(
-                        () => DropdownButtonFormField<String>(
-                          focusNode: _focusNode, // Attach FocusNode
-                          value: controller.degreeProgram.value.isEmpty
-                              ? null
-                              : controller.degreeProgram.value,
-                          hint: Text('Choose a program'),
-                          decoration: InputDecoration(
-                            filled: true,
-                            fillColor: _isFocused
-                                ? Theme.of(context).colorScheme.secondary
-                                : Colors.grey[200], // Change fill color on focus
-                            contentPadding: EdgeInsets.symmetric(
-                                vertical: 12, horizontal: 16),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Theme.of(context).colorScheme.secondary,
+                      // Text(
+                      //   'Select Degree Program',
+                      //   style: TextStyle(
+                      //       fontSize: 10, fontWeight: FontWeight.bold),
+                      // ),
+                      // SizedBox(height: 10),
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Obx(
+                          () => DropdownButtonFormField<String>(
+                            focusNode: _focusNode, // Attach FocusNode
+                            value: controller.degreeProgram.value.isEmpty
+                                ? null
+                                : controller.degreeProgram.value,
+                            hint: Text('Select Degree Program'),
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: _isFocused
+                                  ? Theme.of(context).colorScheme.secondary
+                                  : Colors.grey[200], // Change fill color on focus
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 12, horizontal: 16),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Theme.of(context).colorScheme.secondary,
+                                ),
+                                // borderSide: BorderSide(
+                                //     color:
+                                //         _isFocused ? Colors.grey : Colors.grey,
+                                //     width: 1.5),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              // borderSide: BorderSide(
-                              //     color:
-                              //         _isFocused ? Colors.grey : Colors.grey,
-                              //     width: 1.5),
-                              borderRadius: BorderRadius.circular(12),
+                              disabledBorder: InputBorder.none,
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide.none,
+                          
+                                
+                                    // BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
                             ),
-                            disabledBorder: InputBorder.none,
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-  
-                              
-                                  // BorderSide(color: Theme.of(context).colorScheme.secondary, width: 2),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            icon: Icon(Icons.arrow_drop_down,
+                                color: Theme.of(context).colorScheme.primary),
+                            iconSize: 28,
+                            elevation: 16,
+                            dropdownColor: Colors.white,
+                            style: TextStyle(color: Colors.black, fontSize: 16),
+                            items: degreePrograms.map((program) {
+                              return DropdownMenuItem<String>(
+                                value: program['name'],
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      program['icon'],
+                                      color: Theme.of(context).colorScheme.primary,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Text(program['name']),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                controller.degreeProgram.value = newValue;
+                              }
+                            },
+                            validator: (value) =>
+                                value == null ? 'Please select a program' : null,
                           ),
-                          icon: Icon(Icons.arrow_drop_down,
-                              color: Theme.of(context).colorScheme.primary),
-                          iconSize: 28,
-                          elevation: 16,
-                          dropdownColor: Colors.white,
-                          style: TextStyle(color: Colors.black, fontSize: 16),
-                          items: degreePrograms.map((program) {
-                            return DropdownMenuItem<String>(
-                              value: program['name'],
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    program['icon'],
-                                    color: Theme.of(context).colorScheme.primary,
-                                  ),
-                                  SizedBox(width: 10),
-                                  Text(program['name']),
-                                ],
-                              ),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            if (newValue != null) {
-                              controller.degreeProgram.value = newValue;
-                            }
-                          },
-                          validator: (value) =>
-                              value == null ? 'Please select a program' : null,
                         ),
                       ),
-                      SizedBox(height: 20),
+                      // SizedBox(height: 20),r
                     ],
                   ),
-                ),
+                SizedBox(height: 10),
                 CustomTextField(
                   label: 'Roll No',
                   keyboardType: TextInputType.name,
@@ -183,7 +189,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                     }
                   },
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 10),
                 ElevatedButton(
                   style: Theme.of(context).elevatedButtonTheme.style,
                     

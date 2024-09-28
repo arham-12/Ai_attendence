@@ -6,6 +6,8 @@ from datetime import datetime
 
 Base = declarative_base()
 
+
+"""MODEL FOR PROGRAMS"""
 class Program(Base):
     __tablename__ = 'programs'
 
@@ -17,7 +19,7 @@ class Program(Base):
     
     # One-to-Many relationship: one program can have many students
     students = relationship('Student', back_populates='program')
-
+"""MODEL FOR STUDENTS"""
 class Student(Base):
     __tablename__ = 'students'
 
@@ -37,6 +39,8 @@ class Student(Base):
     # Attendance relationship for easier access to student's attendance records
     attendances = relationship('Attendance', back_populates='student')
 
+
+""""MODEL FOR ADMINS"""
 class Admin(Base):
     __tablename__ = 'admins'
 
@@ -44,6 +48,8 @@ class Admin(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
+
+""""MODEL FOR TEACHERS"""
 class Teacher(Base):
     __tablename__ = 'teachers'
 
@@ -51,6 +57,8 @@ class Teacher(Base):
     name = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
+
+""""MODEL FOR ATTENDANCE"""
 class Attendance(Base):
     __tablename__ = 'attendances'
 
@@ -64,3 +72,52 @@ class Attendance(Base):
     # Relationships
     student = relationship('Student', back_populates='attendances')
     program = relationship('Program')
+
+
+
+
+""""MODEL FOR DEPARTMENTS"""
+class Department(Base):
+    __tablename__ = 'departments'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False, unique=True)
+
+    # Relationship to DegreeProgram
+    degree_programs = relationship("DegreeProgram", back_populates="department", cascade="all, delete-orphan")
+
+
+""""MODEL FOR DEGREE PROGRAMS"""
+class DegreeProgram(Base):
+    __tablename__ = 'degree_programs'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    department_id = Column(Integer, ForeignKey('departments.id'))
+
+    # Relationships
+    department = relationship("Department", back_populates="degree_programs")
+    semesters = relationship("Semester", back_populates="degree_program", cascade="all, delete-orphan")
+
+
+""""MODEL FOR SEMESTERS"""
+class Semester(Base):
+    __tablename__ = 'semesters'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    degree_program_id = Column(Integer, ForeignKey('degree_programs.id'))
+
+    # Relationships
+    degree_program = relationship("DegreeProgram", back_populates="semesters")
+    courses = relationship("Course", back_populates="semester", cascade="all, delete-orphan")
+
+
+""""MODEL FOR COURSES"""
+# Course Model
+class Course(Base):
+    __tablename__ = 'courses'
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    cedit_hours = Column(Integer, nullable=False)
+    semester_id = Column(Integer, ForeignKey('semesters.id'))
+
+    # Relationships
+    semester = relationship("Semester", back_populates="courses")
