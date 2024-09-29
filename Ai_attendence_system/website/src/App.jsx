@@ -9,6 +9,10 @@ import Settings from './components/admin_settings/Settings';
 import StepForm from './components/admin_settings/department_section';
 import ManageStudents from './components/admin_settings/manage_students';
 import ContentRetriever from './components/admin/smart_search';
+import SeeDepartments from './components/admin_settings/SeeDepartments';
+import ManageTeacher from './components/admin_settings/manage_teacher';
+import AdminSettings from './components/admin_settings/AdminSettings';
+
 const App = () => {
   // State to manage user authentication
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -33,9 +37,10 @@ const App = () => {
         <Route path="/search-content" element={<ContentRetriever/>} />
         <Route path="/settings" element={<Settings/>} >
         <Route index element={<StepForm/>} />
+        <Route path='see-departments' element={<SeeDepartments/>} />
         <Route path='students' element={<ManageStudents/>} />
-        {/* <Route path="teachers" element={<DepartmentSection/>} /> */}
-        {/* <Route path="admin-settings" element={<DepartmentSection/>} /> */}
+        <Route path="teachers" element={<ManageTeacher/>} />
+        <Route path="admin-settings" element={<AdminSettings/>} />
         
         
         </Route>

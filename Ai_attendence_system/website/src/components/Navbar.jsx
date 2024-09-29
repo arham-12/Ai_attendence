@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'; // Import Link from react-router-dom
 // Navbar component
 const Navbar = ({ links, activeLink, handleLinkClick }) => {
   return (
-    <nav className="bg-blue-300 text-white py-4 shadow-lg rounded-lg w-[60%] ml-[20%] mt-[1%]">
+    <nav className="bg-blue-300 text-white py-4 shadow-lg rounded-lg mt-1">
       <div className="container mx-auto flex justify-center">
         <div className="flex space-x-4">
           {links.map((link) => {

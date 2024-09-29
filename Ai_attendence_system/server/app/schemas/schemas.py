@@ -1,6 +1,9 @@
 from pydantic import BaseModel, EmailStr, constr, root_validator
-from typing import Optional
-from fastapi import UploadFile, File
+from typing import Optional,List
+
+
+
+
 class StudentRegistrationSchema(BaseModel):
     name: str
     email: EmailStr
@@ -56,3 +59,22 @@ class TeacherLoginSchema(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+
+class DepartmentUpdate(BaseModel):
+    current_name: str
+    new_name: str
+
+
+# Pydantic model for the degree program update
+class DegreeProgramUpdate(BaseModel):
+    current_name: str
+    new_name: str
+
+
+# Pydantic model for the course update
+class CourseUpdate(BaseModel):
+    current_name: str
+    new_name: str
+    credit_hours: int

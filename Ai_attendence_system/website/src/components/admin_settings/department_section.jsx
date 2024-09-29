@@ -5,6 +5,7 @@ import * as Yup from 'yup';
 import StepWizard from 'react-step-wizard';
 import { ErrorMessage } from 'formik';
 import { FaTrash } from 'react-icons/fa';
+import axios from 'axios';
 // Validation schema using Yup
 const validationSchema = Yup.object().shape({
     departmentName: Yup.string().required('Department name is required'),
@@ -27,6 +28,15 @@ const validationSchema = Yup.object().shape({
 // Main Form Component
 // Main Form Component
 const StepForm = () => {
+  const handleSubmit = async (values) => {
+    try {
+      console.log(values);
+      const response = await axios.post('http://localhost:8000/departments', values);
+      console.log('Department created:', response.data);
+    } catch (error) {
+      console.error('Error:', error.response ? error.response.data : error.message);
+    }
+  };
     return (
       <Formik
         initialValues={{
@@ -34,22 +44,12 @@ const StepForm = () => {
           degreePrograms: [],
         }}
         validationSchema={validationSchema}
-        onSubmit={(values) => {
-          console.log(values); // Handle form submission, send data to the backend
-        }}
+        onSubmit={handleSubmit}
       >
         {({ values, setFieldValue, handleSubmit, setTouched, validateForm }) => (
           <Form className="mx-auto p-6 bg-white w-[80%] ml-[20%] shadow-lg rounded-lg">
             <StepWizard>
-              <StepOne nextStep={async () => {
-                const errors = await validateForm();
-                setTouched({
-                  departmentName: true,
-                });
-                if (Object.keys(errors).length === 0) {
-                  nextStep();
-                }
-              }} />
+              <StepOne setFieldValue={setFieldValue} values={values}/>
               <StepTwo setFieldValue={setFieldValue} values={values} />
               <StepThree setFieldValue={setFieldValue} values={values} />
               <FinalStep values={values} />
@@ -61,8 +61,18 @@ const StepForm = () => {
   };
 // Step One: Adding Department Name
 // Step One: Adding Department Name
-const StepOne = ({ nextStep }) => (
-    <div className="bg-white p-6 w-[80%] rounded-lg shadow-md">
+const StepOne = ({ nextStep ,values }) => {
+  // const handleNextStep = async () => {
+  //   // const errors = await validationSchema.validate(values, { abortEarly: false });
+  //   // console.log('Validation Errors:', errors); // Log errors
+  //   if (validationSchema.departmentName != '') {
+  //     console.log('Form Submitted:');
+  //     nextStep(); // Proceed to next step if no errors
+  //   } 
+  // };
+
+  return (
+    <div className="bg-white p-6 w-[80%] rounded-lg shadow-md mt-3">
       <h3 className="text-xl font-semibold text-gray-800 mb-4">Add Department</h3>
       <Field
         name="departmentName"
@@ -74,13 +84,21 @@ const StepOne = ({ nextStep }) => (
       
       <button
         type="button"
-        onClick={nextStep}
+        onClick={() => {
+          if (values.departmentName === '') {
+            // Show error if no degree programs are added
+            alert("the department name cannot be empty");
+          } else {
+            nextStep();
+          }
+        }}
         className="mt-4 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition duration-200"
       >
         Next
       </button>
     </div>
   );
+};
 // Step Two: Adding Degree Programs
 const StepTwo = ({ nextStep, previousStep, setFieldValue, values }) => (
     <FieldArray name="degreePrograms">
@@ -251,26 +269,72 @@ const StepTwo = ({ nextStep, previousStep, setFieldValue, values }) => (
     </FieldArray>
   );
 // Final Step: Review and Submit
-const FinalStep = ({ previousStep, values }) => (
-  <div className="bg-white p-6 rounded-lg shadow-md">
-    <h3 className="text-xl font-semibold text-gray-800 mb-4">Review & Submit</h3>
-    <pre className="text-sm">{JSON.stringify(values, null, 2)}</pre>
-    <div className="flex justify-between mt-4">
-      <button
-        type="button"
-        onClick={previousStep}
-        className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition duration-200"
-      >
-        Previous
-      </button>
-      <button
-        type="submit"
-        className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200"
-      >
-        Submit
-      </button>
-    </div>
-  </div>
-);
+const FinalStep = ({ previousStep, values }) => {
+  return (
+    <div className="bg-white p-6 rounded-lg shadow-md">
+      <h3 className="text-xl font-semibold text-gray-800 mb-4">Review & Submit</h3>
 
+      {/* Display department name */}
+      <div className="mb-4">
+        <h4 className="text-lg text-center font-semibold text-gray-700">{values.departmentName}</h4>
+        
+      </div>
+
+      {/* Display degree programs, semesters, and courses */}
+      {values.degreePrograms.map((program, programIndex) => (
+        <div key={programIndex} className="mb-6">
+          <h4 className="text-lg font-semibold text-gray-700">Degree Program: {program.programName}</h4>
+
+          
+          
+    {program.semesters.map((semester, semesterIndex) => (
+  <React.Fragment key={semesterIndex}>
+    {/* Display the semester heading only once for each semester */}
+    <h4 className="text-lg text-center font-semibold text-gray-700 mb-2">
+      Semester {semester.semesterName}
+    </h4>
+
+    {/* Table for each semester */}
+    <table className="w-full mb-4 border-collapse">
+      <thead>
+        <tr>
+          <th className="border border-gray-300 p-2 bg-gray-100 text-left">Course Name</th>
+          <th className="border border-gray-300 p-2 bg-gray-100 text-left">Credit Hours</th>
+        </tr>
+      </thead>
+      <tbody>
+        {semester.courses.map((course, courseIndex) => (
+          <tr key={courseIndex}>
+            <td className="border border-gray-200 p-2">{course.courseName}</td>
+            <td className="border border-gray-200 p-2">{course.creditHours}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </React.Fragment>
+))}
+            
+          
+        </div>
+      ))}
+
+      <div className="flex justify-between mt-4">
+        <button
+          type="button"
+          onClick={previousStep}
+          className="bg-gray-500 text-white py-2 px-4 rounded hover:bg-gray-600 transition duration-200"
+        >
+          Previous
+        </button>
+        <button
+          type="submit"
+          className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition duration-200"
+          // onClick={handleSubmit}
+        >
+          Submit
+        </button>
+      </div>
+    </div>
+  );
+};
 export default StepForm;

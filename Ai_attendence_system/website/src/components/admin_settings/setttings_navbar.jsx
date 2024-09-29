@@ -10,8 +10,9 @@ const ParentComponent = () => {
   // Define the links with icons
   const links = [
     { key: 'department', label: 'Departments', path: '/settings', icon: MdBusiness },
-    { key: 'students', label: 'Manage Students', path: '/settings/students', icon: MdSupervisorAccount },
-    { key: 'teachers', label: 'Manage Teachers', path: '/settings/teachers', icon: MdSchool },
+    {key: 'see departments', label: 'See departments', path: '/settings/see-departments', icon: MdBusiness},
+    // { key: 'students', label: 'Manage Students', path: '/settings/students', icon: MdSupervisorAccount },
+    // { key: 'teachers', label: 'Manage Teachers', path: '/settings/teachers', icon: MdSchool },
     { key: 'adminSettings', label: 'Admin Settings', path: '/settings/admin-settings', icon: MdSettings },
   ];
 
@@ -22,7 +23,7 @@ const ParentComponent = () => {
 
   return (
     <>
-    <div className=" ml-[20%]">
+    <div className="ml-[35%] w-[50%]">
       <Navbar links={links} activeLink={activeLink} handleLinkClick={handleLinkClick} />
       {/* Add your Routes here */}
 

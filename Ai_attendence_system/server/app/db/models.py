@@ -116,7 +116,7 @@ class Course(Base):
     __tablename__ = 'courses'
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
-    cedit_hours = Column(Integer, nullable=False)
+    credit_hours = Column(Integer) 
     semester_id = Column(Integer, ForeignKey('semesters.id'))
 
     # Relationships

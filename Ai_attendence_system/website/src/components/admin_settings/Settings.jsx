@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 
 const Settings = () => {
   return (
-    <div className='flex flex-col w-full mt-5' >
+    <div className='flex flex-col w-full mt-5 ' >
     <ParentComponent/>
     <Outlet/>
     </div>
