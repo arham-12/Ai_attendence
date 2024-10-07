@@ -1,42 +1,39 @@
-// Navbar.js
-import React from 'react';
-import { Link } from 'react-router-dom'; // Import Link from react-router-dom
+import React, { useState } from 'react';
 
-// Navbar component
-const Navbar = ({ links, activeLink, handleLinkClick }) => {
+const Navbar = ({ tabs }) => {
+  // State to track active tab
+  const [activeTab, setActiveTab] = useState(tabs[0].id);
+
+  const handleTabClick = (tabId) => {
+    setActiveTab(tabId);
+  };
+
   return (
-    <nav className="bg-blue-300 text-white py-4 shadow-lg rounded-lg mt-1">
-      <div className="container mx-auto flex justify-center">
-        <div className="flex space-x-4">
-          {links.map((link) => {
-            const IconComponent = link.icon; // Extract icon from the link object
-            return (
-              <Link
-                key={link.key}
-                to={link.path}
-                onClick={() => handleLinkClick(link.key)}
-                className="cursor-pointer flex items-center space-x-2"
-              >
-                {IconComponent && (
-                  <IconComponent
-                    className={`${
-                      activeLink === link.key ? 'text-xl' : 'text-gray-600'
-                    }`}
-                  />
-                )}
-                <span
-                  className={`${
-                    activeLink === link.key ? 'font-bold' : 'text-gray-600'
-                  }`}
-                >
-                  {link.label}
-                </span>
-              </Link>
-            );
-          })}
-        </div>
+    <div className="font-sans p-4 w-full flex flex-col items-center">
+      <ul className="flex gap-4 bg-gray-100 rounded-2xl p-1 w-max overflow-hidden shadow-md">
+        {tabs.map((tab) => (
+          <li
+            key={tab.id}
+            id={tab.id}
+            className={`tab text-sm py-3 px-6 tracking-wide cursor-pointer rounded-2xl ${
+              activeTab === tab.id
+                ? 'text-white font-bold bg-primary'
+                : 'text-gray-600 font-semibold'
+            }`}
+            onClick={() => handleTabClick(tab.id)}
+          >
+            {tab.label}
+          </li>
+        ))}
+      </ul>
+
+      {/* Conditional Rendering of Content */}
+      <div className="mt-4 w-full">
+        {tabs.map((tab) => (
+          activeTab === tab.id && <div key={tab.id}>{tab.component}</div>
+        ))}
       </div>
-    </nav>
+    </div>
   );
 };
 
