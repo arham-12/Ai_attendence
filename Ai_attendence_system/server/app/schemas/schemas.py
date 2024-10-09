@@ -78,3 +78,15 @@ class CourseUpdate(BaseModel):
     current_name: str
     new_name: str
     credit_hours: int
+
+
+
+class RateResponse(BaseModel):
+    rate: float
+
+class ChartDataResponse(BaseModel):
+    labels: List[str]
+    values: List[int]
+
+class PieChartResponse(BaseModel):
+    values: List[int]

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/SideBar';
-import Dashboard from './components/Dashboard';
-import LoginPage from './components/pages/LoginPage'
-import SchedulePage from './components/pages/SchedulePage';
-import UserAnalitics from './components/pages/UserAnalitics';
-
+// import Dashboard from './components/Dashboard';
+import LoginPage from './pages/LoginPage';
+import SchedulePage from './pages/SchedulePage';
+import SmartSerch from './pages/UserAnalitics';
+import ManageStudents from './pages/ManageStudents';
 // import AdminSettingsForm from './components/admin_settings/AdminSettings';
-import AdminSettings from './components/pages/AdminSettingPage';
-import AdminDashboardPage from './components/pages/AdminDashboardPage';
+import AdminSettings from './pages/AdminSettingPage';
+import AdminDashboardPage from './pages/AdminDashboardPage';
 // import AttendenceAnalytics from './components/pages/AttendenceAnalytics';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -27,11 +27,11 @@ const App = () => {
   
       {/* Main routes */}
       <Route path="/" element={<AdminDashboardPage />} />
-      <Route path="/users-analytics" element={<UserAnalitics />} />
+      <Route path="/users-analytics" element={<SmartSerch />} />
       
       {/* Schedule route */}
       <Route path="/set-schedule" element={<SchedulePage />} />
-  
+      <Route path="/manage-students" element={<ManageStudents />} />
       {/* Settings with nested routes */}
       <Route path="/settings" element={<AdminSettings />}>
         {/* Add nested routes here if needed */}

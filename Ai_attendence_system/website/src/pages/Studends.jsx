@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const AttendenceAnalytics = () => {
+const Students = () => {
   // State to manage the search term and results
   const [searchTerm, setSearchTerm] = useState('');
   const [results, setResults] = useState([]);
@@ -28,7 +28,7 @@ const AttendenceAnalytics = () => {
       <div className="bg-white flex px-1 py-1 rounded-full border border-primary overflow-hidden max-w-md mx-auto font-[sans-serif]">
         <input 
           type='text' 
-          placeholder="Query Related To Student's Attendence...." 
+          placeholder='Query Related To Students Table....' 
           className="w-full outline-none bg-white pl-4 text-sm" 
           value={searchTerm} 
           onChange={(e) => setSearchTerm(e.target.value)} 
@@ -36,7 +36,7 @@ const AttendenceAnalytics = () => {
         <button 
           type='button'
           onClick={handleSearch}
-          className="bg-primary hover:bg-secondary transition-all text-gray-500 hover:text-white text-sm rounded-full px-5 py-2.5"
+          className="bg-primary hover:bg-secondary transition-all text-white hover:text-gray-500 text-sm rounded-full px-5 py-2.5"
         >
           Search
         </button>
@@ -71,4 +71,4 @@ const AttendenceAnalytics = () => {
   );
 }
 
-export default AttendenceAnalytics;
+export default Students;

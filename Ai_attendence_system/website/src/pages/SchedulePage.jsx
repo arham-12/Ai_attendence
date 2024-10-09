@@ -1,8 +1,8 @@
 import React from 'react'
-import Navbar from '../Navbar'
-import ExisitingSchedule from '../ExisitingSchedule';
-import StepForm from '../SetNewSchedule';
-import ScheduleForm from '../SschduleForm';
+import Navbar from '../components/Navbar'
+import ExisitingSchedule from '../components/ExisitingSchedule';
+import StepForm from '../components/SetNewSchedule';
+import ScheduleForm from '../components/SschduleForm';
 const SchedulePage = () => {
   const tabs = [
     {
@@ -13,7 +13,7 @@ const SchedulePage = () => {
     {
       id: 'setnewscheduleTab',
       label: 'Set New Schedule',
-      component: <ScheduleForm/>,
+      component: <StepForm/>,
     },
     
   ];

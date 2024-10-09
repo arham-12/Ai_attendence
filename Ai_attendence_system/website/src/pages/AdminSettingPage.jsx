@@ -1,7 +1,10 @@
 // Import React
 import React, { useState } from "react";
 import { FaEnvelope } from 'react-icons/fa';
-const AdminSettings = () => {
+
+
+
+const UpdateAuthSettings = () => {
   // State for handling form input
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,8 +19,8 @@ const AdminSettings = () => {
 
   return (
     <>
-    <div class="bg-gray-100 ml-[18%] w-[82%] font-[sans-serif]">
-      <div class="min-h-screen flex flex-col items-center justify-center py-6 px-4">
+    <div class="bg-gray-100 ml-[18%] min-h-screen w-[82%] font-[sans-serif]">
+      <div class=" flex flex-col items-center justify-center py-6 px-4">
         <div class="max-w-md w-full">
           <div class="text-center mb-12">
             <h1 class="text-3xl font-bold text-gray-800 mb-4">Settings</h1>
@@ -51,7 +54,7 @@ const AdminSettings = () => {
               </div>
 
               <div class="!mt-8">
-                <button type="button" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-gray-500 bg-primary hover:bg-cyan-300 hover:text-white focus:outline-none">
+                <button type="button" class="w-[50%] ml-[26%] py-3 px-4 text-sm tracking-wide rounded-lg text-gray-500 bg-primary hover:bg-cyan-300 hover:text-white focus:outline-none">
                   Update Settings
                 </button>
               </div>
@@ -65,4 +68,8 @@ const AdminSettings = () => {
   );
 };
 
-export default AdminSettings;
+export default UpdateAuthSettings;
+
+
+
+

@@ -1,6 +1,7 @@
 import React from 'react'
-import Navbar from '../Navbar'
-import Dashboard from '../Dashboard';
+import Navbar from '../components/Navbar'
+import Dashboard from '../components/Dashboard';
+import TodayClasses from '../components/TodayClasses';
 const AdminDashboardPage = () => {
     const tabs = [
         {
@@ -11,7 +12,7 @@ const AdminDashboardPage = () => {
         {
           id: 'classesTab',
           label: 'Today Classes',
-          component: <div>Analytics</div>,
+          component: <TodayClasses/>,
         },
         
       ];

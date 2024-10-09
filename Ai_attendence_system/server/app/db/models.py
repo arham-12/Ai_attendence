@@ -19,6 +19,21 @@ class Program(Base):
     
     # One-to-Many relationship: one program can have many students
     students = relationship('Student', back_populates='program')
+
+
+"""MODEL FOR ENROLLED STUDENTS"""
+class EnrolledStudent(Base):
+    __tablename__ = 'enrolled_students'
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    rollno = Column(String, unique=True, nullable=False)  # Roll number of the student
+    program_name  = Column(String, nullable=False)
+    Semester = Column(String, nullable=False)
+
+
+
+
 """MODEL FOR STUDENTS"""
 class Student(Base):
     __tablename__ = 'students'
@@ -29,12 +44,10 @@ class Student(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     image = Column(String, nullable=False)  # Path to the student's image
-    
+    program_name  = Column(String, nullable=False)
+    Semester = Column(String, nullable=False)
+    section = Column(String, nullable=False)
     # Foreign key linking the student to a specific program
-    program_id = Column(Integer, ForeignKey('programs.id'), nullable=False)
-
-    # Relationship back to Program
-    program = relationship('Program', back_populates='students')
 
     # Attendance relationship for easier access to student's attendance records
     attendances = relationship('Attendance', back_populates='student')

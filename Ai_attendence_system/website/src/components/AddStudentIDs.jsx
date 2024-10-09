@@ -1,17 +1,17 @@
-import React from 'react'
+import React from 'react';
 
-const ExisitingSchedule = () => {
+const AddStudentIDs = () => {
   return (
     <div>
       <div className="font-[sans-serif]">
         <div className="bg-gradient-to-r from-primary via-secondary to-primary text-white min-h-[220px] flex flex-col items-center justify-center text-center">
-          <h4 className="text-3xl font-semibold -mt-8">Upload Existing Schedule</h4>
+          <h4 className="text-3xl font-semibold -mt-8">Upload Student Data</h4>
           
         </div>
 
         <div className="max-w-lg mx-auto relative bg-white border-2 border-primary border-dashed rounded-lg -top-24">
           <div className="p-4 min-h-[300px] flex flex-col items-center justify-center text-center cursor-pointer">
-  
+      <h2 className="text-gray-600">The Excel file should contain the the student IDs or Roll Nos of the students</h2>
           <div className='container mx-auto my-8 p-4 rounded-lg shadow-lg bg-white border border-gray-300'>
       <div className="flex flex-col items-center justify-center">
         <svg
@@ -29,7 +29,7 @@ const ExisitingSchedule = () => {
           />
         </svg>
 
-        <h4 className="text-lg font-semibold text-gray-700 mb-1">Upload Class Schedule</h4>
+        <h4 className="text-lg font-semibold text-gray-700 mb-1">Upload Your Student Data</h4>
         <p className="text-sm text-gray-500 mb-3">Drag & drop file here or</p>
         
         <label
@@ -49,7 +49,7 @@ const ExisitingSchedule = () => {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default ExisitingSchedule
+export default AddStudentIDs;

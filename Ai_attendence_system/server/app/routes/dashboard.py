@@ -3,7 +3,7 @@ from app.db.models import Student , Teacher
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.services.functions_for_db import get_db
-
+from app.schemas.schemas import PieChartResponse, RateResponse, ChartDataResponse
 
 
 dashboard_router = APIRouter()
@@ -45,4 +45,17 @@ async def get_total_teachers(db: Session = Depends(get_db)):
     return {"total_teachers": total_teachers}
 
 
-     
+
+@dashboard_router.get("/api/attendance-rate", response_model=RateResponse)
+async def attendance_rate():
+    pass
+
+@dashboard_router.get("/api/attendance-chart-data", response_model=ChartDataResponse)
+async def attendance_chart_data():
+    pass
+
+
+@dashboard_router.get("/api/pie-chart-data", response_model=PieChartResponse)
+async def pie_chart_data():
+    
+    pass  
