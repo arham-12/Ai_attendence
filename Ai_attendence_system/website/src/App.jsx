@@ -9,6 +9,8 @@ import ManageStudents from './pages/ManageStudents';
 // import AdminSettingsForm from './components/admin_settings/AdminSettings';
 import AdminSettings from './pages/AdminSettingPage';
 import AdminDashboardPage from './pages/AdminDashboardPage';
+import AddDepartmentPage from './pages/AddDepartment';
+import AddDegreeProgramPage from './pages/AddDegreeProgram';
 // import AttendenceAnalytics from './components/pages/AttendenceAnalytics';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -24,7 +26,8 @@ const App = () => {
     <Routes>
       {/* Login route */}
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-  
+      <Route path="/add-department" element={<AddDepartmentPage />} />
+      <Route path="/add-degreeprograms" element={<AddDegreeProgramPage />} />
       {/* Main routes */}
       <Route path="/" element={<AdminDashboardPage />} />
       <Route path="/users-analytics" element={<SmartSerch />} />

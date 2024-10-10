@@ -9,7 +9,7 @@ const Navbar = ({ tabs }) => {
   };
 
   return (
-    <div className="font-sans p-4 w-full flex flex-col items-center">
+    <div className="font-sans p-4 w-full flex flex-col items-center ">
       <ul className="flex gap-4 bg-gray-100 rounded-2xl p-1 w-max overflow-hidden shadow-md">
         {tabs.map((tab) => (
           <li

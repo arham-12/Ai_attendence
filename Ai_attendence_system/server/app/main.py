@@ -4,6 +4,7 @@ from app.routes.dashboard import dashboard_router
 from fastapi.middleware import cors
 from app.routes.admin_settings import admin_settings_router
 from app.routes.Class_schedules import schedule_router
+from app.routes.add_departments import add_department_router
 app = FastAPI()
 
 
@@ -16,7 +17,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
+app.include_router(add_department_router)
 app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(admin_settings_router)

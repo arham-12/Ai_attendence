@@ -1,11 +1,19 @@
 from tempfile import NamedTemporaryFile
 import os
-from fastapi import APIRouter, File, UploadFile
+from fastapi import APIRouter, File, UploadFile, Depends ,Query
 from fastapi.responses import JSONResponse
 from langchain_community.document_loaders.csv_loader import CSVLoader
 from app.services.functions_for_schedule import create_vector_store_and_save_uids,load_index,embed_querry,generate_response,prepare_input_for_model
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, date
+from app.db.models import Lecture, Schedule
+from app.schemas.schemas import DetailedScheduleResponse,ScheduleRequest
+from pydantic import BaseModel
+from fastapi import FastAPI, HTTPException
+from datetime import datetime, timedelta
+from typing import List,Optional
+from app.services.functions_for_db import get_db
+from sqlalchemy.orm import Session,selectinload
 import numpy as np
 schedule_router = APIRouter()
 
@@ -84,3 +92,170 @@ async def get_schedule():
 
     # Return all found classes as a JSON response
     return {"classes": response}
+
+
+
+
+# Function to check for conflicts
+def check_for_conflicts(instructor_id: str, lecture_dates: List[str], db: Session):
+    # Query to check for conflicts in the schedules
+    return db.query(Schedule).join(Lecture).filter(
+        Schedule.instructor_id == instructor_id,
+        Lecture.date.in_(lecture_dates)
+    ).all()
+
+# Endpoint to generate the schedule
+@schedule_router.post("/generate-schedule", response_model=DetailedScheduleResponse)
+async def generate_schedule(schedule: ScheduleRequest, db: Session = Depends(get_db)):
+    try:
+        start_date = datetime.strptime(schedule.start_date, "%Y-%m-%d")
+        end_date = datetime.strptime(schedule.end_date, "%Y-%m-%d")
+        starting_time = datetime.strptime(schedule.starting_time, '%I:%M %p').time()
+    except ValueError:
+        raise HTTPException(status_code=400, detail="Invalid date format. Use 'YYYY-MM-DD'.")
+
+    if start_date >= end_date:
+        raise HTTPException(status_code=400, detail="Start date must be before end date.")
+    
+    if schedule.num_lectures <= 0:
+        raise HTTPException(status_code=400, detail="Number of lectures must be positive.")
+    
+    preferred_weekdays = schedule.preferred_weekdays or ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
+    
+    valid_weekdays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+    
+    if not all(day in valid_weekdays for day in preferred_weekdays):
+        raise HTTPException(status_code=400, detail="Invalid weekday(s) provided.")
+
+    current_date = start_date
+    lecture_dates = []
+    lecture_days = []
+    
+    while len(lecture_dates) < schedule.num_lectures and current_date <= end_date:
+        if current_date.strftime("%A") in preferred_weekdays:
+            lecture_dates.append(current_date.strftime("%Y-%m-%d"))
+            lecture_days.append(current_date.strftime("%A"))
+        current_date += timedelta(days=1)
+
+    if len(lecture_dates) < schedule.num_lectures:
+        raise HTTPException(
+            status_code=400,
+            detail="Could not schedule all lectures within the given time range and weekday constraints."
+        )
+    
+    # Check for scheduling conflicts with the instructor's existing schedules
+    conflicts = check_for_conflicts(schedule.instructor_id, lecture_dates, db)
+    if conflicts:
+        raise HTTPException(
+            status_code=400,
+            detail="Scheduling conflict detected with existing schedule."
+        )
+    
+    # Add the new schedule if no conflicts are detected
+    new_schedule = Schedule(
+        instructor_name=schedule.instructor_name,
+        instructor_id=schedule.instructor_id,
+        degree_program=schedule.degree_program,
+        semester=schedule.semester,
+        course_name=schedule.course_name,
+        course_code=schedule.course_code,
+        class_type=schedule.class_type,
+        
+    )
+    
+    db.add(new_schedule)
+    db.commit()
+    db.refresh(new_schedule)
+
+    # Add lecture details
+    for date, day in zip(lecture_dates, lecture_days):
+        lecture = Lecture(date=datetime.strptime(date, "%Y-%m-%d"), day=day, schedule_id=new_schedule.id, starting_time=starting_time)
+        db.add(lecture)
+    
+    db.commit()
+
+    return DetailedScheduleResponse(
+        instructor_name=schedule.instructor_name,
+        instructor_id=schedule.instructor_id,
+        degree_program=schedule.degree_program,
+        semester=schedule.semester,
+        course_name=schedule.course_name,
+        course_code=schedule.course_code,
+        class_type=schedule.class_type,
+        starting_time=starting_time,
+        lecture_dates=lecture_dates,
+        lecture_days=lecture_days
+    )
+@schedule_router.get("/api/schedules")
+def get_schedules(db: Session = Depends(get_db)):
+    # Get the current date
+    today = date.today()
+
+    # Start the query from the Schedule table and join with lectures
+    query = (
+        db.query(Schedule)
+        .join(Schedule.lectures)
+        .options(selectinload(Schedule.lectures))
+        .filter(Lecture.date == today)  # Filter for today's lectures
+    )
+
+    # Execute the query to get schedules with today's lectures
+    schedules = query.all()
+
+    # Prepare the response to include required fields
+    response = []
+    for schedule in schedules:
+        for lecture in schedule.lectures:
+            if lecture.date == today:  # Ensure each lecture is on today's date
+                response.append({
+                    "id": schedule.id,
+                    "instructor_name": schedule.instructor_name,
+                    "degree_program": schedule.degree_program,
+                    "semester": schedule.semester,
+                    "course_name": schedule.course_name,
+                    "course_code": schedule.course_code,
+                    "class_type": schedule.class_type,
+                    "lecture_date": lecture.date,
+                    "day": lecture.day
+                })
+
+    return response
+
+
+
+
+@schedule_router.get("/api/schedules")
+def get_schedules(db: Session = Depends(get_db)):
+    # Get the current date
+    today = date.today()
+
+    # Start the query from the Schedule table and join with lectures
+    query = (
+        db.query(Schedule)
+        .join(Schedule.lectures)
+        .options(selectinload(Schedule.lectures))
+        .filter(Lecture.date == today)  # Filter for today's lectures
+    )
+
+    # Execute the query to get schedules with today's lectures
+    schedules = query.all()
+
+    # Prepare the response to include required fields
+    response = []
+    for schedule in schedules:
+        for lecture in schedule.lectures:
+            if lecture.date == today:  # Ensure each lecture is on today's date
+                response.append({
+                    "id": schedule.id,
+                    "instructor_name": schedule.instructor_name,
+                    "degree_program": schedule.degree_program,
+                    "semester": schedule.semester,
+                    "course_name": schedule.course_name,
+                    "course_code": schedule.course_code,
+                    "class_type": schedule.class_type,
+                    "starting_time": lecture.starting_time,
+                    "lecture_date": lecture.date,
+                    "day": lecture.day
+                })
+
+    return response

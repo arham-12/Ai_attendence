@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, DateTime
+from sqlalchemy import Column, Integer, String, ForeignKey, DateTime,Date, Time
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy.dialects.postgresql import BYTEA
@@ -20,7 +20,6 @@ class Program(Base):
     # One-to-Many relationship: one program can have many students
     students = relationship('Student', back_populates='program')
 
-
 """MODEL FOR ENROLLED STUDENTS"""
 class EnrolledStudent(Base):
     __tablename__ = 'enrolled_students'
@@ -28,11 +27,10 @@ class EnrolledStudent(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     rollno = Column(String, unique=True, nullable=False)  # Roll number of the student
-    program_name  = Column(String, nullable=False)
-    Semester = Column(String, nullable=False)
+    program_id = Column(Integer, ForeignKey('programs.id'), nullable=False)  # Foreign key to Program
+    semester = Column(String, nullable=False)
 
-
-
+    program = relationship('Program')
 
 """MODEL FOR STUDENTS"""
 class Student(Base):
@@ -44,14 +42,13 @@ class Student(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
     image = Column(String, nullable=False)  # Path to the student's image
-    program_name  = Column(String, nullable=False)
-    Semester = Column(String, nullable=False)
+    program_id = Column(Integer, ForeignKey('programs.id'), nullable=False)  # Foreign key linking the student to a specific program
+    semester = Column(String, nullable=False)
     section = Column(String, nullable=False)
-    # Foreign key linking the student to a specific program
 
-    # Attendance relationship for easier access to student's attendance records
+    # Relationships
+    program = relationship('Program', back_populates='students')
     attendances = relationship('Attendance', back_populates='student')
-
 
 """"MODEL FOR ADMINS"""
 class Admin(Base):
@@ -61,7 +58,6 @@ class Admin(Base):
     email = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
 
-
 """"MODEL FOR TEACHERS"""
 class Teacher(Base):
     __tablename__ = 'teachers'
@@ -69,7 +65,6 @@ class Teacher(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, unique=True, index=True, nullable=False)
     hashed_password = Column(String, nullable=False)
-
 
 """"MODEL FOR ATTENDANCE"""
 class Attendance(Base):
@@ -86,51 +81,49 @@ class Attendance(Base):
     student = relationship('Student', back_populates='attendances')
     program = relationship('Program')
 
+# Models
+class Schedule(Base):
+    __tablename__ = "schedules"
 
-
-
-""""MODEL FOR DEPARTMENTS"""
-class Department(Base):
-    __tablename__ = 'departments'
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False, unique=True)
+    instructor_name = Column(String, index=True)
+    instructor_id = Column(String, index=True)
+    degree_program = Column(String)
+    semester = Column(String)
+    course_name = Column(String)
+    course_code = Column(String)
+    class_type = Column(String)
+
+    # Store lecture details as a relationship
+    lectures = relationship("Lecture", back_populates="schedule")
+
+class Lecture(Base):
+    __tablename__ = "lectures"
+
+    id = Column(Integer, primary_key=True, index=True)
+    date = Column(Date)
+    day = Column(String)
+    starting_time = Column(Time)
+    schedule_id = Column(Integer, ForeignKey("schedules.id"))
+
+    schedule = relationship("Schedule", back_populates="lectures")
+
+class DegreeProgram(Base):
+    __tablename__ = "degree_programs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, index=True)  # Degree program name
+    department_id = Column(Integer, ForeignKey("departments.id"), index=True)  # Foreign key to Department
+
+    # Relationship to the Department model
+    department = relationship("Department", back_populates="degree_programs")
+
+# In your Department model, add the relationship
+class Department(Base):
+    __tablename__ = "departments"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True)
 
     # Relationship to DegreeProgram
-    degree_programs = relationship("DegreeProgram", back_populates="department", cascade="all, delete-orphan")
-
-
-""""MODEL FOR DEGREE PROGRAMS"""
-class DegreeProgram(Base):
-    __tablename__ = 'degree_programs'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    department_id = Column(Integer, ForeignKey('departments.id'))
-
-    # Relationships
-    department = relationship("Department", back_populates="degree_programs")
-    semesters = relationship("Semester", back_populates="degree_program", cascade="all, delete-orphan")
-
-
-""""MODEL FOR SEMESTERS"""
-class Semester(Base):
-    __tablename__ = 'semesters'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    degree_program_id = Column(Integer, ForeignKey('degree_programs.id'))
-
-    # Relationships
-    degree_program = relationship("DegreeProgram", back_populates="semesters")
-    courses = relationship("Course", back_populates="semester", cascade="all, delete-orphan")
-
-
-""""MODEL FOR COURSES"""
-# Course Model
-class Course(Base):
-    __tablename__ = 'courses'
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, nullable=False)
-    credit_hours = Column(Integer) 
-    semester_id = Column(Integer, ForeignKey('semesters.id'))
-
-    # Relationships
-    semester = relationship("Semester", back_populates="courses")
+    degree_programs = relationship("DegreeProgram", back_populates="department")

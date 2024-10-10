@@ -3,7 +3,16 @@ from typing import Optional,List
 
 
 
+class DepartmentCreate(BaseModel):
+    names: List[str]
 
+
+class DepartmentDegreePrograms(BaseModel):
+    name: str
+    degreePrograms: List[str]
+
+class DegreeProgramData(BaseModel):
+    departments: List[DepartmentDegreePrograms]
 class StudentRegistrationSchema(BaseModel):
     name: str
     email: EmailStr
@@ -90,3 +99,31 @@ class ChartDataResponse(BaseModel):
 
 class PieChartResponse(BaseModel):
     values: List[int]
+
+
+# Request and Response Models
+class ScheduleRequest(BaseModel):
+    instructor_name: str
+    instructor_id: str
+    degree_program: str
+    semester: str
+    course_name: str
+    course_code: str
+    class_type: str
+    start_date: str
+    starting_time: str
+    end_date: str
+    num_lectures: int
+    preferred_weekdays: Optional[List[str]] = None
+
+class DetailedScheduleResponse(BaseModel):
+    instructor_name: str
+    instructor_id: str
+    degree_program: str
+    semester: str
+    course_name: str
+    course_code: str
+    class_type: str
+    starting_time: str
+    lecture_dates: List[str]
+    lecture_days: List[str]
