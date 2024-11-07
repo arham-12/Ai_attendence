@@ -4,16 +4,16 @@ import { FaEnvelope, FaLock } from 'react-icons/fa';
 const Login = () => {
   return (
     <>
-    <div class="bg-secondary ml-[18%] w-[82%] font-[sans-serif]">
+    <div class="bg-gray-100  w-full font-[sans-serif]">
       <div class="min-h-screen flex flex-col items-center justify-center py-6 px-4">
         <div class="max-w-md w-full">
           <div class="text-center mb-12">
             <h1 class="text-3xl font-bold text-gray-800 mb-4">Welcome Back</h1>
-            <p class="text-gray-600">Login to your account</p>
+            <p class="text-gray-600">Login The Admin Account</p>
           </div>
 
           <div class="p-8 rounded-2xl bg-white shadow">
-            <h2 class="text-gray-800 text-center text-2xl font-bold">Sign in</h2>
+            <h2 class="text-gray-800 text-center text-2xl font-bold">Login</h2>
             <form class="mt-8 space-y-4">
               <div>
                 <label class="text-gray-800 text-sm mb-2 block">User name</label>
@@ -39,7 +39,7 @@ const Login = () => {
               </div>
 
               <div class="!mt-8">
-                <button type="button" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-gray-500 bg-primary hover:bg-cyan-300 hover:text-white focus:outline-none">
+                <button type="button" class="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-primary hover:bg-cyan-300 hover:text-gray-800 focus:outline-none">
                   Sign in
                 </button>
               </div>

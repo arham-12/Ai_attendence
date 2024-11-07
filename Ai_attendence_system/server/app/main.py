@@ -5,6 +5,7 @@ from fastapi.middleware import cors
 from app.routes.admin_settings import admin_settings_router
 from app.routes.Class_schedules import schedule_router
 from app.routes.add_departments import add_department_router
+from app.routes.manage_students import manage_students_router
 app = FastAPI()
 
 
@@ -22,3 +23,4 @@ app.include_router(auth_router)
 app.include_router(dashboard_router)
 app.include_router(admin_settings_router)
 app.include_router(schedule_router)
+app.include_router(manage_students_router)

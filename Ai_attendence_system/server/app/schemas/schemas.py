@@ -1,5 +1,5 @@
-from pydantic import BaseModel, EmailStr, constr, root_validator
-from typing import Optional,List
+from pydantic import BaseModel, EmailStr, constr, root_validator,Field
+from typing import Optional,List 
 
 
 
@@ -127,3 +127,26 @@ class DetailedScheduleResponse(BaseModel):
     starting_time: str
     lecture_dates: List[str]
     lecture_days: List[str]
+
+
+class DatabaseConnectionInfo(BaseModel):
+    db_type: str
+    username: str = None
+    password: str = None
+    host: str = None
+    port: int = None
+    db_name: str
+
+# Define TableImportInfo as a Pydantic model
+class TableImportInfo(BaseModel):
+    db_type: str
+    username: Optional[str] = None  # Optional field
+    password: Optional[str] = None  # Optional field
+    host: Optional[str] = None  # Optional field
+    port: Optional[str] = None  # Optional field
+    db_name: str
+    table_name: str
+    columns: List[str] = []  # Default empty list
+
+    class Config:
+        orm_mode = True  # Ensures Pydantic can work with SQLAlchemy models (if necessary)

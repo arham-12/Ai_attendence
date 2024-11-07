@@ -9,8 +9,21 @@ export default {
       colors: {
         primary: "#387DC1",
         secondary: "#22d3ee",
-      }
+      },
     },
   },
-  plugins: [],
-}
+  plugins: [
+    function ({ addUtilities }) {
+      addUtilities({
+        '.scrollbar-hide': {
+          /* Hide scrollbar but keep content scrollable */
+          '&::-webkit-scrollbar': {
+            display: 'none',
+          },
+          '-ms-overflow-style': 'none', /* IE and Edge */
+          'scrollbar-width': 'none', /* Firefox */
+        },
+      });
+    },
+  ],
+};
