@@ -1,5 +1,5 @@
 from pydantic import BaseModel, EmailStr, constr, root_validator,Field
-from typing import Optional,List 
+from typing import Optional,List ,Dict
 
 
 
@@ -150,3 +150,19 @@ class TableImportInfo(BaseModel):
 
     class Config:
         orm_mode = True  # Ensures Pydantic can work with SQLAlchemy models (if necessary)
+
+
+class StudentCreate(BaseModel):
+    student_id: str
+    student_name: str
+    student_email: str
+    department_name: str
+    degree_program: str
+    semester: str
+
+    class Config:
+        orm_mode = True
+
+
+class ColumnMappingRequest(BaseModel):
+    column_mapping: Dict[str, str]  # {"uploaded_column": "required_column"}

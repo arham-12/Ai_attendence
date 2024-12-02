@@ -1,11 +1,13 @@
 # main.py
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,Depends,UploadFile
 from sqlalchemy import inspect,text
 from sqlalchemy.exc import SQLAlchemyError, NoSuchTableError
 from app.services.functions_for_db import get_database_engine, get_table_names
-from app.schemas.schemas import DatabaseConnectionInfo, TableImportInfo
-
-
+from app.schemas.schemas import DatabaseConnectionInfo, TableImportInfo,StudentCreate,ColumnMappingRequest
+from app.db.models import Student,DegreeProgram
+from sqlalchemy.orm import Session
+from app.services.functions_for_db import get_db
+import pandas as pd
 manage_students_router = APIRouter()
 
 
@@ -161,3 +163,129 @@ async def fetch_table_data(info: TableImportInfo):
         raise HTTPException(status_code=500, detail=f"Error fetching data: {str(e)}")
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Unexpected error: {str(e)}")
+
+
+
+
+# Create a new student
+@manage_students_router.post("/add-student/", response_model=StudentCreate)
+def create_student(student:StudentCreate, db: Session = Depends(get_db)):
+    db_student = db.query(Student).filter(Student.student_id == student.student_id).first()
+    if db_student:
+        raise HTTPException(status_code=400, detail="Student ID already registered")
+    
+    db_student = Student(
+        student_id=student.student_id,
+        student_name=student.student_name,
+        student_email=student.student_email,
+        department_name=student.department_name,
+        degree_program=student.degree_program,
+        semester=student.semester,
+    )
+    
+    db.add(db_student)
+    db.commit()
+    db.refresh(db_student)
+    
+    return db_student
+
+
+
+
+
+
+
+REQUIRED_COLUMNS = ["name", "rollno", "email", "degree_program_name", "semester", "section"]
+
+@manage_students_router.post("/analyze-csv/")
+async def analyze_csv(file: UploadFile):
+    """
+    Analyze the uploaded CSV/Excel and return a response indicating missing or incorrect columns.
+    """
+    if file.content_type not in ["text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]:
+        raise HTTPException(status_code=400, detail="Only CSV or Excel files are allowed.")
+    
+    try:
+        # Load the file into a DataFrame
+        if file.content_type == "text/csv":
+            df = pd.read_csv(file.file)
+        else:
+            df = pd.read_excel(file.file)
+        
+        uploaded_columns = df.columns.tolist()
+        missing_columns = [col for col in REQUIRED_COLUMNS if col not in uploaded_columns]
+        extra_columns = [col for col in uploaded_columns if col not in REQUIRED_COLUMNS]
+
+        return {
+            "uploaded_columns": uploaded_columns,
+            "missing_columns": missing_columns,
+            "extra_columns": extra_columns,
+            "required_columns": REQUIRED_COLUMNS,
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
+
+@manage_students_router.post("/submit-column-mapping/")
+async def submit_column_mapping(
+    mapping: ColumnMappingRequest,
+    file: UploadFile,
+    db: Session = Depends(get_db)
+):
+    """
+    Accept corrected column mapping and process the data.
+    """
+    if file.content_type not in ["text/csv", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"]:
+        raise HTTPException(status_code=400, detail="Only CSV or Excel files are allowed.")
+    
+    try:
+        # Load the file into a DataFrame
+        if file.content_type == "text/csv":
+            df = pd.read_csv(file.file)
+        else:
+            df = pd.read_excel(file.file)
+        
+        # Apply column mapping
+        column_mapping = mapping.column_mapping
+        df.rename(columns=column_mapping, inplace=True)
+
+        # Validate that all required columns are present
+        missing_columns = [col for col in REQUIRED_COLUMNS if col not in df.columns]
+        if missing_columns:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Missing required columns in corrected data: {', '.join(missing_columns)}"
+            )
+
+        for _, row in df.iterrows():
+            # Check if the student already exists by rollno or email
+            existing_student = db.query(Student).filter(
+                (Student.rollno == row["rollno"]) | (Student.email == row["email"])
+            ).first()
+
+            if existing_student:
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Student with rollno '{row['rollno']}' or email '{row['email']}' already exists."
+                )
+
+            # Create and add the new student to the database
+            student = Student(
+                name=row["name"],
+                rollno=row["rollno"],
+                email=row["email"],
+                degree_program_name=row["degree_program_name"],  # Use degree program name directly
+                semester=row["semester"],
+                section=row.get("section"),
+            )
+            db.add(student)
+
+        # Commit all changes to the database
+        db.commit()
+        return {"detail": "Students added successfully."}
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
