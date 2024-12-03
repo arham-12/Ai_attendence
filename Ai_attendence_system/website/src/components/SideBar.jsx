@@ -8,7 +8,7 @@ import { DashBoardContext } from '../context/IsDashoard';
 function SideBar() {
     const {isDashBoard} = useContext(DashBoardContext)
     return (
-        <div className={`${isDashBoard ? 'block' : 'hidden'}`}>
+        <div className={`${isDashBoard ? 'hidden lg:block' : 'hidden'}`}>
             <nav class="bg-white shadow-xl h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
                 <div class="relative flex flex-col h-full">
 
