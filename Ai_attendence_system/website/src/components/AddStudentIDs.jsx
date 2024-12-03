@@ -128,7 +128,7 @@ const AddStudentIDs = () => {
         <div className="btns flex gap-5">
           <button
             type="button"
-            class="mt-8 px-6 py-2.5 text-sm w-full bg-[#007bff] hover:bg-[#006bff] text-white rounded transition-all"
+            class="mt-8 px-6 py-2.5 text-sm w-full bg-primary hover:bg-[#006bff] text-white rounded transition-all"
           >
             Submit
           </button>
@@ -137,7 +137,7 @@ const AddStudentIDs = () => {
               setshowUpload(!showUpload);
             }}
             type="button"
-            class="mt-8 px-6 py-2.5 text-sm w-full bg-[#007bff] hover:bg-[#006bff] text-white rounded transition-all"
+            class="mt-8 px-6 py-2.5 text-sm w-full bg-primary hover:bg-[#006bff] text-white rounded transition-all"
           >
             Bulk Import
           </button>
