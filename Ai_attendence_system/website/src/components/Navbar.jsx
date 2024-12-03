@@ -17,7 +17,7 @@ const Navbar = ({ tabs }) => {
             id={tab.id}
             className={`tab text-sm py-3 px-6 tracking-wide cursor-pointer rounded-2xl ${
               activeTab === tab.id
-                ? 'text-white font-bold bg-gradient-to-r from-primary via-secondary to-primary'
+                ? 'text-white font-bold bg-gradient-to-r bg-primary'
                 : 'text-gray-600 font-semibold'
             }`}
             onClick={() => handleTabClick(tab.id)}

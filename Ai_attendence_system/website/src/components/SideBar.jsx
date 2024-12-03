@@ -5,10 +5,11 @@ import { FaDatabase } from 'react-icons/fa';
 import { Link } from 'react-router-dom'
 import logo from '../assets/logo.webp'
 import { DashBoardContext } from '../context/IsDashoard';
+import { AuthContext } from '../context/auth';
 function SideBar() {
-    const {isDashBoard} = useContext(DashBoardContext)
+    const {isAddProgram} = useContext(AuthContext)
     return (
-        <div className={`${isDashBoard ? 'hidden lg:block' : 'hidden'}`}>
+        <div className={`${isAddProgram ? 'hidden lg:block' : 'hidden'}`}>
             <nav class="bg-white shadow-xl h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
                 <div class="relative flex flex-col h-full">
 
@@ -66,7 +67,13 @@ function SideBar() {
                             <li>
                                 <Link to="/manage-students" className="text-[#333] text-sm flex items-center hover:text-primary transition-all">
                                     <FiUserPlus className="w-4 h-4 mr-4" />
-                                    <span>Add Students</span>
+                                    <span>Manage Students</span>
+                                </Link>
+                            </li>
+                            <li>
+                                <Link to="/manage-students" className="text-[#333] text-sm flex items-center hover:text-primary transition-all">
+                                    <FiUserPlus className="w-4 h-4 mr-4" />
+                                    <span>Manage Fucality</span>
                                 </Link>
                             </li>
                         </ul>

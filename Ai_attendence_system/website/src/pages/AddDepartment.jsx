@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import axios from 'axios';
+import toast from 'react-hot-toast';
+import { AuthContext } from '../context/auth';
 
 const AddDepartmentPage = () => {
+
   const [departments, setDepartments] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -51,12 +54,13 @@ const AddDepartmentPage = () => {
       setDepartments([]);
     } catch (error) {
       console.error("Error submitting the departments!", error);
-      alert('Error adding departments: ' + error.response?.data || 'Please try again.');
+      toast.error('Error adding departments: ' + error.response?.data || 'Please try again.')
+     
     }
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gray-100">
+    <div className={`flex flex-col items-center justify-center min-h-screen w-full bg-gray-100`}>
       <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
         <h1 className="text-2xl font-semibold text-gray-800 mb-4">Add Departments</h1>
         <form onSubmit={handleSubmit}>

@@ -88,7 +88,7 @@ const AddStudentIDs = () => {
           </div>
         </div>
         <div
-          class={`absolute ml-[18%] top-0 left-0 px-20 h-screen w-[80%] bg-[#0000004e] ${
+          class={`absolute w-full top-0 left-0 px-20 h-screen w-[80%] bg-[#0000004e] ${
             showUpload ? "flex" : "hidden"
           } justify-center items-center`}
         >
