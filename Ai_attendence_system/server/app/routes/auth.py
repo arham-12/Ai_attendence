@@ -23,110 +23,110 @@ def get_db():
 UPLOAD_DIR = "static/images"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# @auth_router.post("/register-student/")
-# async def register_student(
-#     name: str = Form(...),
-#     email: str = Form(...),
-#     rollno: str = Form(...),
-#     password: str = Form(...),
-#     confirm_password: str = Form(...),
-#     program_name: str = Form(...),
-#     section: str = Form(None),
-#     semester: str = Form(...),
-#     timming: str = Form(...),
-#     image: UploadFile = File(...),
-#     db: Session = Depends(get_db)
-# ):
+@auth_router.post("/register-student/")
+async def register_student(
+    name: str = Form(...),
+    email: str = Form(...),
+    rollno: str = Form(...),
+    password: str = Form(...),
+    confirm_password: str = Form(...),
+    program_name: str = Form(...),
+    section: str = Form(None),
+    semester: str = Form(...),
+    timming: str = Form(...),
+    image: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
 
-#     """
-#     Register a new student.
+    """
+    Register a new student.
 
-#     Args:
-#         name (str): The name of the student.
-#         email (str): The email of the student.
-#         rollno (str): The roll number of the student.
-#         password (str): The password of the student.
-#         confirm_password (str): The confirmation password of the student.
-#         program_name (str): The name of the program the student belongs to.
-#         section (str): The section of the student.
-#         semester (str): The semester of the student.
-#         timming (str): The timming of the student.
-#         image (UploadFile): The image file of the student.
+    Args:
+        name (str): The name of the student.
+        email (str): The email of the student.
+        rollno (str): The roll number of the student.
+        password (str): The password of the student.
+        confirm_password (str): The confirmation password of the student.
+        program_name (str): The name of the program the student belongs to.
+        section (str): The section of the student.
+        semester (str): The semester of the student.
+        timming (str): The timming of the student.
+        image (UploadFile): The image file of the student.
 
-#     Returns:
-#         dict: A dictionary containing the response message.
+    Returns:
+        dict: A dictionary containing the response message.
 
-#     Raises:
-#         HTTPException: If the passwords do not match or if the student already exists.
-#     """
-#     # Ensure the passwords match
-#     if password != confirm_password:
-#         raise HTTPException(status_code=400, detail="Passwords do not match")
+    Raises:
+        HTTPException: If the passwords do not match or if the student already exists.
+    """
+    # Ensure the passwords match
+    if password != confirm_password:
+        raise HTTPException(status_code=400, detail="Passwords do not match")
 
-#     # Ensure the upload directory exists
-#     os.makedirs(UPLOAD_DIR, exist_ok=True)
+    # Ensure the upload directory exists
+    os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-#     # Define the image file path with a unique name (e.g., using the student's roll number)
-#     image_filename = f"{rollno}.jpg"  # You can also use other formats or unique IDs
-#     image_path = os.path.join(UPLOAD_DIR, image_filename)
+    # Define the image file path with a unique name (e.g., using the student's roll number)
+    image_filename = f"{rollno}.jpg"  # You can also use other formats or unique IDs
+    image_path = os.path.join(UPLOAD_DIR, image_filename)
 
-#     # Save the uploaded image file to the server
-#     with open(image_path, "wb") as image_file:
-#         content = await image.read()  # Read the file content
-#         image_file.write(content)  # Save the binary content to a file
+    # Save the uploaded image file to the server
+    with open(image_path, "wb") as image_file:
+        content = await image.read()  # Read the file content
+        image_file.write(content)  # Save the binary content to a file
 
-#     # Check if the student already exists by email or roll number
-#     existing_student = db.query(Student).filter(
-#         (Student.email == email) | (Student.rollno == rollno)
-#     ).first()
+    # Check if the student already exists by email or roll number
+    existing_student = db.query(Student).filter(
+        (Student.email == email) | (Student.rollno == rollno)
+    ).first()
 
-#     if existing_student:
-#         # If the student is already present, raise an error
-#         raise HTTPException(status_code=400, detail="Student with this email or roll number already exists.")
+    if existing_student:
+        # If the student is already present, raise an error
+        raise HTTPException(status_code=400, detail="Student with this email or roll number already exists.")
 
-#     # Find or create the program
-#     program = db.query(Program).filter(
-#         Program.name == program_name,
-#         Program.section == section
-#     ).first()
+    # Find or create the program
+    program = db.query(Program).filter(
+        Program.name == program_name,
+        Program.section == section
+    ).first()
 
-#     if not program:
-#         # If the program doesn't exist, create it
-#         program = Program(
-#             name=program_name,
-#             section=section,
-#             timing=timming,
-#             semester=semester  # or any other relevant value
-#         )
-#         db.add(program)
-#         try:
-#             db.commit()  # Commit the new program
-#             db.refresh(program)  # Refresh the program to get the id
-#         except IntegrityError:
-#             db.rollback()
-#             raise HTTPException(status_code=400, detail="Error in creating program.")
+    if not program:
+        # If the program doesn't exist, create it
+        program = Program(
+            name=program_name,
+            section=section,
+            timing=timming,
+            semester=semester  # or any other relevant value
+        )
+        db.add(program)
+        try:
+            db.commit()  # Commit the new program
+            db.refresh(program)  # Refresh the program to get the id
+        except IntegrityError:
+            db.rollback()
+            raise HTTPException(status_code=400, detail="Error in creating program.")
 
-#     # Hash the password and create a new student record
-#     hashed_password = get_password_hash(password)
+    # Hash the password and create a new student record
+    hashed_password = get_password_hash(password)
 
-#     new_student = Student(
-#         name=name,
-#         email=email,
-#         rollno=rollno,
-#         hashed_password=hashed_password,
-#         program_id=program.id,  # Link to the program
-#         image=image_path  # Store the local path of the uploaded image
-#     )
+    new_student = Student(
+        name=name,
+        email=email,
+        rollno=rollno,
+        hashed_password=hashed_password,
+        program_id=program.id,  # Link to the program
+        image=image_path  # Store the local path of the uploaded image
+    )
 
-#     try:
-#         db.add(new_student)
-#         db.commit()
-#         db.refresh(new_student)
-#     except IntegrityError:
-#         db.rollback()
-#         raise HTTPException(status_code=400, detail="Error in adding student to the database.")
+    try:
+        db.add(new_student)
+        db.commit()
+        db.refresh(new_student)
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(status_code=400, detail="Error in adding student to the database.")
 
-#     return {"response": "Student registered successfully", "student": new_student}
+    return {"response": "Student registered successfully", "student": new_student}
 
 @auth_router.post("/login-student")
 def login_student(StudentLogin: StudentLoginSchema, db: Session = Depends(get_db)):
