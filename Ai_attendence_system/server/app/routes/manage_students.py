@@ -1,5 +1,5 @@
 # main.py
-from fastapi import APIRouter, HTTPException,Depends,UploadFile
+from fastapi import APIRouter, HTTPException,Depends,UploadFile,Query
 from sqlalchemy import inspect,text
 from sqlalchemy.exc import SQLAlchemyError, NoSuchTableError
 from app.services.functions_for_db import get_database_engine, get_table_names
@@ -7,6 +7,7 @@ from app.schemas.schemas import DatabaseConnectionInfo, TableImportInfo,StudentC
 from app.db.models import Student,DegreeProgram
 from sqlalchemy.orm import Session
 from app.services.functions_for_db import get_db
+from typing import List, Optional
 import pandas as pd
 manage_students_router = APIRouter()
 
@@ -192,9 +193,6 @@ def create_student(student:StudentCreate, db: Session = Depends(get_db)):
 
 
 
-
-
-
 REQUIRED_COLUMNS = ["name", "rollno", "email", "degree_program_name", "semester", "section"]
 
 @manage_students_router.post("/analyze-csv/")
@@ -289,3 +287,50 @@ async def submit_column_mapping(
         db.rollback()
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+@manage_students_router.get("/search-students", response_model=List[Student])
+def search_students(
+    name: Optional[str] = Query(None, description="Filter by student name"),
+    rollno: Optional[str] = Query(None, description="Filter by roll number"),
+    email: Optional[str] = Query(None, description="Filter by email"),
+    degree_program_name: Optional[str] = Query(None, description="Filter by degree program name"),
+    semester: Optional[str] = Query(None, description="Filter by semester"),
+    section: Optional[str] = Query(None, description="Filter by section"),
+    db: Session = Depends(get_db),
+):
+    """
+    Search students by applying filters.
+    All parameters are optional and can be combined.
+    """
+
+    # Sanitize query parameters (Optional, as SQLAlchemy handles escaping)
+    filters = {
+        "name": name.strip() if name else None,
+        "rollno": rollno.strip() if rollno else None,
+        "email": email.strip() if email else None,
+        "degree_program_name": degree_program_name.strip() if degree_program_name else None,
+        "semester": semester.strip() if semester else None,
+        "section": section.strip() if section else None,
+    }
+
+    query = db.query(Student)
+
+    # Apply filters dynamically
+    if filters["name"]:
+        query = query.filter(Student.name.ilike(f"%{filters['name']}%"))
+    if filters["rollno"]:
+        query = query.filter(Student.rollno.ilike(f"%{filters['rollno']}%"))
+    if filters["email"]:
+        query = query.filter(Student.email.ilike(f"%{filters['email']}%"))
+    if filters["degree_program_name"]:
+        query = query.filter(Student.degree_program_name.ilike(f"%{filters['degree_program_name']}%"))
+    if filters["semester"]:
+        query = query.filter(Student.semester.ilike(f"%{filters['semester']}%"))
+    if filters["section"]:
+        query = query.filter(Student.section.ilike(f"%{filters['section']}%"))
+
+    # Fetch results and handle empty responses
+    students = query.all()
+    if not students:
+        raise HTTPException(status_code=404, detail="No students found matching the criteria")
+
+    return students
