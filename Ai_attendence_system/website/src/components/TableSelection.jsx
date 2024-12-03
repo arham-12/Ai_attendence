@@ -1,6 +1,6 @@
 function TableSelection({ tables = [], onSelect }) {
     return (
-      <div className="mt-4">
+      <div className="">
         <h3 className="text-lg font-semibold mb-2">Select a Table</h3>
         <select
           onChange={(e) => {

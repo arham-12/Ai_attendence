@@ -39,7 +39,7 @@ function ConnectionForm({ onConnect }) {
   return (
     <form
       onSubmit={handleSubmit}
-      className="bg-white p-6 rounded-lg shadow-lg max-w-md mx-auto"
+      className="bg-white p-6 rounded-lg shadow-lg max-w-lg mx-auto"
     >
       <h2 className="text-xl font-semibold mb-4">Connect to Database</h2>
       <div className="space-y-4">

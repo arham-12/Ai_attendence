@@ -2,7 +2,8 @@ import os
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.db.session import SessionLocal, engine
-from app.db.models import Student , Admin, Teacher , Program
+from app.db.models import Student , Teacher
+from  app.db.auth import Admin
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from app.schemas.schemas import StudentLoginSchema, AdminLoginSchema, TeacherLoginSchema
 from app.services.funtcions_for_auth import get_password_hash, verify_password, create_access_token
