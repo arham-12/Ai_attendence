@@ -2,7 +2,7 @@ import os
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 from app.db.session import SessionLocal, engine
-from app.db.models import Student , Teacher
+from app.db.models import Student , Teacher, Department
 from  app.db.models import Admin
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile, File, Form
 from app.schemas.schemas import StudentLoginSchema, AdminLoginSchema, TeacherLoginSchema
@@ -160,23 +160,41 @@ def login_student(StudentLogin: StudentLoginSchema, db: Session = Depends(get_db
 @auth_router.post("/admin_login")
 async def admin_login(admin_login: AdminLoginSchema, db: Session = Depends(get_db)):
     """
-    Authenticates an admin user and generates an access token.
+    Authenticates an admin user by validating their email and password. It also checks if the admin is associated
+    with valid department and degree program entries in the database. Additionally, it returns the count of departments.
 
     Args:
         admin_login (AdminLoginSchema): The JSON body containing the admin's email (EmailStr) and password (str).
+        db (Session): The database session dependency.
 
     Returns:
-        dict: A dictionary containing the access token and token type.
+        dict: A dictionary containing the access token, token type, admin details, and department count.
 
     Raises:
-        HTTPException: If the email or password is incorrect or invalid.
+        HTTPException: If the email or password is incorrect, or if the admin is not associated with a valid department.
     """
+    # Query the database to retrieve the admin by their email
     admin = db.query(Admin).filter(Admin.email == admin_login.email).first()
+
+    # Check if the admin exists and if the password is correct
     if not admin or not verify_password(admin_login.password, admin.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid email or password")
-    
+ 
+    skip_pages = True
+    # Get the count of all departments in the database
+    department_count = db.query(Department).count()
+    if department_count == 0:
+        skip_pages = False
+    # Generate an access token for the authenticated admin
     access_token = create_access_token(data={"sub": admin.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+
+    # Return the access token, token type, department details, and department count
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "skip_pages": skip_pages,
+    }
+
 
 
 @auth_router.post("/teacher-login")
