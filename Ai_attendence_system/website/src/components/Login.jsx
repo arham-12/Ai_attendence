@@ -34,7 +34,7 @@ const Login = () => {
 
       if (response.status === 200) {
         setisLogin(true);
-        if (response.data.skip_page) {
+        if (response.data.skip_pages) {
           setisAddProgram(true);
           navigate("/")
         } else {
