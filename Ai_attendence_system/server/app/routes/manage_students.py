@@ -168,22 +168,30 @@ async def fetch_table_data(info: TableImportInfo):
 
 
 
-# Create a new student
 @manage_students_router.post("/add-student/", response_model=StudentCreate)
-def create_student(student:StudentCreate, db: Session = Depends(get_db)):
+def create_student(student: StudentCreate, db: Session = Depends(get_db)):
+    # Check if the student ID already exists
     db_student = db.query(Student).filter(Student.student_id == student.student_id).first()
     if db_student:
         raise HTTPException(status_code=400, detail="Student ID already registered")
     
+    # Look for the degree program by name
+    db_degree_program = db.query(DegreeProgram).filter(DegreeProgram.name == student.degree_program).first()
+
+    if not db_degree_program:
+        raise HTTPException(status_code=400, detail="Degree program does not exist")
+    
+    # Create a new student and link it to the found degree program by its ID
     db_student = Student(
         student_id=student.student_id,
         student_name=student.student_name,
         student_email=student.student_email,
-        degree_program=student.degree_program,
+        degree_program_id=db_degree_program.id,  # Use the degree_program_id
         semester=student.semester,
         section=student.section
     )
     
+    # Add and commit the new student
     db.add(db_student)
     db.commit()
     db.refresh(db_student)

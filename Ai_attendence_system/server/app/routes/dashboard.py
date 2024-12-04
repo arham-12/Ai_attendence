@@ -6,8 +6,8 @@ from app.services.functions_for_db import get_db
 from app.schemas.schemas import PieChartResponse, RateResponse, ChartDataResponse
 
 
-dashboard_router = APIRouter()
 
+dashboard_router = APIRouter()
 
 @dashboard_router.get("/get_total_students")
 async def get_total_students(db: Session = Depends(get_db)):

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import { toast } from "react-hot-toast";
@@ -15,10 +15,34 @@ const AddStudentIDs = () => {
   });
   const [showUpload, setShowUpload] = useState(false);
   const [showColumnsData, setShowColumnsData] = useState(false);
+const [degreePrograms, setDegreePrograms] = useState([]);
+useEffect(() => {
+  const getPrograms = async () => {
+    try {
+
+      const response = await axios.get(
+        "http://localhost:8000/get-degree-programs"
+      );
+  
+      if (response.status === 200) {
+        setDegreePrograms(response.data);
+  
+      }
+    } catch (error) {
+      console.error("Error adding student:", error);
+      toast.error("Error adding student. Please try again.");
+    }
+  }
+return () => {
+  getPrograms();
+}
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log(formData);
+    
   };
 
   const handleFileChange = (e) => {
@@ -220,17 +244,16 @@ const AddStudentIDs = () => {
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
           </div>
-
           <div className="relative flex items-center">
-            <input
-              type="text"
-              name="degree_program"
-              value={formData.degree_program}
-              onChange={handleInputChange}
-              placeholder="Degree Program"
-              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
-            />
+    <select value={formData.degree_program} onChange={handleInputChange} name="degree_program" id="">
+    {
+      degreePrograms.map((program, index) => (
+        <option key={index} value={program.name}>{program.name}</option>
+      ))
+    }
+    </select>
           </div>
+         
 
           <div className="relative flex items-center">
             <input

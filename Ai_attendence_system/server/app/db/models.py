@@ -5,8 +5,6 @@ from sqlalchemy.dialects.postgresql import BYTEA
 from datetime import datetime
 
 Base = declarative_base()
-
-
 class Student(Base):
     __tablename__ = 'students'
 
@@ -14,15 +12,15 @@ class Student(Base):
     student_name = Column(String, nullable=False)
     student_id = Column(String, unique=True, nullable=False)  # Roll number of the student
     student_email = Column(String, unique=True, index=True, nullable=False)  # Email of the student
-    degree_program = Column(String, ForeignKey('degree_programs.name'), nullable=False)  # Foreign key to DegreeProgram
+    degree_program_id = Column(Integer, ForeignKey('degree_programs.id'), nullable=False)  # Foreign key to DegreeProgram id
     semester = Column(String, nullable=False)
     section = Column(String, nullable=True)
 
     # Relationships
     attendances = relationship('Attendance', back_populates='student')
-    degree_program = relationship("DegreeProgram", back_populates="students")
+    degree_program = relationship("DegreeProgram", back_populates="students", foreign_keys=[degree_program_id])
 
-# Admin Model
+
 class Admin(Base):
     __tablename__ = 'admins'
 
@@ -37,14 +35,12 @@ class DegreeProgram(Base):
     __tablename__ = "degree_programs"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True, nullable=False)   # Degree program name
+    name = Column(String, unique=True, index=True, nullable=False)  # Degree program name
     department_id = Column(Integer, ForeignKey("departments.id"), index=True)  # Foreign key to Department
 
     # Relationships
     department = relationship("Department", back_populates="degree_programs")
     students = relationship("Student", back_populates="degree_program")
-
-
 # Teacher Model
 class Teacher(Base):
     __tablename__ = 'teachers'

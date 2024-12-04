@@ -152,5 +152,5 @@ async def get_degree_programs(db: Session = Depends(get_db)):
     degree_programs = db.query(DegreeProgram).all()
 
     # Return a list of dictionaries containing degree program id, name, and department id
-    return [{"id": program.id, "name": program.name, "department_id": program.department_id} for program in degree_programs]
+    return [{"name": program.name, "department_id": program.department_id} for program in degree_programs]
 
