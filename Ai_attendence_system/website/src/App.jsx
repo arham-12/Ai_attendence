@@ -46,7 +46,7 @@ const App = () => {
       
     </Routes>
 <Toaster  toastOptions={{
-    className: 'rounded-full',
+    className: 'rounded-full bg-primary',
   }}/>
   </div>
     
