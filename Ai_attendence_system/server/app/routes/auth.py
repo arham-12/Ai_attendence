@@ -158,27 +158,25 @@ def login_student(StudentLogin: StudentLoginSchema, db: Session = Depends(get_db
 
 
 @auth_router.post("/admin_login")
-async def admin_login(admin_login: AdminLoginSchema , db: Session = Depends(get_db)):
-
+async def admin_login(admin_login: AdminLoginSchema, db: Session = Depends(get_db)):
     """
-    Authenticates an admin user and generates an access token.  
+    Authenticates an admin user and generates an access token.
 
     Args:
-        form_data (OAuth2PasswordRequestForm): The form data containing username and password.
+        admin_login (AdminLoginSchema): The JSON body containing the admin's email (EmailStr) and password (str).
 
     Returns:
         dict: A dictionary containing the access token and token type.
 
     Raises:
-        HTTPException: If the username or password is incorrect.
+        HTTPException: If the email or password is incorrect or invalid.
     """
-    admin = db.query(Admin).filter(Admin.email == Admin.email).first()
+    admin = db.query(Admin).filter(Admin.email == admin_login.email).first()
     if not admin or not verify_password(admin_login.password, admin.hashed_password):
         raise HTTPException(status_code=400, detail="Invalid email or password")
     
     access_token = create_access_token(data={"sub": admin.email})
     return {"access_token": access_token, "token_type": "bearer"}
-
 
 
 @auth_router.post("/teacher-login")
