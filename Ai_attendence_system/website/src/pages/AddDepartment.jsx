@@ -2,9 +2,10 @@ import React, { useContext, useState } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { AuthContext } from '../context/auth';
+import {useNavigate} from "react-router-dom"
 
 const AddDepartmentPage = () => {
-
+const navigate = useNavigate();
   const [departments, setDepartments] = useState([]);
   const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState([]);
@@ -46,18 +47,35 @@ const AddDepartmentPage = () => {
     }
   };
 
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+  
     try {
-      await axios.post('http://localhost:8000/add-department', { names: departments });
-      alert('Departments added successfully!');
-      setDepartments([]);
+      const response = await axios.post('http://localhost:8000/add-department', { names: departments });
+  
+      // Check if the response status is 200
+      if (response.status === 200) {
+        navigate("/add-degreeprograms");
+        // Show success toast if status is 200
+        toast.success('Departments added successfully!', {
+          position: 'top-right',
+        });
+        
+        // Clear the departments input or reset the state
+        setDepartments([]);
+      }
     } catch (error) {
       console.error("Error submitting the departments!", error);
-      toast.error('Error adding departments: ' + error.response?.data || 'Please try again.')
-
+  
+      // Show error toast with a meaningful message
+      toast.error(
+        `Error adding departments: ${error.response?.data?.message || 'Please try again.'}`, 
+        { position: 'top-right' }
+      );
     }
   };
+  
 
   return (
     <div className={`flex flex-col items-center justify-center min-h-screen w-full bg-gray-100`}>
