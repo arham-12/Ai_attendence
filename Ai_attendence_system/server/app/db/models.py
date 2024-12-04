@@ -13,8 +13,8 @@ class Student(Base):
     id = Column(Integer, primary_key=True, index=True)
     student_name = Column(String, nullable=False)
     student_id = Column(String, unique=True, nullable=False)  # Roll number of the student
-    email = Column(String, unique=True, index=True, nullable=False)  # Email of the student
-    degree_program_name = Column(String, ForeignKey('degree_programs.name'), nullable=False)  # Foreign key to DegreeProgram
+    student_email = Column(String, unique=True, index=True, nullable=False)  # Email of the student
+    degree_program = Column(String, ForeignKey('degree_programs.name'), nullable=False)  # Foreign key to DegreeProgram
     semester = Column(String, nullable=False)
     section = Column(String, nullable=True)
 
@@ -50,16 +50,18 @@ class Teacher(Base):
     __tablename__ = 'teachers'
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True, nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String, nullable=False)
+    teacher_name = Column(String, index=True, nullable=False)
+    teacher_email = Column(String, unique=True, index=True, nullable=False)
 
-    department_id = Column(Integer, ForeignKey("departments.id"), nullable=False)  # Foreign key to Department
+
+    department_name = Column(String, ForeignKey("departments.name"), nullable=False)  # Foreign key to Department
+
+    # New field to specify if the teacher is a visitor or permanent
+    teacher_type = Column(String, nullable=False)  # Default to 'permanent' if not specified
 
     # Relationships
     department = relationship("Department", back_populates="teachers")
     schedules = relationship("Schedule", back_populates="teacher")
-
 
 # Attendance Model
 class Attendance(Base):

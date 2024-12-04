@@ -179,9 +179,9 @@ def create_student(student:StudentCreate, db: Session = Depends(get_db)):
         student_id=student.student_id,
         student_name=student.student_name,
         student_email=student.student_email,
-        department_name=student.department_name,
         degree_program=student.degree_program,
         semester=student.semester,
+        section=student.section
     )
     
     db.add(db_student)
@@ -193,7 +193,7 @@ def create_student(student:StudentCreate, db: Session = Depends(get_db)):
 
 
 
-REQUIRED_COLUMNS = ["Student name", "Student ids", "Email", "Degree program", "Semester", "Section"]
+REQUIRED_COLUMNS = ["student_name", "student_id", "student_email", "degree_program", "semester", "section"]
 
 @manage_students_router.post("/analyze-csv/")
 async def analyze_csv(file: UploadFile):
@@ -259,21 +259,21 @@ async def submit_column_mapping(
         for _, row in df.iterrows():
             # Check if the student already exists by rollno or email
             existing_student = db.query(Student).filter(
-                (Student.rollno == row["rollno"]) | (Student.email == row["email"])
+                (Student.student_id == row["student_id"]) | (Student.student_email == row["student_email"])
             ).first()
 
             if existing_student:
                 raise HTTPException(
                     status_code=400,
-                    detail=f"Student with rollno '{row['rollno']}' or email '{row['email']}' already exists."
+                    detail=f"Student with rollno '{row['student_id']}' or email '{row['student_email']}' already exists."
                 )
 
             # Create and add the new student to the database
             student = Student(
                 student_name=row["Student name"],
                 student_id =row["Student ids"],
-                email=row["Email"],
-                degree_program=row["Degree program"],  # Use degree program name directly
+                email=row["student_email"],
+                degree_program=row["degree_program"],  # Use degree program name directly
                 semester=row["Semester"],
                 section=row.get("Section"),
             )

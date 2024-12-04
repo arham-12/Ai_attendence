@@ -12,31 +12,29 @@ import pandas as pd
 manage_teacher_router = APIRouter()
 
 # Create a new student
-@manage_teacher_router.post("/add-student/", response_model=StudentCreate)
+@manage_teacher_router.post("/add-teacher/")
 def create_student(teacher:TeacherCreate, db: Session = Depends(get_db)):
-    db_student = db.query(Teacher).filter(Teacher.student_id == teacher.student_id).first()
+    db_student = db.query(Teacher).filter(Teacher.teacher_email == teacher.teacher_email).first()
     if db_student:
-        raise HTTPException(status_code=400, detail="Student ID already registered")
+        raise HTTPException(status_code=400, detail="Teacher's email already registered")
     
-    db_student = Teacher(
-        student_id=teacher.student_id,
-        student_name=teacher.student_name,
-        student_email=teacher.student_email,
+    db_teacher = Teacher(
+        teacher_name=teacher.teacher_name,
+        teacher_email=teacher.teacher_email,
         department_name=teacher.department_name,
-        degree_program=teacher.degree_program,
-        semester=teacher.semester,
+        teacher_type=teacher.teacher_type,
     )
     
-    db.add(db_student)
+    db.add(db_teacher)
     db.commit()
-    db.refresh(db_student)
+    db.refresh(db_teacher)
     
-    return db_student
+    return db_teacher
 
 
 
 
-REQUIRED_COLUMNS = ["Student name", "Student ids", "Email", "Degree program", "Semester", "Section"]
+REQUIRED_COLUMNS = ["Teacher name", "Teacher email", "Department name", "Teacher type"]
 
 @manage_teacher_router.post("/analyze-csv/")
 async def analyze_csv(file: UploadFile):
@@ -52,7 +50,7 @@ async def analyze_csv(file: UploadFile):
             df = pd.read_csv(file.file)
         else:
             df = pd.read_excel(file.file)
-        
+
         uploaded_columns = df.columns.tolist()
         missing_columns = [col for col in REQUIRED_COLUMNS if col not in uploaded_columns]
         extra_columns = [col for col in uploaded_columns if col not in REQUIRED_COLUMNS]

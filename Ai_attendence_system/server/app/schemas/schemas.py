@@ -151,13 +151,12 @@ class TableImportInfo(BaseModel):
     class Config:
         orm_mode = True  # Ensures Pydantic can work with SQLAlchemy models (if necessary)
 
-
 class StudentCreate(BaseModel):
     student_id: str
     student_name: str
-    student_email: str
-    department_name: str
-    degree_program: str
+    email: str  # Updated to match your SQLAlchemy model
+    section: Optional[str] = None  # Default to None if not provided
+    degree_program_name: str  # Aligned with your SQLAlchemy model field
     semester: str
 
     class Config:
@@ -166,3 +165,13 @@ class StudentCreate(BaseModel):
 
 class ColumnMappingRequest(BaseModel):
     column_mapping: Dict[str, str]  # {"uploaded_column": "required_column"}
+
+
+class TeacherCreate(BaseModel):
+    teacher_name: str
+    teacher_email:str
+    department_name: str
+    teacher_type:str
+
+    class Config:
+        orm_mode = True

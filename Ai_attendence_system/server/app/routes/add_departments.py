@@ -131,3 +131,26 @@ def get_departments(db: Session = Depends(get_db)):
 
     # Return a list of dictionaries containing department id and name
     return [{"id": dept.id, "name": dept.name} for dept in departments]
+
+
+@add_department_router.get("/get-degree-programs")
+async def get_degree_programs(db: Session = Depends(get_db)):
+    """
+    Retrieves a list of all degree programs from the database.
+
+    This endpoint fetches all degree programs stored in the database and returns a list of 
+    dictionaries containing the degree program ID, name, and department ID.
+
+    Args:
+        db (Session): Database session dependency.
+
+    Returns:
+        list: A list of dictionaries, each containing the degree program ID, name, and department ID.
+    """
+    
+    # Query all degree programs from the database
+    degree_programs = db.query(DegreeProgram).all()
+
+    # Return a list of dictionaries containing degree program id, name, and department id
+    return [{"id": program.id, "name": program.name, "department_id": program.department_id} for program in degree_programs]
+
