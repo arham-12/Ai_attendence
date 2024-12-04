@@ -36,15 +36,11 @@ const AddStudentIDs = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmitData = async (e) => {
     e.preventDefault();
 
     try {
-      let fileBase64 = null;
-      if (formData.file) {
-        // Convert file to base64
-        fileBase64 = await convertFileToBase64(formData.file);
-      }
+ 
 
       const dataToSend = {
         student_name: formData.student_name,
@@ -52,12 +48,11 @@ const AddStudentIDs = () => {
         student_id: formData.student_id,
         degree_program: formData.degree_program,
         semester: formData.semester,
-        department_name: formData.department_name,
-        file: fileBase64, // Add file in base64 format
+        department_name: formData.department_name
       };
 
       const response = await axios.post(
-        "http://localhost:8000/add-student-id",
+        "http://localhost:8000/add-student/",
         dataToSend,
         {
           headers: {
@@ -68,6 +63,44 @@ const AddStudentIDs = () => {
 
       if (response.status === 200) {
         toast.success("Student ID added successfully!");
+        setFormData({
+          fullName: "",
+          email: "",
+          studentId: "",
+          degreeProgram: "",
+          semester: "",
+          department: "",
+          section: "",
+          file: null,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding student:", error);
+      toast.error("Error adding student. Please try again.");
+    }
+  };
+  const handleSubmitFile = async (e) => {
+    e.preventDefault();
+    try {
+      let file = null;
+      if (formData.file) {
+        // Convert file to base64
+        fileBase64 = await convertFileToBase64(formData.file);
+      }
+
+
+      const response = await axios.post(
+        "http://localhost:8000/analyze-csv/",
+        {file},
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("File added successfully!");
         setFormData({
           fullName: "",
           email: "",
@@ -152,7 +185,7 @@ const AddStudentIDs = () => {
       </div>
       <form
         className="font-[sans-serif] w-full mx-auto"
-        onSubmit={handleSubmit}
+        onSubmit={handleSubmitData}
       >
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="relative flex items-center">
@@ -265,7 +298,7 @@ const AddStudentIDs = () => {
             </p>
 
             <button
-              onClick={handleSubmit}
+              onClick={handleSubmitFile}
               className={`${
                 formData.file ? "block" : "hidden"
               } bg-primary px-6 py-1 mt-2 text-white rounded-md`}
