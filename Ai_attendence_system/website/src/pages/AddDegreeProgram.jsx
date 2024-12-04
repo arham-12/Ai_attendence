@@ -145,14 +145,14 @@ const AddDegreeProgramPage = () => {
 
   return (
     <div className="container mx-auto mt-10 p-6 bg-gray-50 rounded-lg shadow-lg max-w-6xl">
-      <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">Add Degree Programs</h1>
+      <h1 className="text-3xl font-bold text-secondary mb-6 text-center">Add Degree Programs</h1>
 
       <div className="flex overflow-x-auto space-x-2 mb-4">
         {departments.map(department => (
           <button
             key={department.id}
             onClick={() => setActiveDepartment(department.name)}
-            className={`px-4 py-2 rounded-full ${activeDepartment === department.name ? 'bg-blue-600 text-white' : 'bg-gray-200'}`}
+            className={`px-4 py-2 rounded-full ${activeDepartment === department.name ? 'bg-secondary text-white' : 'bg-gray-200'}`}
           >
             {department.name}
           </button>
@@ -160,54 +160,54 @@ const AddDegreeProgramPage = () => {
       </div>
 
       {activeDepartment && (
-      <span>
+        <span>
           <div className="bg-white p-4 rounded-lg shadow-md mb-6">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">Add Programs to {activeDepartment}</h2>
-          <div className="border border-gray-300 rounded-lg p-2 mt-1">
-  {/* Container for Input Field - Fixed at the Bottom */}
+            <h2 className="text-xl font-semibold text-gray-800 mb-4">Add Programs to {activeDepartment}</h2>
+            <div className="border border-gray-300 rounded-lg p-2 mt-1">
+              {/* Container for Input Field - Fixed at the Bottom */}
 
-  {/* Container for Added Values - Row-first with Wrap */}
-  <div className="flex flex-wrap gap-2">
-    {(degreeProgramsMap[activeDepartment] || []).map(value => (
-      <div key={value} className="flex items-center bg-blue-500 text-white rounded-full px-3 py-1 shadow-sm">
-        <span>{value}</span>
-        <button
-          type="button"
-          onClick={() => handleRemoveProgram(activeDepartment, value)}
-          className="ml-2 text-sm text-red-600"
-        >
-          &times;
-        </button>
-      </div>
-    ))}
+              {/* Container for Added Values - Row-first with Wrap */}
+              <div className="flex flex-wrap gap-2">
+                {(degreeProgramsMap[activeDepartment] || []).map(value => (
+                  <div key={value} className="flex items-center bg-secondary text-white rounded-full px-3 py-1 shadow-sm">
+                    <span>{value}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveProgram(activeDepartment, value)}
+                      className="ml-2 text-sm text-red-600"
+                    >
+                      &times;
+                    </button>
+                  </div>
+                ))}
 
-  </div>
-  <input
-    type="text"
-    value={degreeName}
-    onChange={(e) => setDegreeName(e.target.value)}
-    onKeyDown={handleKeyDown}
-    placeholder="Type degree name and press Enter"
-    className="border-none focus:outline-none w-full p-2 mb-2 rounded-lg shadow-sm"
-  />
-
-</div>
-
-          
-
-          <div className="flex flex-wrap space-x-2 space-y-2 mb-4">
-            {(degreeProgramsByDepartment[activeDepartment] || []).map(program => (
-              <div
-                key={program}
-                className="cursor-pointer bg-blue-100 rounded-full p-2"
-                onClick={() => handleAddPrograms(program)}
-              >
-                {program}
               </div>
-            ))}
+              <input
+                type="text"
+                value={degreeName}
+                onChange={(e) => setDegreeName(e.target.value)}
+                onKeyDown={handleKeyDown}
+                placeholder="Type degree name and press Enter"
+                className="border-none focus:outline-none w-full p-2 mb-2 rounded-lg shadow-sm"
+              />
+
+            </div>
+
+
+
+            <div className="flex flex-wrap space-x-2 space-y-2 mb-4 mt-3">
+              {(degreeProgramsByDepartment[activeDepartment] || []).map(program => (
+                <div
+                  key={program}
+                  className="bg-[#b3f3f5] text-gray-700 rounded-full px-4 py-2 text-sm cursor-pointer hover:bg-secondary hover:text-white "
+                  onClick={() => handleAddPrograms(program)}
+                >
+                  {program}
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </span>
+        </span>
       )}
 
       <button
