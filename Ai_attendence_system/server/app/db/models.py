@@ -7,7 +7,6 @@ from datetime import datetime
 Base = declarative_base()
 
 
-# Student Model
 class Student(Base):
     __tablename__ = 'students'
 
@@ -15,7 +14,7 @@ class Student(Base):
     student_name = Column(String, nullable=False)
     student_id = Column(String, unique=True, nullable=False)  # Roll number of the student
     email = Column(String, unique=True, index=True, nullable=False)  # Email of the student
-    degree_program = Column(String, ForeignKey('degree_programs.name'), nullable=False)  # Foreign key to DegreeProgram
+    degree_program_name = Column(String, ForeignKey('degree_programs.name'), nullable=False)  # Foreign key to DegreeProgram
     semester = Column(String, nullable=False)
     section = Column(String, nullable=True)
 
@@ -23,6 +22,27 @@ class Student(Base):
     attendances = relationship('Attendance', back_populates='student')
     degree_program = relationship("DegreeProgram", back_populates="students")
 
+# Admin Model
+class Admin(Base):
+    __tablename__ = 'admins'
+
+    id = Column(Integer, primary_key=True, index=True)
+    email = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)
+
+
+
+
+class DegreeProgram(Base):
+    __tablename__ = "degree_programs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, unique=True, index=True, nullable=False)   # Degree program name
+    department_id = Column(Integer, ForeignKey("departments.id"), index=True)  # Foreign key to Department
+
+    # Relationships
+    department = relationship("Department", back_populates="degree_programs")
+    students = relationship("Student", back_populates="degree_program")
 
 
 # Teacher Model
@@ -86,19 +106,6 @@ class Lecture(Base):
     schedule_id = Column(Integer, ForeignKey("schedules.id"))
 
     schedule = relationship("Schedule", back_populates="lectures")
-
-
-# Degree Program Model
-class DegreeProgram(Base):
-    __tablename__ = "degree_programs"
-
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, unique=True, index=True, nullable=False)   # Degree program name
-    department_id = Column(Integer, ForeignKey("departments.id"), index=True)  # Foreign key to Department
-
-    # Relationships
-    department = relationship("Department", back_populates="degree_programs")
-    students = relationship("Student", back_populates="degree_program")
 
 
 # Department Model
