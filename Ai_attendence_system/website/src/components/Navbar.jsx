@@ -15,7 +15,7 @@ const Navbar = ({ tabs }) => {
           <li
             key={tab.id}
             id={tab.id}
-            className={`tab text-sm py-3 px-6 tracking-wide cursor-pointer rounded-2xl ${
+            className={`tab text-sm py-3 px-6 tracking-wide cursor-pointer rounded-md ${
               activeTab === tab.id
                 ? 'text-white font-bold bg-gradient-to-r bg-primary'
                 : 'text-gray-600 font-semibold'
