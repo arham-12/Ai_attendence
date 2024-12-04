@@ -5,12 +5,12 @@ import { toast } from "react-hot-toast";
 
 const AddStudentIDs = () => {
   const [formData, setFormData] = useState({
-    student_id: "",
-    student_name: "",
-    student_email: "",
-   section:"",
-    degree_program: "",
-    semester: "",
+    student_id: null,
+    student_name: null,
+    student_email: null,
+   section:null,
+    degree_program: null,
+    semester: null,
     file: null, // Add file state
   });
   const [showUpload, setShowUpload] = useState(false);
