@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import { FaEnvelope } from 'react-icons/fa';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
+import React, { useContext, useState } from "react";
+import { FaEnvelope } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/auth";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const {setisLogin} = useContext(AuthContext)
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const handleInputChange = (e) => {
@@ -14,48 +18,57 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      const response = await axios.post('http://localhost:8000/admin_login', formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
+      const response = await axios.post(
+        "http://localhost:8000/admin_login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
       if (response.status === 200) {
+        setisLogin(true);
+        navigate("/add-department")
         // Display success toast
-        toast.success('Login Successful!', {
-          position: 'top-right',
+        toast.success("Login Successful!", {
+          position: "top-right",
         });
-        console.log('Login Successful:', response.data);
+        console.log("Login Successful:", response.data);
       }
     } catch (error) {
       // Display error toast
-      toast.error('Login Failed! Please try again.', {
-        position: 'top-right',
+      toast.error("Login Failed! Please try again.", {
+        position: "top-right",
       });
-      console.error('Login Failed:', error);
+      console.error("Login Failed:", error);
     }
   };
-  
 
   return (
     <div className="bg-gray-100 w-full font-[sans-serif]">
       <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              Welcome Back
+            </h1>
             <p className="text-gray-600">Login to the Admin Account</p>
           </div>
           <div className="p-8 rounded-2xl bg-white shadow">
-            <h2 className="text-gray-800 text-center text-2xl font-bold">Login</h2>
+            <h2 className="text-gray-800 text-center text-2xl font-bold">
+              Login
+            </h2>
             <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">Email</label>
+                <label className="text-gray-800 text-sm mb-2 block">
+                  Email
+                </label>
                 <div className="relative flex items-center">
                   <input
                     name="email"
@@ -71,7 +84,9 @@ const Login = () => {
               </div>
 
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">Password</label>
+                <label className="text-gray-800 text-sm mb-2 block">
+                  Password
+                </label>
                 <div className="relative flex items-center">
                   <input
                     name="password"
