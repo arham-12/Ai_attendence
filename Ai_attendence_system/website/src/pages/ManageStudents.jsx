@@ -3,6 +3,7 @@ import Navbar from '../components/Navbar'
 import AddStudentIDs from '../components/AddStudentIDs';
 // import DbCredential from '../components/DbCredential';
 import DatabaseCOnectionPage from './DatabaseConectionPage';
+import SearchStudent from '../components/SearchStudent';
 const ManageStudents = () => {
     const tabs = [
         {
@@ -14,6 +15,11 @@ const ManageStudents = () => {
           id: 'DbcredentialTab',
           label: 'Add Database',
           component: <DatabaseCOnectionPage/>,
+        },
+        {
+          id: 'SearchStudent',
+          label: 'Search Student',
+          component: <SearchStudent/>,
         },
         
       ];
