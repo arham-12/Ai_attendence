@@ -30,8 +30,8 @@ const App = () => {
     <Routes>
       {/* Login route */}
       <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
-      <Route path="/add-department" element={<AddDepartmentPage />} />
-      <Route path="/add-degreeprograms" element={<AddProgramProtected Component={AddDegreeProgramPage} />} />
+      <Route path="/add-department" element={<AuthProtected Component={AddDepartmentPage} />} />
+      <Route path="/add-degreeprograms" element={<AuthProtected Component={AddDegreeProgramPage} />} />
       {/* Main routes */}
       <Route path="/" element={<AddProgramProtected Component={AdminDashboardPage} />} />
       <Route path="/users-analytics" element={<AddProgramProtected Component={SmartSerch} />} />

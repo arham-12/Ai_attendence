@@ -1,10 +1,16 @@
-import React, { useState } from 'react';
-import { FaEnvelope } from 'react-icons/fa';
+import React, { useContext, useState } from "react";
+import { FaEnvelope } from "react-icons/fa";
+import axios from "axios";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../context/auth";
 
 const Login = () => {
+  const navigate = useNavigate();
+  const {setisLogin} = useContext(AuthContext)
   const [formData, setFormData] = useState({
-    username: '',
-    password: '',
+    email: "",
+    password: "",
   });
 
   const handleInputChange = (e) => {
@@ -12,27 +18,36 @@ const Login = () => {
     setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form Data:', formData);
 
-    // Example API integration
-    fetch('https://api.example.com/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        console.log('Login Successful:', data);
-        // Handle success logic
-      })
-      .catch((error) => {
-        console.error('Login Failed:', error);
-        // Handle error logic
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/admin_login",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setisLogin(true);
+        navigate("/add-department")
+        // Display success toast
+        toast.success("Login Successful!", {
+          position: "top-right",
+        });
+        console.log("Login Successful:", response.data);
+      }
+    } catch (error) {
+      // Display error toast
+      toast.error("Login Failed! Please try again.", {
+        position: "top-right",
       });
+      console.error("Login Failed:", error);
+    }
   };
 
   return (
@@ -40,21 +55,26 @@ const Login = () => {
       <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome Back</h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              Welcome Back
+            </h1>
             <p className="text-gray-600">Login to the Admin Account</p>
           </div>
-
           <div className="p-8 rounded-2xl bg-white shadow">
-            <h2 className="text-gray-800 text-center text-2xl font-bold">Login</h2>
+            <h2 className="text-gray-800 text-center text-2xl font-bold">
+              Login
+            </h2>
             <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">User name</label>
+                <label className="text-gray-800 text-sm mb-2 block">
+                  Email
+                </label>
                 <div className="relative flex items-center">
                   <input
-                    name="username"
-                    type="text"
+                    name="email"
+                    type="email"
                     required
-                    value={formData.username}
+                    value={formData.email}
                     onChange={handleInputChange}
                     className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-primary"
                     placeholder="Enter user name"
@@ -64,7 +84,9 @@ const Login = () => {
               </div>
 
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">Password</label>
+                <label className="text-gray-800 text-sm mb-2 block">
+                  Password
+                </label>
                 <div className="relative flex items-center">
                   <input
                     name="password"

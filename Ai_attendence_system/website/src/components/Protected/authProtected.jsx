@@ -5,7 +5,8 @@ import AddDegreeProgramPage from "../../pages/AddDegreeProgram";
 
 const AuthProtected = (props) => {
   const {isLogin} = useContext(AuthContext);
-  return isLogin ? <AddDegreeProgramPage/> : <LoginPage/>
+  const { Component } = props
+  return isLogin ? <Component/> : <LoginPage/>
 };
 
 export default AuthProtected;
