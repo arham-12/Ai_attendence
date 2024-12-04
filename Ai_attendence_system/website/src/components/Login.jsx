@@ -4,10 +4,10 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth";
-
+// skip_pages
 const Login = () => {
   const navigate = useNavigate();
-  const {setisLogin} = useContext(AuthContext)
+  const { setisLogin, setisAddProgram, skipPage } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -34,7 +34,12 @@ const Login = () => {
 
       if (response.status === 200) {
         setisLogin(true);
-        navigate("/add-department")
+        if (response.data.skip_page) {
+          setisAddProgram(true);
+          navigate("/")
+        } else {
+          navigate("/add-department");
+        }
         // Display success toast
         toast.success("Login Successful!", {
           position: "top-right",
