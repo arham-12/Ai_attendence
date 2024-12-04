@@ -15,6 +15,7 @@ import AddDegreeProgramPage from './pages/AddDegreeProgram';
 import AddProgramProtected from './components/Protected/addProgramProtected';
 import UpdateAuthSettings from './pages/AdminSettingPage';
 import AuthProtected from './components/Protected/authProtected';
+import ManageTeachers from './pages/ManageTeachers';
 // import AttendenceAnalytics from './components/pages/AttendenceAnalytics';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -39,6 +40,7 @@ const App = () => {
       {/* Schedule route */}
       <Route path="/set-schedule" element={<AddProgramProtected Component={SchedulePage} />} />
       <Route path="/manage-students" element={<AddProgramProtected Component={ManageStudents} />} />
+      <Route path="/manage-teachers" element={<AddProgramProtected Component={ManageTeachers} />} />
       {/* Settings with nested routes */}
       <Route path="/settings" element={<AddProgramProtected Component={UpdateAuthSettings} />}>
         {/* Add nested routes here if needed */}
@@ -46,7 +48,7 @@ const App = () => {
       
     </Routes>
 <Toaster  toastOptions={{
-    className: 'rounded-full bg-primary',
+    className: 'rounded-full',
   }}/>
   </div>
     

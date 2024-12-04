@@ -6,21 +6,22 @@ import DatabaseCOnectionPage from './DatabaseConectionPage';
 import SearchStudent from '../components/SearchStudent';
 const ManageStudents = () => {
     const tabs = [
+      {
+        id: 'SearchStudent',
+        label: 'Search Student',
+        component: <SearchStudent/>,
+      },
         {
           id: 'StudentIDsTab',
-          label: 'Students Details',
+          label: 'Add Students',
           component: <AddStudentIDs />,
         },
         {
           id: 'DbcredentialTab',
-          label: 'Add Database',
+          label: 'Import Data',
           component: <DatabaseCOnectionPage/>,
         },
-        {
-          id: 'SearchStudent',
-          label: 'Search Student',
-          component: <SearchStudent/>,
-        },
+     
         
       ];
     

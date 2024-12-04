@@ -71,7 +71,7 @@ function SideBar() {
                                 </Link>
                             </li>
                             <li>
-                                <Link to="/manage-students" className="text-[#333] text-sm flex items-center hover:text-primary transition-all">
+                                <Link to="/manage-teachers" className="text-[#333] text-sm flex items-center hover:text-primary transition-all">
                                     <FiUserPlus className="w-4 h-4 mr-4" />
                                     <span>Manage Fucality</span>
                                 </Link>
