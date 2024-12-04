@@ -1,14 +1,106 @@
 import React, { useState } from "react";
 import { IoClose } from "react-icons/io5";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 const AddTeachers = () => {
-  const [showUpload, setshowUpload] = useState(false);
-  const [showColumnsData, setshowColumnsData] = useState(false)
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    studentId: "",
+    degreeProgram: "",
+    semester: "",
+    department: "",
+    section: "",
+    file: null, // Add file state
+  });
+  const [showUpload, setShowUpload] = useState(false);
+  const [showColumnsData, setShowColumnsData] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    setFormData({ ...formData, file: file });
+  };
+
+  // Convert file to base64 string
+  const convertFileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    try {
+      let fileBase64 = null;
+      if (formData.file) {
+        // Convert file to base64
+        fileBase64 = await convertFileToBase64(formData.file);
+      }
+
+      const dataToSend = {
+        fullName: formData.fullName,
+        email: formData.email,
+        studentId: formData.studentId,
+        degreeProgram: formData.degreeProgram,
+        semester: formData.semester,
+        department: formData.department,
+        section: formData.section,
+        file: fileBase64, // Add file in base64 format
+      };
+
+      const response = await axios.post(
+        "http://localhost:8000/add-student-id",
+        dataToSend,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        toast.success("Student ID added successfully!");
+        setFormData({
+          fullName: "",
+          email: "",
+          studentId: "",
+          degreeProgram: "",
+          semester: "",
+          department: "",
+          section: "",
+          file: null,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding student:", error);
+      toast.error("Error adding student. Please try again.");
+    }
+  };
+
   return (
     <div>
-      <div class={`${showColumnsData?"grid":"hidden"} absolute z-10 bg-[#0000004e] top-0 left-0 justify-center items-center h-screen w-full  grid-cols-2 gap-8 px-3 shadow-md rounded-md`}>
-       <IoClose onClick={()=>{setshowColumnsData(!showColumnsData)}} className="absolute top-0 right-0 mx-6 my-4 text-4xl" />
-        <ul class="list-none text-lg flex flex-col gap-7 py-7 rounded-lg text-center bg-white pl-4">
+      <div
+        className={`${
+          showColumnsData ? "grid" : "hidden"
+        } absolute z-10 bg-[#0000004e] top-0 left-0 justify-center items-center h-screen w-full grid-cols-2 gap-8 px-3 shadow-md rounded-md`}
+      >
+        <IoClose
+          onClick={() => {
+            setShowColumnsData(!showColumnsData);
+          }}
+          className="absolute top-0 right-0 mx-6 my-4 text-4xl"
+        />
+        <ul className="list-none text-lg flex flex-col gap-7 py-7 rounded-lg text-center bg-white pl-4">
           <h1 className="font-bold text-2xl">Required Columns ❗</h1>
           <li>Item 1</li>
           <li>Item 2</li>
@@ -16,93 +108,149 @@ const AddTeachers = () => {
           <li>Item 2</li>
           <li>Item 3</li>
         </ul>
-
-        <ul class="list-none text-lg flex flex-col gap-5 py-6 rounded-lg text-center bg-white pl-4">
+        <ul className="list-none text-lg flex flex-col gap-5 py-6 rounded-lg text-center bg-white pl-4">
           <h1 className="font-bold text-2xl">Wrong Columns ❌</h1>
-          <li>Item 1 <input className="p-2 text-sm border border-black rounded-md" placeholder="Change Columns" type="text" /></li>
-          <li>Item 1 <input className="p-2 text-sm border border-black rounded-md" placeholder="Change Columns" type="text" /></li>
-          <li>Item 1 <input className="p-2 text-sm border border-black rounded-md" placeholder="Change Columns" type="text" /></li>
-          <li>Item 1 <input className="p-2 text-sm border border-black rounded-md" placeholder="Change Columns" type="text" /></li>
-          <li>Item 1 <input className="p-2 text-sm border border-black rounded-md" placeholder="Change Columns" type="text" /></li>
+          <li>
+            Item 1{" "}
+            <input
+              className="p-2 text-sm border border-black rounded-md"
+              placeholder="Change Columns"
+              type="text"
+            />
+          </li>
+          <li>
+            Item 1{" "}
+            <input
+              className="p-2 text-sm border border-black rounded-md"
+              placeholder="Change Columns"
+              type="text"
+            />
+          </li>
+          <li>
+            Item 1{" "}
+            <input
+              className="p-2 text-sm border border-black rounded-md"
+              placeholder="Change Columns"
+              type="text"
+            />
+          </li>
+          <li>
+            Item 1{" "}
+            <input
+              className="p-2 text-sm border border-black rounded-md"
+              placeholder="Change Columns"
+              type="text"
+            />
+          </li>
+          <li>
+            Item 1{" "}
+            <input
+              className="p-2 text-sm border border-black rounded-md"
+              placeholder="Change Columns"
+              type="text"
+            />
+          </li>
         </ul>
       </div>
-      <form class="font-[sans-serif] w-full mx-auto">
-        <div class="grid sm:grid-cols-2 gap-4">
-          <div class="relative flex items-center">
+      <form
+        className="font-[sans-serif] w-full mx-auto"
+        onSubmit={handleSubmit}
+      >
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div className="relative flex items-center">
             <input
               type="text"
+              name="fullName"
+              value={formData.fullName}
+              onChange={handleInputChange}
               placeholder="Full Name"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-        
           </div>
 
-          <div class="relative flex items-center">
+          <div className="relative flex items-center">
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
               placeholder="Email"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-      
           </div>
 
-          <div class="relative flex items-center">
+          <div className="relative flex items-center">
             <input
               type="text"
+              name="studentId"
+              value={formData.studentId}
+              onChange={handleInputChange}
               placeholder="Student Id"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-        
           </div>
-          <div class="relative flex items-center">
+
+          <div className="relative flex items-center">
             <input
               type="text"
+              name="degreeProgram"
+              value={formData.degreeProgram}
+              onChange={handleInputChange}
               placeholder="Degree Program"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-        
           </div>
-          <div class="relative flex items-center">
+
+          <div className="relative flex items-center">
             <input
               type="number"
-              placeholder="Smester"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              name="semester"
+              value={formData.semester}
+              onChange={handleInputChange}
+              placeholder="Semester"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-         
           </div>
-          <div class="relative flex items-center">
+
+          <div className="relative flex items-center">
             <input
               type="text"
+              name="department"
+              value={formData.department}
+              onChange={handleInputChange}
               placeholder="Department"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-       
           </div>
-          <div class="relative flex items-center">
+
+          <div className="relative flex items-center">
             <input
               type="text"
+              name="section"
+              value={formData.section}
+              onChange={handleInputChange}
               placeholder="Section"
-              class="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+              className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-        
           </div>
         </div>
+
         <div
-          class={`absolute w-full top-0 left-0 px-20 h-screen w-[80%] bg-[#0000004e] ${
+          className={`absolute w-full top-0 left-0 px-20 h-screen bg-[#0000004e] ${
             showUpload ? "flex" : "hidden"
           } justify-center items-center`}
         >
           <div
             onClick={() => {
-              setshowUpload(!showUpload);
+              setShowUpload(!showUpload);
             }}
             className="absolute top-0 right-0 text-2xl m-4 p-3 border rounded-full cursor-pointer"
           >
             <IoClose />
           </div>
           <label
-            for="uploadFile1"
-            class="bg-white text-gray-500 font-semibold text-base rounded w-[60%] h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 border-dashed font-[sans-serif]"
+            htmlFor="uploadFile1"
+            className="bg-white text-gray-500 font-semibold text-base rounded w-[60%] h-52 flex flex-col items-center justify-center cursor-pointer border-2 border-gray-300 border-dashed font-[sans-serif]"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -118,26 +266,41 @@ const AddTeachers = () => {
                 data-original="#000000"
               />
             </svg>
-            Upload file
-            <input type="file" id="uploadFile1" class="hidden" />
+            <input
+              type="file"
+              name="file"
+              id="uploadFile1"
+              className="hidden"
+              onChange={handleFileChange}
+            />
             <p class="text-xs font-medium text-gray-400 mt-2">
               PNG, JPG SVG, WEBP, and GIF are Allowed.
             </p>
+
+            <button
+              onClick={handleSubmit}
+              className={`${
+                formData.file ? "block" : "hidden"
+              } bg-primary px-6 py-1 mt-2 text-white rounded-md`}
+            >
+              Upload
+            </button>
           </label>
         </div>
-        <div className="btns flex gap-5">
+
+        <div className="mt-4 flex gap-2">
           <button
-            type="button"
-            class="mt-8 px-6 py-2.5 text-sm w-full bg-primary hover:bg-[#006bff] text-white rounded transition-all"
+            type="submit"
+            className="w-full bg-primary text-white py-2 rounded-md"
           >
-            Submit
+          Add
           </button>
           <button
-            onClick={() => {
-              setshowUpload(!showUpload);
-            }}
             type="button"
-            class="mt-8 px-6 py-2.5 text-sm w-full bg-primary hover:bg-[#006bff] text-white rounded transition-all"
+            onClick={() => {
+              setShowUpload(!showUpload);
+            }}
+            className="w-full bg-primary text-white py-2 rounded-md"
           >
             Bulk Import
           </button>

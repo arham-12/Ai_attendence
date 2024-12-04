@@ -8,12 +8,12 @@ const ManageTeachers = () => {
         const tabs = [
           {
             id: 'SearchStudent',
-            label: 'Search Student',
+            label: 'Search Teacher',
             component: <SearchStudent/>,
           },
             {
               id: 'StudentIDsTab',
-              label: 'Add Students',
+              label: 'Add Teachers',
               component: <AddStudentIDs />,
             },
             {
