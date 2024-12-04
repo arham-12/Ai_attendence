@@ -8,7 +8,7 @@ const AddStudentIDs = () => {
     student_id: "",
     student_name: "",
     student_email: "",
-    department_name: "",
+   section:"",
     degree_program: "",
     semester: "",
     file: null, // Add file state
@@ -48,7 +48,7 @@ const AddStudentIDs = () => {
         student_id: formData.student_id,
         degree_program: formData.degree_program,
         semester: formData.semester,
-        department_name: formData.department_name
+        section: formData.section
       };
 
       const response = await axios.post(
@@ -246,8 +246,8 @@ const AddStudentIDs = () => {
           <div className="relative flex items-center">
             <input
               type="text"
-              name="department_name"
-              value={formData.department_name}
+              name="section"
+              value={formData.section}
               onChange={handleInputChange}
               placeholder="Department"
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
