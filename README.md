@@ -29,12 +29,12 @@ The request body should contain the following fields:
   
   ```json
   {
-    "name": "student_name",
-    "id": "student_id",
-    "email": "student_email",
-    "program": "degree_program",
-    "semester": "semester",
-    "section": "section"
+    "wrong_name": "student_name",
+    "wrong_student_id": "student_id",
+    "wrong_email": "student_email",
+    "wrong_program": "degree_program",
+    "wrong_semester": "semester",
+    "wrong_section": "section"
   }
 
 ## Bulk Teacher Insertion API
@@ -61,7 +61,7 @@ The request body should contain the following fields:
   
   ```json
   {
-    "name": "teacher_name",
-    "email": "teacher_email",
-    "program": "degree_program"
+    "wrong_name": "teacher_name",
+    "wrong_email": "teacher_email",
+    "wrong_program": "degree_program"
   }
