@@ -37,6 +37,17 @@ The request body should contain the following fields:
     "wrong_section": "section"
   }
 
+### Response
+
+#### Success Response (HTTP 201 Created)
+
+If the bulk insertion is successful, the response will be:
+
+```json
+{
+  "detail": "Successfully added X Students."
+}
+
 ## Bulk Teacher Insertion API
 
 #### Description
@@ -65,3 +76,14 @@ The request body should contain the following fields:
     "wrong_email": "teacher_email",
     "wrong_program": "degree_program"
   }
+### Response
+
+#### Success Response (HTTP 201 Created)
+
+If the bulk insertion is successful, the response will be:
+
+```json
+{
+  "detail": "Successfully added X teachers."
+}
+
