@@ -37,7 +37,7 @@ The request body should contain the following fields:
     "section": "section"
   }
 
-# Bulk Teacher Insertion API
+## Bulk Teacher Insertion API
 
 #### Description
 Bulk inserts teacher records by validating and processing a CSV/Excel file. The request body must include a file (CSV/Excel) and optionally a JSON mapping of column names.
