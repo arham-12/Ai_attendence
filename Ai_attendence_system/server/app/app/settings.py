@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'backend',
     'drf_spectacular',
+    'corsheaders'
 ]
 
 
@@ -65,12 +66,22 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.common.CommonMiddleware',
+    'django.middleware.common.CommonMiddleware',  # Make sure this comes after CORS middleware
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',  # CORS middleware should be here
 ]
+
+# Allow all origins
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Or, allow only specific origins
+# CORS_ALLOWED_ORIGINS = [
+#     'https://example.com',
+#     'https://another-example.com',
+# ]
 
 ROOT_URLCONF = 'app.urls'
 
