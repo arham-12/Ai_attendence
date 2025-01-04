@@ -1,0 +1,11 @@
+student_name,student_id,student_email,degree_program,semester,section
+John Doe,ST001,john.doe@example.com,bsit,5,A
+Jane Smith,ST002,jane.smith@example.com,bsit,4,B
+Alice Johnson,ST003,alice.johnson@example.com,bsit,3,C
+Robert Brown,ST004,robert.brown@example.com,bsit,2,A
+Emily Davis,ST005,emily.davis@example.com,bsit,1,B
+Michael Wilson,ST006,michael.wilson@example.com,bsit,5,C
+Sarah Lee,ST007,sarah.lee@example.com,bsit,4,A
+David Moore,ST008,david.moore@example.com,bsit,3,B
+Laura Taylor,ST009,laura.taylor@example.com,bsit,2,C
+Daniel Harris,ST010,daniel.harris@example.com,bsit,1,A
