@@ -1,7 +1,9 @@
-import React, { useState } from "react";
-import axios from 'axios'
-import toast from 'react-hot-toast'
+import React, { useContext, useState } from "react";
+import axios from "axios";
+import toast from "react-hot-toast";
+import { AuthContext } from "../../context/auth";
 const EditStudentBox = ({ Show, SetShow, student }) => {
+  const { authToken } = useContext(AuthContext);
   const [inputs, setinputs] = useState({
     degree_program: student.degree_program,
     student_name: student.student_name,
@@ -14,21 +16,24 @@ const EditStudentBox = ({ Show, SetShow, student }) => {
     e.preventDefault();
     setinputs({ ...inputs, [e.target.name]: e.target.value });
   };
-  const onSubmitHandler = async (e)=>{
+  const onSubmitHandler = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put(`http://localhost:8000/api/students/${student.student_id}/`,inputs);
-      if(response.status === 200){
+      const response = await axios.put(
+        `http://localhost:8000/api/students/${student.student_id}/`,
+        inputs,
+        { headers: { Authorization: `Token ${authToken}` } }
+      );
+      if (response.status === 200) {
         window.location.reload();
         toast.success("Update successfully");
         SetShow(false);
       }
     } catch (error) {
       console.log(error);
-      toast.error(error)
+      toast.error(error);
     }
-    
-  }
+  };
   return (
     <>
       <div
@@ -99,7 +104,7 @@ const EditStudentBox = ({ Show, SetShow, student }) => {
             </div>
           </div>
           <button
-          onClick={onSubmitHandler}
+            onClick={onSubmitHandler}
             type="button"
             class="px-5 py-2.5 w-full rounded-md text-white text-sm outline-none bg-primary hover:bg-secondary"
           >

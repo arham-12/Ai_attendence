@@ -12,7 +12,6 @@ const AddTeachers = () => {
     semester: "",
     department: "",
     section: "",
-    file: null, // Add file state
   });
   const [showUpload, setShowUpload] = useState(false);
   const [showColumnsData, setShowColumnsData] = useState(false);

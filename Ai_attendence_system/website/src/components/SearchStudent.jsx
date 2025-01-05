@@ -1,11 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
 import StudentDataCard from "./StudentDataCard";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { AuthContext } from "../context/auth";
 
 const SearchStudent = () => {
   // State for the input fields
+  const { authToken } = useContext(AuthContext);
   const [studentId, setStudentId] = useState("");
   const [searchedStudent, setsearchedStudent] = useState(null);
   const [response, setresponse] = useState([]);
@@ -18,7 +20,9 @@ const SearchStudent = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get("http://localhost:8000/api/students/");
+        const res = await axios.get("http://localhost:8000/api/students/", {
+          headers: { Authorization: `Token ${authToken}` },
+        });
         setresponse(res.data);
       } catch (error) {
         console.log(error);
@@ -32,7 +36,9 @@ const SearchStudent = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/students/${studentId}/`
+        `http://localhost:8000/api/students/${studentId}/`,{
+          headers: { Authorization: `Token ${authToken}` },
+        }
       );
       if (response.status === 200) {
         toast.success("Student exists!");
