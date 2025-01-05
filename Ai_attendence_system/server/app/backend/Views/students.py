@@ -118,8 +118,18 @@ class BulkStudentInsertionAPIView(APIView):
                 return Response({"detail": "Unsupported file format. Upload a CSV or Excel file."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": f"Error reading file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-        
-              # Rename columns based on the received mapping
+            # Check if the number of columns matches
+        if len(data.columns) != len(required_columns):
+            return Response(
+                {
+                    "detail": f"The number of columns in the file ({len(data.columns)}) does not match the required columns ({len(required_columns)}).",
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+
+
+        # Rename columns based on the received mapping
         if isinstance(columns, dict):
             data.rename(columns=columns, inplace=True)
         else:
