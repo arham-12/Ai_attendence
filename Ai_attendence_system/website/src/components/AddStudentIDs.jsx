@@ -2,47 +2,46 @@ import React, { useEffect, useState } from "react";
 import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import DeleteDialogBox from "./dialog-boxes/deleteDialogBox";
 
 const AddStudentIDs = () => {
   const [formData, setFormData] = useState({
     student_id: null,
     student_name: null,
     student_email: null,
-   section:null,
+    section: null,
     degree_program: null,
     semester: null,
     file: null, // Add file state
   });
+
   const [showUpload, setShowUpload] = useState(false);
   const [showColumnsData, setShowColumnsData] = useState(false);
-const [degreePrograms, setDegreePrograms] = useState([]);
-useEffect(() => {
-  const getPrograms = async () => {
-    try {
+  const [degreePrograms, setDegreePrograms] = useState(null);
+  useEffect(() => {
+    const getPrograms = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:8000/api/degree-programs/"
+        );
 
-      const response = await axios.get(
-        "http://localhost:8000/get-degree-programs"
-      );
-  
-      if (response.status === 200) {
-        setDegreePrograms(response.data);
-  
+        if (response.status === 200) {
+          setDegreePrograms(response.data.degree_programs);
+          console.log(degreePrograms.program_name);
+        }
+      } catch (error) {
+        console.error("Error adding student:", error);
+        toast.error("Error adding student. Please try again.");
       }
-    } catch (error) {
-      console.error("Error adding student:", error);
-      toast.error("Error adding student. Please try again.");
-    }
-  }
-return () => {
-  getPrograms();
-}
+    };
+    return () => {
+      getPrograms();
+    };
   }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    console.log(formData);
-    
   };
 
   const handleFileChange = (e) => {
@@ -64,15 +63,13 @@ return () => {
     e.preventDefault();
 
     try {
- 
-
       const dataToSend = {
         student_name: formData.student_name,
         student_email: formData.student_email,
         student_id: formData.student_id,
         degree_program: formData.degree_program,
         semester: formData.semester,
-        section: formData.section
+        section: formData.section,
       };
 
       const response = await axios.post(
@@ -112,10 +109,9 @@ return () => {
         fileBase64 = await convertFileToBase64(formData.file);
       }
 
-
       const response = await axios.post(
         "http://localhost:8000/analyze-csv/",
-        {file},
+        { file },
         {
           headers: {
             "Content-Type": "application/json",
@@ -144,6 +140,7 @@ return () => {
 
   return (
     <div>
+ 
       <div
         className={`${
           showColumnsData ? "grid" : "hidden"
@@ -245,16 +242,41 @@ return () => {
             />
           </div>
           <div className="relative flex items-center">
-    <select value={formData.degree_program} onChange={handleInputChange} name="degree_program" id="">
-    {
-      degreePrograms.map((program, index) => (
-        <option key={index} value={program.name}>{program.name}</option>
-      ))
-    }
-    </select>
+            <select
+            className="w-full border-black border py-3 px-4"
+              value={formData.degree_program}
+              onChange={handleInputChange}
+              name="degree_program"
+              id=""
+            >
+              {Array.isArray(degreePrograms) ? (
+                  degreePrograms.map((program, index) => (
+                    <option className="" key={index} value={program.program_name}>
+                      {program.program_name}
+                    </option>
+                  ))
+              ):(<option >No degree programs found!</option>)
+            }
+            </select>
           </div>
-         
+          <div class="relative font-[sans-serif] w-full">
+      <button type="button" id="dropdownToggle"
+        class="px-5 py-2.5 w-full border text-left border-gray-300 text-gray-800 text-sm outline-none bg-white hover:bg-gray-50">
+        Dropdown menu
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 fill-gray-500 inline ml-3" viewBox="0 0 24 24">
+          <path fill-rule="evenodd"
+            d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+            clip-rule="evenodd" data-original="#000000" />
+        </svg>
+      </button>
 
+      <ul id="dropdownMenu" class='absolute hidden shadow-[0_8px_19px_-7px_rgba(6,81,237,0.2)] bg-white py-2 z-[1000] min-w-full w-max divide-y max-h-96 overflow-auto'>
+        <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Dropdown option</li>
+        <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Cloth set</li>
+        <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Sales details</li>
+        <li class='py-3 px-5 hover:bg-gray-50 text-gray-800 text-sm cursor-pointer'>Marketing</li>
+      </ul>
+    </div>
           <div className="relative flex items-center">
             <input
               type="number"
