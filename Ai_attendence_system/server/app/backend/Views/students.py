@@ -9,6 +9,7 @@ from drf_spectacular.utils import extend_schema
 from rest_framework.renderers import JSONRenderer
 import pandas as pd
 import json
+# View for handling Students
 class StudentAPIView(APIView):
     serializer_class = StudentSerializer
 
@@ -63,6 +64,7 @@ class StudentAPIView(APIView):
         except Student.DoesNotExist:
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
+# Bulk Student insertion view 
 class BulkStudentInsertionAPIView(APIView):
     @extend_schema(
         request={
@@ -129,7 +131,7 @@ class BulkStudentInsertionAPIView(APIView):
         wrong_columns = [col for col in data.columns if col not in required_columns]
         if missing_columns or wrong_columns:
             return Response(
-                {"missing_columns": missing_columns, "required_columns": required_columns, "wrong_columns": wrong_columns},
+                {"detail": "Missing or invalid columns.", "missing_columns": missing_columns, "required_columns": required_columns, "wrong_columns": wrong_columns},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         # Validate degree programs and prepare for bulk insertion

@@ -3,6 +3,7 @@
 from rest_framework import serializers
 from .models import DegreeProgram, Student,Teachers,TeacherPasswords
 from django.contrib.auth.hashers import make_password
+from .models import Lecture, Schedule
 
 class DegreeProgramSerializer(serializers.ModelSerializer):
     class Meta:
@@ -83,3 +84,17 @@ class TeacherPasswordSerializer(serializers.ModelSerializer):
         validated_data['password'] = make_password(validated_data['password'])
         
         return TeacherPasswords.objects.create(teacher=teacher, **validated_data)
+    
+
+
+class LectureSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Lecture
+        fields = "__all__"
+
+class ScheduleSerializer(serializers.ModelSerializer):
+    lectures = LectureSerializer(many=True)
+
+    class Meta:
+        model = Schedule
+        fields = "__all__"
