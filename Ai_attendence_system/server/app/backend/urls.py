@@ -3,8 +3,15 @@ from backend.Views.students import StudentAPIView, BulkStudentInsertionAPIView
 from backend.Views.degree_program import DegreeProgramAPIView
 from backend.Views.teachers import TeacherAPIView, TeacherPasswordView, BulkTeacherInsertionAPIView
 from django.views.decorators.http import require_http_methods
+from backend.Views.user import UserManagementAPIView
 
 urlpatterns = [
+    #user authentication api endpoints
+    path(
+        "login/",
+        require_http_methods(["POST"])(UserManagementAPIView.as_view()),
+        name="login",
+    ),
     # Teacher API Endpoints
     path(
         "teachers/",

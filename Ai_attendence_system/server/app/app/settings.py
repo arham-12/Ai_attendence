@@ -43,11 +43,18 @@ INSTALLED_APPS = [
     'rest_framework',
     'backend',
     'drf_spectacular',
-    'corsheaders'
+    'corsheaders',
+    'rest_framework.authtoken',
 ]
 
 
 REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',  # Require authentication by default
+    ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     
 }
