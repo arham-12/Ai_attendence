@@ -2,13 +2,13 @@ import React, { useState } from "react";
 import DeleteDialogBox from "./dialog-boxes/deleteDialogBox";
 import EditStudentBox from "./dialog-boxes/editStudentBox";
 
-const StudentDataCard = ({ name, email, id, semester, section }) => {
+const StudentDataCard = ({ student,name, email, id, semester, section }) => {
   const [showDeleteBox, setshowDeleteBox] = useState(false);
   const [showEditBox, setshowEditBox] = useState(false)
   return (
     <>
-      <DeleteDialogBox Show={showDeleteBox} setShow={setshowDeleteBox} />
-      <EditStudentBox Show={showEditBox} SetShow={setshowEditBox} />
+      <DeleteDialogBox Show={showDeleteBox} setShow={setshowDeleteBox} studenId={student.student_id}/>
+      <EditStudentBox student={student} Show={showEditBox} SetShow={setshowEditBox} />
       <tr class="hover:bg-gray-50 rounded-lg">
       <td class="p-4 text-[15px] text-gray-800">{id}</td>
       <td class="p-4 text-[15px] text-gray-800">{name}</td>

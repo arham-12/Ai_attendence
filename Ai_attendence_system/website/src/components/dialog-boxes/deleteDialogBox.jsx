@@ -1,6 +1,25 @@
+import axios from "axios";
 import React from "react";
+import toast from "react-hot-toast";
 
-const DeleteDialogBox = ({Show,setShow}) => {
+const DeleteDialogBox = ({Show,setShow,studenId}) => {
+  const DeleteStudent = async (e)=>{
+    e.preventDefault();
+    try {
+      const response = await axios.delete(`http://localhost:8000/api/students/${studenId}/`);
+   
+      
+      if(response.status === 204){
+        setShow(false);
+        window.location.reload();
+        toast.success("Delete successfully")
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message)
+    }
+    
+  }
   return (
     <>
       <div class={`fixed inset-0 p-4 ${Show?'flex':'hidden'} flex-wrap justify-center items-center w-full h-full z-[1000] before:fixed before:inset-0 before:w-full before:h-full before:bg-[rgba(0,0,0,0.5)] overflow-auto font-[sans-serif]`}>
@@ -48,6 +67,7 @@ const DeleteDialogBox = ({Show,setShow}) => {
                 Cancel
               </button>
               <button
+              onClick={DeleteStudent}
                 type="button"
                 class="px-4 py-2 rounded-lg text-white text-sm bg-red-600 hover:bg-red-700 active:bg-red-600"
               >
