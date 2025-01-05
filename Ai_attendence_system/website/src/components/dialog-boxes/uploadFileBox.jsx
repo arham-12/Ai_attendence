@@ -15,6 +15,7 @@ const UploadFileBox = ({ Show, setShow }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
+            "Authorization":"Token "
           },
         }
       );
