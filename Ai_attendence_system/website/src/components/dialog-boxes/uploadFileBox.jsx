@@ -6,11 +6,15 @@ import { BulkImportContext } from "../../context/bulkImportContext";
 
 const UploadFileBox = ({ Show, setifFalse, setShow }) => {
   const { authToken } = useContext(AuthContext);
-  const { setmissing_columns, setrequired_columns, setwrong_columns } =
-    useContext(BulkImportContext);
+  const {
+    setmissing_columns,
+    setrequired_columns,
+    setwrong_columns,
+    setselectedFile,
+  } = useContext(BulkImportContext);
   const [file, setfile] = useState(null);
-  let sheetUrl ;
   
+
   const handleSubmitFile = async (e) => {
     e.preventDefault();
     try {
@@ -30,18 +34,16 @@ const UploadFileBox = ({ Show, setifFalse, setShow }) => {
         toast.success("File added successfully!");
         setShow(false);
       } else {
-        
       }
     } catch (error) {
       console.error("Error adding student:", error);
       toast.error(error.response.data.detail);
-     
-      if (error.response.data.missing_columns) {
-        setmissing_columns(error.response.data.missing_columns);
+
+      if (error.response.data.existing_columns) {
+        setmissing_columns(error.response.data.existing_columns);
         setrequired_columns(error.response.data.required_columns);
         setwrong_columns(error.response.data.wrong_columns);
         setifFalse(true);
-
       }
       setShow(false);
     }
@@ -95,7 +97,7 @@ const UploadFileBox = ({ Show, setifFalse, setShow }) => {
                 id="uploadFile1"
                 className="hidden"
                 accept=".xls, .xlsx, .csv"
-                onChange={(e) => setfile(e.target.files[0])}
+                onChange={(e) => {setfile(e.target.files[0]);setselectedFile(e.target.files[0]);}}
               />
               <p class="text-xs font-medium text-gray-400 mt-2">
                 Csv, Excelsheet are Allowed.
