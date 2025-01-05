@@ -13,7 +13,7 @@ dist
 dist-ssr
 *.local
 .env
-
+.pyc
 # Python
 *.pyc
 __pycache__/
