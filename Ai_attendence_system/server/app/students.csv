@@ -1,4 +1,4 @@
-student_name,student_id,student_email,degree_program,semester,section
+student,student_id,student_email,degree_program,semester,section
 John Doe,ST001,john.doe@example.com,bsit,5,A
 Jane Smith,ST002,jane.smith@example.com,bsit,4,B
 Alice Johnson,ST003,alice.johnson@example.com,bsit,3,C

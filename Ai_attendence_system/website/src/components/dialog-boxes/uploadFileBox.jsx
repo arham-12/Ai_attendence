@@ -35,10 +35,14 @@ const UploadFileBox = ({ Show, setifFalse, setShow }) => {
     } catch (error) {
       console.error("Error adding student:", error);
       toast.error(error.response.data.detail);
-      setmissing_columns(error.response.data.missing_columns);
-      setrequired_columns(error.response.data.required_columns);
-      setwrong_columns(error.response.data.wrong_columns);
-      if (error.response.data.missing_columns) setifFalse(true);
+     
+      if (error.response.data.missing_columns) {
+        setmissing_columns(error.response.data.missing_columns);
+        setrequired_columns(error.response.data.required_columns);
+        setwrong_columns(error.response.data.wrong_columns);
+        setifFalse(true);
+
+      }
       setShow(false);
     }
   };

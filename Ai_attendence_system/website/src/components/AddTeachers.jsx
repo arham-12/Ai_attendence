@@ -5,13 +5,8 @@ import { toast } from "react-hot-toast";
 
 const AddTeachers = () => {
   const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    studentId: "",
-    degreeProgram: "",
-    semester: "",
-    department: "",
-    section: "",
+    teacher_name: "",
+    teacher_email: "",
   });
   const [showUpload, setShowUpload] = useState(false);
   const [showColumnsData, setShowColumnsData] = useState(false);
