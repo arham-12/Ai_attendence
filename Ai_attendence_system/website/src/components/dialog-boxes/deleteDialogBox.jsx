@@ -1,12 +1,14 @@
 import axios from "axios";
-import React from "react";
+import React, { useContext } from "react";
 import toast from "react-hot-toast";
+import { AuthContext } from "../../context/auth";
 
-const DeleteDialogBox = ({Show,setShow,studenId}) => {
+const DeleteDialogBox = ({Show,setShow,apiUrl}) => {
+  const {authToken} = useContext(AuthContext)
   const DeleteStudent = async (e)=>{
     e.preventDefault();
     try {
-      const response = await axios.delete(`http://localhost:8000/api/students/${studenId}/`);
+      const response = await axios.delete(apiUrl,{headers: { Authorization: `Token ${authToken}` },});
    
       
       if(response.status === 204){

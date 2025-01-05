@@ -5,15 +5,16 @@ import './index.css'
 import { BrowserRouter } from 'react-router-dom'
 import { AuthContextProvider } from './context/auth.jsx'
 import { DashBoardContextProvider } from './context/IsDashoard.jsx'
+import { BulkImportProvider } from './context/bulkImportContext.jsx'
 
 createRoot(document.getElementById('root')).render(
   <AuthContextProvider>
-  <DashBoardContextProvider>
+ <BulkImportProvider>
  <BrowserRouter>
   <StrictMode>
     <App />
   </StrictMode>
   </BrowserRouter>,
-  </DashBoardContextProvider>
+  </BulkImportProvider>
   </AuthContextProvider>
 )

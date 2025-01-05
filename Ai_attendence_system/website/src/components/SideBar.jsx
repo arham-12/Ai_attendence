@@ -7,9 +7,9 @@ import logo from '../assets/logo.webp'
 import { DashBoardContext } from '../context/IsDashoard';
 import { AuthContext } from '../context/auth';
 function SideBar() {
-    const {isAddProgram} = useContext(AuthContext)
+    const {isLogin} = useContext(AuthContext)
     return (
-        <div className={`${isAddProgram ? 'hidden lg:block' : 'hidden'}`}>
+        <div className={`${isLogin ? 'hidden lg:block' : 'hidden'}`}>
             <nav class="bg-white shadow-xl h-screen fixed top-0 left-0 min-w-[250px] py-6 px-4 font-[sans-serif] overflow-auto">
                 <div class="relative flex flex-col h-full">
 

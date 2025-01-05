@@ -1,10 +1,15 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
+import { AuthContext } from "../../context/auth";
+import { BulkImportContext } from "../../context/bulkImportContext";
 
-const UploadFileBox = ({ Show, setShow }) => {
+const UploadFileBox = ({ Show, setifFalse, setShow }) => {
+  const { authToken } = useContext(AuthContext);
+  const { setmissing_columns, setrequired_columns, setwrong_columns } =
+    useContext(BulkImportContext);
   const [file, setfile] = useState(null);
-  console.log(file);
+  let sheetUrl ;
   
   const handleSubmitFile = async (e) => {
     e.preventDefault();
@@ -15,19 +20,26 @@ const UploadFileBox = ({ Show, setShow }) => {
         {
           headers: {
             "Content-Type": "multipart/form-data",
-            "Authorization":"Token "
+            Authorization: `Token ${authToken}`,
           },
         }
       );
 
+
       if (response.status === 200) {
         toast.success("File added successfully!");
-        setShow(false)
+        setShow(false);
+      } else {
+        
       }
     } catch (error) {
       console.error("Error adding student:", error);
       toast.error(error.response.data.detail);
-      setShow(false)
+      setmissing_columns(error.response.data.missing_columns);
+      setrequired_columns(error.response.data.required_columns);
+      setwrong_columns(error.response.data.wrong_columns);
+      if (error.response.data.missing_columns) setifFalse(true);
+      setShow(false);
     }
   };
   return (
@@ -78,17 +90,17 @@ const UploadFileBox = ({ Show, setShow }) => {
                 name="file"
                 id="uploadFile1"
                 className="hidden"
-                 accept=".xls, .xlsx, .csv"
-                onChange={(e)=>setfile(e.target.files[0])}
+                accept=".xls, .xlsx, .csv"
+                onChange={(e) => setfile(e.target.files[0])}
               />
               <p class="text-xs font-medium text-gray-400 mt-2">
                 Csv, Excelsheet are Allowed.
               </p>
 
               <button
-              onClick={handleSubmitFile}
+                onClick={handleSubmitFile}
                 className={`${
-                  Show ? "block" : "hidden"
+                  file ? "block" : "hidden"
                 } bg-primary text-sm px-6 py-1 mt-2 text-white rounded-md`}
               >
                 Upload

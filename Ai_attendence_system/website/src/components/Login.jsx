@@ -4,12 +4,15 @@ import axios from "axios";
 import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth";
+import { useCookies } from "react-cookie";
 // skip_pages
 const Login = () => {
+  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
+  console.log(cookies.authToken);
   const navigate = useNavigate();
-  const { setisLogin, setisAddProgram, skipPage } = useContext(AuthContext);
+  const { setisLogin, setisAddProgram, setauthToken } = useContext(AuthContext);
   const [formData, setFormData] = useState({
-    email: "",
+    username: "",
     password: "",
   });
 
@@ -23,7 +26,7 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/admin_login",
+        "http://localhost:8000/api/login/",
         formData,
         {
           headers: {
@@ -34,14 +37,15 @@ const Login = () => {
 
       if (response.status === 200) {
         setisLogin(true);
-        if (response.data.skip_pages) {
-          setisAddProgram(true);
-          navigate("/")
-        } else {
-          navigate("/add-department");
-        }
+        setauthToken(response.data.access_token);
+        setisAddProgram(true);
+        navigate("/");
+        setCookie("authToken", response.data.access_token, {
+          path: "/",
+          maxAge: 3600,
+        });
         // Display success toast
-        toast.success("Login Successful!", {
+        toast.success(response.data.detail, {
           position: "top-right",
         });
         console.log("Login Successful:", response.data);
@@ -76,10 +80,10 @@ const Login = () => {
                 </label>
                 <div className="relative flex items-center">
                   <input
-                    name="email"
-                    type="email"
+                    name="username"
+                    type="text"
                     required
-                    value={formData.email}
+                    value={formData.username}
                     onChange={handleInputChange}
                     className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-primary"
                     placeholder="Enter user name"

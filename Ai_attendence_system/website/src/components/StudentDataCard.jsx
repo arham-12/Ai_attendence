@@ -7,7 +7,7 @@ const StudentDataCard = ({ student,name, email, id, semester, section }) => {
   const [showEditBox, setshowEditBox] = useState(false)
   return (
     <>
-      <DeleteDialogBox Show={showDeleteBox} setShow={setshowDeleteBox} studenId={student.student_id}/>
+      <DeleteDialogBox Show={showDeleteBox} setShow={setshowDeleteBox} apiUrl={`http://localhost:8000/api/students/${student.student_id}/`}/>
       <EditStudentBox student={student} Show={showEditBox} SetShow={setshowEditBox} />
       <tr class="hover:bg-gray-50 rounded-lg">
       <td class="p-4 text-[15px] text-gray-800">{id}</td>

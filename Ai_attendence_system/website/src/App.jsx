@@ -34,15 +34,15 @@ const App = () => {
       <Route path="/add-department" element={<AuthProtected Component={AddDepartmentPage} />} />
       <Route path="/add-degreeprograms" element={<AuthProtected Component={AddDegreeProgramPage} />} />
       {/* Main routes */}
-      <Route path="/" element={<AddProgramProtected Component={AdminDashboardPage} />} />
+      <Route path="/" element={<AuthProtected Component={AdminDashboardPage} />} />
       <Route path="/users-analytics" element={<AddProgramProtected Component={SmartSerch} />} />
       
       {/* Schedule route */}
-      <Route path="/set-schedule" element={<AddProgramProtected Component={SchedulePage} />} />
-      <Route path="/manage-students" element={<AddProgramProtected Component={ManageStudents} />} />
-      <Route path="/manage-teachers" element={<AddProgramProtected Component={ManageTeachers} />} />
+      <Route path="/set-schedule" element={<AuthProtected Component={SchedulePage} />} />
+      <Route path="/manage-students" element={<AuthProtected Component={ManageStudents} />} />
+      <Route path="/manage-teachers" element={<AuthProtected Component={ManageTeachers} />} />
       {/* Settings with nested routes */}
-      <Route path="/settings" element={<AddProgramProtected Component={UpdateAuthSettings} />}>
+      <Route path="/settings" element={<AuthProtected Component={UpdateAuthSettings} />}>
         {/* Add nested routes here if needed */}
       </Route>
       
