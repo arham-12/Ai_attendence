@@ -68,3 +68,25 @@ class Attendance(models.Model):
     is_present = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.student} - {self.course} - {self.date}"
+    
+
+class Schedule(models.Model):
+    instructor_name = models.CharField(max_length=255)
+    instructor_id = models.CharField(max_length=255)
+    degree_program = models.CharField(max_length=255)
+    semester = models.CharField(max_length=255)
+    course_name = models.CharField(max_length=255)
+    course_code = models.CharField(max_length=255)
+    class_type = models.CharField(max_length=255)
+
+    def __str__(self):
+        return f"{self.course_name} - {self.instructor_name}"
+
+class Lecture(models.Model):
+    date = models.DateField()
+    day = models.CharField(max_length=20)
+    schedule = models.ForeignKey(Schedule, related_name="lectures", on_delete=models.CASCADE)
+    starting_time = models.TimeField()
+
+    def __str__(self):
+        return f"Lecture on {self.date} ({self.day})"

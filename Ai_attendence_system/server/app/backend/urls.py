@@ -4,6 +4,8 @@ from backend.Views.degree_program import DegreeProgramAPIView
 from backend.Views.teachers import TeacherAPIView, TeacherPasswordView, BulkTeacherInsertionAPIView
 from django.views.decorators.http import require_http_methods
 from backend.Views.user import UserManagementAPIView
+from  backend.Views.schedule import GenerateScheduleView
+
 
 urlpatterns = [
     #user authentication api endpoints
@@ -62,5 +64,11 @@ urlpatterns = [
         'students_bulk_insertion/',
         require_http_methods(["POST"])(BulkStudentInsertionAPIView.as_view()),
         name='student_bulk_insertion',
+    ),
+    # Generate Schedule API Endpoints
+    path(
+        "generate-schedule/",
+        require_http_methods(["POST"])(GenerateScheduleView.as_view()),
+        name="generate_schedule",
     ),
 ]
