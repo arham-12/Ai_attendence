@@ -8,7 +8,7 @@ import { AuthContext } from "../../context/auth";
 const ManageAllTeachers = () => {
   // State for the input fields
   const { authToken } = useContext(AuthContext);
-  const [teacherId, setteacherId] = useState("")
+  const [teacherId, setteacherId] = useState("");
   const [searchedStudent, setsearchedStudent] = useState(null);
   const [response, setresponse] = useState([]);
 
@@ -25,7 +25,6 @@ const ManageAllTeachers = () => {
         });
         setresponse(res.data);
         console.log(res.data);
-        
       } catch (error) {
         console.log(error);
       }
@@ -38,7 +37,8 @@ const ManageAllTeachers = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/students/${studentId}/`,{
+        `http://localhost:8000/api/teachers/${teacherId}/`,
+        {
           headers: { Authorization: `Token ${authToken}` },
         }
       );
@@ -62,7 +62,7 @@ const ManageAllTeachers = () => {
         >
           <h1 className="font-semibold text-sm ">Teacher id:</h1>
           <input
-            name="studentId"
+            name="teacherId"
             placeholder="Enter teacher id"
             className="px-2 py-1.5 text-sm border-b border-black bg-transparent"
             type="text"
@@ -73,7 +73,7 @@ const ManageAllTeachers = () => {
 
         <div className="list-none text-sm rounded-lg text-center">
           <button
-            onClick={ManageAllTeachers}
+            onClick={SearchTeachers}
             className="bg-primary px-6 py-1 rounded-md text-white flex items-center gap-2"
           >
             <IoSearchSharp /> Search
@@ -101,7 +101,6 @@ const ManageAllTeachers = () => {
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Actions
                 </th>
-              
               </tr>
             </thead>
 
@@ -113,17 +112,16 @@ const ManageAllTeachers = () => {
                   id={searchedStudent.id}
                   name={searchedStudent.teacher_name}
                   email={searchedStudent.teacher_email}
-             
                 />
               ) : (
-                response.map((res,index) => (
+                response.map((res, index) => (
                   <TeacherDataCard
-                   teacher={res}
+                    teacher={res}
                     key={index}
                     id={index}
                     name={res.teacher_name}
                     email={res.teacher_email}
-                  degree_program={res.degree_program}
+                    degree_program={res.degree_program}
                   />
                 ))
               )}

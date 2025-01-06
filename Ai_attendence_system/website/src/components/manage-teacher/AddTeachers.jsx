@@ -7,13 +7,12 @@ import UpdateColumnsBox from "../dialog-boxes/UpdateColumnsBox";
 import DropDown from "../DropDown";
 import UploadTeachersFile from "../dialog-boxes/UploadTeachersFile";
 
-
 const AddTeacherIDs = () => {
   const [dropdownValue, setdropdownValue] = useState("");
   const [formData, setFormData] = useState({
     teacher_name: null,
     teacher_email: null,
-    degree_program:0
+    degree_program: 0,
   });
   const { authToken } = useContext(AuthContext);
   const [showUpload, setShowUpload] = useState(false);
@@ -97,7 +96,12 @@ const AddTeacherIDs = () => {
         className="font-[sans-serif] w-full mx-auto"
         onSubmit={handleSubmitData}
       >
+          <div className="py-5 text-center w-full">
+            <h1 className="text-4xl font-medium">Add new user</h1>
+            <p className="text-sm">you can add new student</p>
+          </div>
         <div className="grid sm:grid-cols-2 gap-4">
+        
           <div className="relative flex items-center">
             <input
               type="text"
@@ -124,7 +128,7 @@ const AddTeacherIDs = () => {
             value={dropdownValue}
             setValue={setdropdownValue}
           />
-{/* 
+          {/* 
 <div className="relative flex items-center">
             <input
               type="number"

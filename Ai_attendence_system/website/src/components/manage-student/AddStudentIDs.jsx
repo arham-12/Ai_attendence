@@ -6,7 +6,6 @@ import UploadFileBox from "../dialog-boxes/uploadFileBox";
 import UpdateColumnsBox from "../dialog-boxes/UpdateColumnsBox";
 import DropDown from "../DropDown";
 
-
 const AddStudentIDs = () => {
   const [dropdownValue, setdropdownValue] = useState("");
   const [formData, setFormData] = useState({
@@ -96,7 +95,7 @@ const AddStudentIDs = () => {
         setShow={setShowUpload}
         setifFalse={setshowUpdateColBox}
       />
-      <UpdateColumnsBox Show={showUpdateColBox} setShow={setshowUpdateColBox} />
+      <UpdateColumnsBox Show={showUpdateColBox} setShow={setshowUpdateColBox} apiUrl={"http://localhost:8000/api/students_bulk_insertion/"} />
       <form
         className="font-[sans-serif] w-full mx-auto"
         onSubmit={handleSubmitData}

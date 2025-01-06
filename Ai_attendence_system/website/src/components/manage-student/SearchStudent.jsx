@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { AuthContext } from "../../context/auth";
 import StudentDataCard from "./StudentDataCard";
 
-
 const SearchStudent = () => {
   // State for the input fields
   const { authToken } = useContext(AuthContext);
@@ -37,7 +36,8 @@ const SearchStudent = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/students/${studentId}/`,{
+        `http://localhost:8000/api/students/${studentId}/`,
+        {
           headers: { Authorization: `Token ${authToken}` },
         }
       );
@@ -95,6 +95,9 @@ const SearchStudent = () => {
                   Email
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
+                  Degree Program
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Semester
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
@@ -125,6 +128,7 @@ const SearchStudent = () => {
                     id={res.student_id}
                     name={res.student_name}
                     email={res.student_email}
+                    degreeprogram={res.degree_program}
                     semester={res.semester}
                     section={res.section}
                   />

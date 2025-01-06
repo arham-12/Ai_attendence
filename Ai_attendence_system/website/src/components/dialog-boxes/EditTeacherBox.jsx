@@ -6,10 +6,8 @@ const EditTeacherBox = ({ Show, SetShow, teacher }) => {
   const [inputs, setinputs] = useState({
     degree_program: teacher.degree_program,
     teacher_name: teacher.teacher_name,
-    teacher_id: teacher.teacher_id,
     teacher_email: teacher.teacher_email,
-    semester: teacher.semester,
-    section: teacher.section,
+  
   });
   const onChangeHandler = (e) => {
     e.preventDefault();
@@ -44,7 +42,7 @@ const EditTeacherBox = ({ Show, SetShow, teacher }) => {
           <svg
             onClick={() => SetShow(false)}
             xmlns="http://www.w3.org/2000/svg"
-            class="w-3.5 cursor-pointer shrink-0 fill-gray-800 hover:fill-red-500 float-right"
+            class="w-3.5 cursor-pointer shrink-0 fill-gray-800 hover:fill-primary float-right"
             viewBox="0 0 320.591 320.591"
           >
             <path
@@ -84,22 +82,7 @@ const EditTeacherBox = ({ Show, SetShow, teacher }) => {
                 placeholder={teacher.degree_program}
                 class="px-4 placeholder:text-black  py-2.5 mt-6 bg-[#f0f1f2] text-black w-full text-sm focus:bg-transparent outline-blue-600 rounded-md"
               />
-              <input
-                name="semester"
-                value={inputs.semester}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder={teacher.semester}
-                class="px-4 placeholder:text-black  py-2.5 mt-6 bg-[#f0f1f2] text-black w-full text-sm focus:bg-transparent outline-blue-600 rounded-md"
-              />
-              <input
-                name="section"
-                value={inputs.section}
-                onChange={onChangeHandler}
-                type="text"
-                placeholder={teacher.section}
-                class="px-4 placeholder:text-black  py-2.5 mt-6 bg-[#f0f1f2] text-black w-full text-sm focus:bg-transparent outline-blue-600 rounded-md"
-              />
+           
             </div>
           </div>
           <button
