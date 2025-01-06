@@ -28,16 +28,35 @@ class TeacherAPIView(APIView):
             serializer = self.serializer_class(teachers, many=True)
             return Response(serializer.data)
         
-
     @extend_schema(request=TeacherSerializer)
     def post(self, request):
-        # Create a new teacher
-        serializer = self.serializer_class(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+            # Create a new teacher
+            teacher_serializer = self.serializer_class(data=request.data)
+            
+            if teacher_serializer.is_valid():
+                # Save the teacher data
+                teacher = teacher_serializer.save()
+                
+                # Check if password data is provided in the request
+                password_data = request.data.get("password")
+                if password_data:
+                    # Prepare password data for the `TeacherPasswordSerializer`
+                    password_serializer = TeacherPasswordSerializer(data={
+                        'teacher_email': teacher.teacher_email,
+                        'password': password_data
+                    })
+                    
+                    if password_serializer.is_valid():
+                        # Save the password data
+                        password_serializer.save()
+                    else:
+                        # If password data is invalid, delete the created teacher
+                        teacher.delete()
+                        return Response(password_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+                
+                return Response(teacher_serializer.data, status=status.HTTP_201_CREATED)
+            
+            return Response(teacher_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     @extend_schema(request=TeacherSerializer)
     def put(self, request, teacher_email: str = None):
         if teacher_email:     
@@ -136,7 +155,7 @@ class BulkTeacherInsertionAPIView(APIView):
                 return Response({"detail": "Unsupported file format. Upload a CSV or Excel file."}, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
             return Response({"detail": f"Error reading file: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
-        
+
         # Rename columns based on the received mapping
         if isinstance(columns, dict):
             data.rename(columns=columns, inplace=True)
@@ -179,7 +198,7 @@ class BulkTeacherInsertionAPIView(APIView):
         # Handle invalid rows
         if invalid_rows:
             return Response(
-                {"detail": "Invalid degree programs found.", "invalid_rows": invalid_rows},
+                {"detail": "Invalid degree program found." ,"degree_program_name":list({i["degree_program"] for i in invalid_rows})},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
