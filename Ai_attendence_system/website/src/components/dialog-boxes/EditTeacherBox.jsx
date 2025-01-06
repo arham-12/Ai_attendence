@@ -1,38 +1,38 @@
-import React, { useContext, useState } from 'react'
-import { AuthContext } from '../../context/auth';
+import React, { useContext, useState } from "react";
+import { AuthContext } from "../../context/auth";
 
 const EditTeacherBox = ({ Show, SetShow, teacher }) => {
-    const { authToken } = useContext(AuthContext);
-    const [inputs, setinputs] = useState({
-        degree_program: teacher.degree_program,
-      teacher_name: teacher.teacher_name,
-      teacher_id: teacher.teacher_id,
-      teacher_email: teacher.teacher_email,
-      semester: teacher.semester,
-      section: teacher.section,
-    });
-    const onChangeHandler = (e) => {
-      e.preventDefault();
-      setinputs({ ...inputs, [e.target.name]: e.target.value });
-    };
-    const onSubmitHandler = async (e) => {
-      e.preventDefault();
-      try {
-        const response = await axios.put(
-          `http://localhost:8000/api/teachers/${teacher.id}/`,
-          inputs,
-          { headers: { Authorization: `Token ${authToken}` } }
-        );
-        if (response.status === 200) {
-          window.location.reload();
-          toast.success("Update successfully");
-          SetShow(false);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error(error);
+  const { authToken } = useContext(AuthContext);
+  const [inputs, setinputs] = useState({
+    degree_program: teacher.degree_program,
+    teacher_name: teacher.teacher_name,
+    teacher_id: teacher.teacher_id,
+    teacher_email: teacher.teacher_email,
+    semester: teacher.semester,
+    section: teacher.section,
+  });
+  const onChangeHandler = (e) => {
+    e.preventDefault();
+    setinputs({ ...inputs, [e.target.name]: e.target.value });
+  };
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.put(
+        `http://localhost:8000/api/teachers/${teacher.id}/`,
+        inputs,
+        { headers: { Authorization: `Token ${authToken}` } }
+      );
+      if (response.status === 200) {
+        window.location.reload();
+        toast.success("Update successfully");
+        SetShow(false);
       }
-    };
+    } catch (error) {
+      console.log(error);
+      toast.error(error);
+    }
+  };
   return (
     <>
       <div
@@ -112,7 +112,7 @@ const EditTeacherBox = ({ Show, SetShow, teacher }) => {
         </div>
       </div>
     </>
-  )
-}
+  );
+};
 
-export default EditTeacherBox
+export default EditTeacherBox;

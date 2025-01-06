@@ -55,7 +55,7 @@ const AddTeacherIDs = () => {
       const dataToSend = {
         teacher_name: formData.teacher_name,
         teacher_email: formData.teacher_email,
-        degree_program: formData.degree_program,
+        degree_program: dropdownValue,
       };
 
       const response = await axios.post(
@@ -119,12 +119,12 @@ const AddTeacherIDs = () => {
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
           </div>
-          {/* <DropDown
+          <DropDown
             degreePrograms={degreePrograms}
             value={dropdownValue}
             setValue={setdropdownValue}
-          /> */}
-
+          />
+{/* 
 <div className="relative flex items-center">
             <input
               type="number"
@@ -134,7 +134,7 @@ const AddTeacherIDs = () => {
               placeholder="Email"
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
-          </div>
+          </div> */}
         </div>
 
         <div className="mt-4 flex gap-2">

@@ -3,17 +3,18 @@ import DeleteDialogBox from "../dialog-boxes/deleteDialogBox";
 import EditTeacherBox from "../dialog-boxes/EditTeacherBox";
 
 
-const TeacherDataCard = ({ teacher,name, email, id }) => {
+const TeacherDataCard = ({ teacher,name, email, id,degree_program }) => {
   const [showDeleteBox, setshowDeleteBox] = useState(false);
   const [showEditBox, setshowEditBox] = useState(false)
   return (
     <>
       <DeleteDialogBox Show={showDeleteBox} setShow={setshowDeleteBox} apiUrl={`http://localhost:8000/api/teachers/${teacher.id}/`}/>
-      <EditTeacherBox student={teacher} Show={showEditBox} SetShow={setshowEditBox} />
+      <EditTeacherBox teacher={teacher} Show={showEditBox} SetShow={setshowEditBox} />
       <tr class="hover:bg-gray-50 rounded-lg">
       <td class="p-4 text-[15px] text-gray-800">{id}</td>
       <td class="p-4 text-[15px] text-gray-800">{name}</td>
       <td class="p-4 text-[15px] text-gray-800">{email}</td>
+      <td class="p-4 text-[15px] text-gray-800">{degree_program}</td>
       <td class="p-4">
         <button onClick={()=>setshowEditBox(true)} class="mr-4" title="Edit">
           <svg

@@ -24,6 +24,8 @@ const ManageAllTeachers = () => {
           headers: { Authorization: `Token ${authToken}` },
         });
         setresponse(res.data);
+        console.log(res.data);
+        
       } catch (error) {
         console.log(error);
       }
@@ -114,14 +116,14 @@ const ManageAllTeachers = () => {
              
                 />
               ) : (
-                response.map((res) => (
+                response.map((res,index) => (
                   <TeacherDataCard
-                    teacher={res}
-                    key={res.id}
-                    id={res.id}
+                   teacher={res}
+                    key={index}
+                    id={index}
                     name={res.teacher_name}
                     email={res.teacher_email}
-                  
+                  degree_program={res.degree_program}
                   />
                 ))
               )}
