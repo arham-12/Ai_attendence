@@ -92,6 +92,7 @@ class BulkStudentInsertionAPIView(APIView):
         Request Body: Must contain a file (CSV/Excel) and optional column mapping (JSON).
         Response: Returns success message or detailed error on missing/invalid data.
         """
+        print(request.data)
         # Required columns
         required_columns = ["student_name", "student_id", "student_email", "degree_program", "semester", "section"]
 

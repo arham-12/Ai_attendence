@@ -3,6 +3,7 @@ import { createContext, useState, useEffect } from "react";
 const BulkImportContext = createContext();
 
 const BulkImportProvider = ({ children }) => {
+    const [selectedFile, setselectedFile] = useState()
   const [missing_columns, setmissing_columns] = useState([]);
   const [required_columns, setrequired_columns] = useState([]);
   const [wrong_columns, setwrong_columns] = useState([]);
@@ -16,6 +17,7 @@ const BulkImportProvider = ({ children }) => {
         setrequired_columns,
         wrong_columns,
         setwrong_columns,
+        selectedFile,setselectedFile
       }}
     >
       {children}

@@ -1,11 +1,44 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { BulkImportContext } from "../../context/bulkImportContext";
-import { array } from "yup";
+import axios from 'axios'
+import { AuthContext } from "../../context/auth";
 
 const UpdateColumnsBox = ({ Show, setShow }) => {
-  const { missing_columns, required_columns, wrong_columns } =
+    const [updatedColumns, setupdatedColumns] = useState({});
+    const {authToken} = useContext(AuthContext)
+  const { missing_columns, required_columns, wrong_columns,selectedFile } =
     useContext(BulkImportContext);
   console.log(missing_columns);
+  console.log(selectedFile);
+  
+const UpdateColumns = (column,index)=>{
+setupdatedColumns({...updatedColumns,[column]:required_columns[index]})
+}
+console.log(   { selectedFile, updatedColumns });
+
+const onSubmitHandler = async()=>{
+    const formData = new FormData();
+    
+    // Attach file to formData
+    formData.append("file", selectedFile);
+    
+    // Convert updatedColumns object to JSON string and add it to formData
+    formData.append("columns", JSON.stringify(updatedColumns));
+    const response = await axios.post(
+        "http://localhost:8000/api/students_bulk_insertion/",
+      formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Token ${authToken}`,
+          },
+        }
+      );
+      console.log(response);
+      
+}
+console.log(updatedColumns);
+
 
   return (
     <>
@@ -30,37 +63,42 @@ const UpdateColumnsBox = ({ Show, setShow }) => {
               data-original="#000000"
             ></path>
           </svg>
-          <div class="font-[sans-serif] overflow-x-auto">
-            <div className="w-full grid grid-cols-3 gap-10">
-              <ul className="flex flex-col">
-                <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
-                  Missing Columns
-                </h1>
-                {missing_columns.map((item) => (
-                  <li>{item}</li>
-                ))}
-              </ul>
-              <ul className="flex flex-col">
-                <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
-                  Required Columns
-                </h1>
-                {required_columns.map((item) => (
-                  <li>{item}</li>
-                ))}
-              </ul>
-              <ul className="flex flex-col">
-                <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
-                  Wrong Columns
-                </h1>
-                {wrong_columns.map((item) => (
-                  <li >
-                    <input placeholder={item} className="w-full py-1.5" type="text" />
-                  </li>
-                ))}
-              </ul>
-             
-            </div>
-          </div>
+          <div className="font-[sans-serif] overflow-x-auto">
+  <div className="w-full grid grid-cols-2 gap-10">
+    {/* Your Columns */}
+    <ul className="flex flex-col">
+      <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
+        Your Columns
+      </h1>
+      {missing_columns.map((item, index) => (
+        <li key={index} className="flex justify-between mb-1">
+          {wrong_columns.includes(item) ? (
+            <>
+             <li>{item}</li>
+              <button value={item} onClick={()=>UpdateColumns(item,index)} className="bg-primary px-2 py-[2px] text-[12px] text-white rounded">
+                Update
+              </button>
+            </>
+          ) : (
+            <span className="text-gray-700">{item}</span>
+          )}
+        </li>
+      ))}
+    </ul>
+
+    {/* Required Columns */}
+    <ul className="flex flex-col">
+      <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
+        Required Columns
+      </h1>
+      {required_columns.map((item, index) => (
+        <li key={index} className="text-gray-700">{item}</li>
+      ))}
+    </ul>
+  </div>
+  <button onClick={onSubmitHandler}>Update Final</button>
+</div>
+
         </div>
       </div>
     </>
