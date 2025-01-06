@@ -1,12 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { IoClose } from "react-icons/io5";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import DeleteDialogBox from "./dialog-boxes/deleteDialogBox";
-import DropDown from "./DropDown";
-import UploadFileBox from "./dialog-boxes/uploadFileBox";
-import { AuthContext } from "../context/auth";
-import UpdateColumnsBox from "./dialog-boxes/UpdateColumnsBox";
+import { AuthContext } from "../../context/auth";
+import UploadFileBox from "../dialog-boxes/uploadFileBox";
+import UpdateColumnsBox from "../dialog-boxes/UpdateColumnsBox";
+import DropDown from "../DropDown";
+
 
 const AddStudentIDs = () => {
   const [dropdownValue, setdropdownValue] = useState("");
@@ -19,7 +18,7 @@ const AddStudentIDs = () => {
   });
   const { authToken } = useContext(AuthContext);
   const [showUpload, setShowUpload] = useState(false);
-  const [showUpdateColBox, setshowUpdateColBox] = useState(false)
+  const [showUpdateColBox, setshowUpdateColBox] = useState(false);
   const [degreePrograms, setDegreePrograms] = useState([]);
 
   useEffect(() => {
@@ -74,7 +73,6 @@ const AddStudentIDs = () => {
         }
       );
 
-
       if (response.status === 201) {
         toast.success("Student ID added successfully!");
         setFormData({
@@ -93,8 +91,12 @@ const AddStudentIDs = () => {
 
   return (
     <div>
-      <UploadFileBox Show={showUpload} setShow={setShowUpload} setifFalse={setshowUpdateColBox} />
-     <UpdateColumnsBox Show={showUpdateColBox} setShow={setshowUpdateColBox}/>
+      <UploadFileBox
+        Show={showUpload}
+        setShow={setShowUpload}
+        setifFalse={setshowUpdateColBox}
+      />
+      <UpdateColumnsBox Show={showUpdateColBox} setShow={setshowUpdateColBox} />
       <form
         className="font-[sans-serif] w-full mx-auto"
         onSubmit={handleSubmitData}

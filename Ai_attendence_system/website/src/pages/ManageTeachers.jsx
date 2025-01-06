@@ -1,25 +1,21 @@
 import React from 'react'
 import Navbar from '../components/Navbar';
-import SearchStudent from '../components/SearchStudent';
-import AddStudentIDs from '../components/AddStudentIDs';
-import DatabaseConnectionPage from './DatabaseConectionPage';
+import ManageAllTeachers from '../components/manage-teacher/ManageAllTeachers';
+import AddTeacherIDs from '../components/manage-teacher/AddTeachers';
+
+
 
 const ManageTeachers = () => {
         const tabs = [
           {
             id: 'SearchStudent',
             label: 'Search Teacher',
-            component: <SearchStudent/>,
+            component: <ManageAllTeachers/>,
           },
             {
               id: 'StudentIDsTab',
               label: 'Add Teachers',
-              component: <AddStudentIDs />,
-            },
-            {
-              id: 'DbcredentialTab',
-              label: 'Import Data',
-              component: <DatabaseConnectionPage/>,
+              component: <AddTeacherIDs/>,
             },
          
             

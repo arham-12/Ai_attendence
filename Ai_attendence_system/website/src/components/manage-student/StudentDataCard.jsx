@@ -1,6 +1,7 @@
 import React, { useState } from "react";
-import DeleteDialogBox from "./dialog-boxes/deleteDialogBox";
-import EditStudentBox from "./dialog-boxes/editStudentBox";
+import DeleteDialogBox from "../dialog-boxes/deleteDialogBox";
+import EditStudentBox from "../dialog-boxes/editStudentBox";
+
 
 const StudentDataCard = ({ student,name, email, id, semester, section }) => {
   const [showDeleteBox, setshowDeleteBox] = useState(false);

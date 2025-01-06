@@ -64,10 +64,10 @@ console.log(updatedColumns);
             ></path>
           </svg>
           <div className="font-[sans-serif] overflow-x-auto">
-  <div className="w-full grid grid-cols-2 gap-10">
+  <div className="w-full grid grid-cols-2 gap-4 max-lg:mt-8 md:gap-10">
     {/* Your Columns */}
     <ul className="flex flex-col">
-      <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
+      <h1 className="text-lg max-lg:text-sm font-semibold border-b border-primary text-start mb-2">
         Your Columns
       </h1>
       {missing_columns.map((item, index) => (
@@ -88,7 +88,7 @@ console.log(updatedColumns);
 
     {/* Required Columns */}
     <ul className="flex flex-col">
-      <h1 className="text-lg font-semibold border-b border-primary text-start mb-2">
+      <h1 className="text-lg max-lg:text-sm font-semibold border-b border-primary text-start mb-2">
         Required Columns
       </h1>
       {required_columns.map((item, index) => (
