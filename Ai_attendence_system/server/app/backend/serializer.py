@@ -52,11 +52,32 @@ class StudentSerializer(serializers.ModelSerializer):
     
 
 class TeacherSerializer(serializers.ModelSerializer):
+    degree_program = serializers.CharField()  # Unified for both read and write
+
     class Meta:
         model = Teachers
-        fields = "__all__"
+        fields = ['teacher_name', 'teacher_email', 'degree_program']
 
+    def to_representation(self, instance):
+        """Customize representation for GET requests."""
+        representation = super().to_representation(instance)
+        # Replace degree_program with its name for the GET response
+        representation['degree_program'] = instance.degree_program.program_name
+        return representation
 
+    def validate_degree_program(self, value):
+        """Validate degree_program during POST requests."""
+        try:
+            program = DegreeProgram.objects.get(program_name=value)
+        except DegreeProgram.DoesNotExist:
+            raise serializers.ValidationError(f'Degree program "{value}" does not exist.')
+        return program
+
+    def create(self, validated_data):
+        """Handle creation of Teacher with degree program."""
+        degree_program = validated_data.pop('degree_program')
+        validated_data['degree_program'] = self.validate_degree_program(degree_program)
+        return Teachers.objects.create(**validated_data)
 class TeacherPasswordSerializer(serializers.ModelSerializer):
     teacher_email = serializers.EmailField(source='teacher.teacher_email', write_only=True)
 
