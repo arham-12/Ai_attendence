@@ -15,7 +15,7 @@ class Student(models.Model):
     degree_program = models.ForeignKey(DegreeProgram, on_delete=models.CASCADE, related_name='students', null=True)  # ForeignKey to DegreeProgram
     semester = models.CharField(max_length=20)
     section = models.CharField(max_length=10, null=True, blank=True)  # Optional field for section
-
+    
     def __str__(self):
         return f"{self.student_name} ({self.student_id})"
 
@@ -25,10 +25,9 @@ class Student(models.Model):
 
 
 class Course(models.Model):
-    course_name = models.CharField(max_length=255)
     course_code = models.CharField(max_length=50, unique=True)  # Course code
-    course_description = models.TextField()
-    course_program = models.ForeignKey(
+    course_name = models.CharField(max_length=255)
+    degree_program = models.ForeignKey(
         DegreeProgram, on_delete=models.CASCADE, related_name="courses"
     )  # Each course belongs to a degree program
     teacher = models.ForeignKey(
@@ -41,7 +40,9 @@ class Course(models.Model):
 
 class Teachers(models.Model):
     teacher_name = models.CharField(max_length=255)
-    teacher_email = models.EmailField(unique=True, null=False, blank=False)  # Email of the teacher
+    teacher_email = models.EmailField(unique=True, null=False, blank=False)
+    teaching_type = models.CharField(max_length=255, null=True, blank=True,default="visitor")  # Optional field for teaching type
+      # Email of the teacher
     degree_program = models.ForeignKey(
         DegreeProgram, related_name="teachers", on_delete=models.CASCADE, default=1
     )  # Provide a default DegreeProgram ID

@@ -1,11 +1,19 @@
 from django.urls import path
-from backend.Views.students import StudentAPIView, BulkStudentInsertionAPIView
-from backend.Views.degree_program import DegreeProgramAPIView
-from backend.Views.teachers import TeacherAPIView, TeacherPasswordView, BulkTeacherInsertionAPIView
 from django.views.decorators.http import require_http_methods
 from backend.Views.user import UserManagementAPIView
 from  backend.Views.schedule import GenerateScheduleView
-
+from  backend.Views.course import CourseView
+from backend.Views.searching import StudentSearchView, TeacherSearchView
+from backend.Views.students import(
+    StudentAPIView,
+    BulkStudentInsertionAPIView
+)
+from backend.Views.degree_program import DegreeProgramAPIView
+from backend.Views.teachers import(
+    TeacherAPIView,
+    TeacherPasswordView,
+    BulkTeacherInsertionAPIView
+) 
 
 urlpatterns = [
     #user authentication api endpoints
@@ -65,10 +73,33 @@ urlpatterns = [
         require_http_methods(["POST"])(BulkStudentInsertionAPIView.as_view()),
         name='student_bulk_insertion',
     ),
-    # Generate Schedule API Endpoints
+    # Schedule API Endpoints
     path(
         "generate-schedule/",
         require_http_methods(["POST"])(GenerateScheduleView.as_view()),
         name="generate_schedule",
+    ),
+    # Course API Endpoints
+    path(
+        'courses/',
+        require_http_methods(["GET", "POST"])(CourseView.as_view()),
+        name='course_list_create',
+    ),
+    path(
+        'courses/<str:course_code>/',
+        require_http_methods(["GET", "PUT", "DELETE"])(CourseView.as_view()),
+        name='course_detail',
+    ),
+    # Student search API Endpoints
+    path(
+        'students-search/',
+        StudentSearchView.as_view(),  # No need for require_http_methods here, as it's handled by Django REST Framework
+        name='student_search',
+    ),
+    # teacher search API Endpoints
+    path(
+        'teachers-search/',
+        TeacherSearchView.as_view(),  # No need for require_http_methods here, as it's handled by Django REST Framework
+        name='teacher_search',
     ),
 ]

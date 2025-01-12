@@ -131,7 +131,7 @@ class BulkTeacherInsertionAPIView(APIView):
         print("Request data: ", request.data)
         
         # Required columns
-        required_columns = ["teacher_name", "teacher_email", "degree_program"]
+        required_columns = ["teacher_name", "teacher_email", "degree_program","teaching_type"]
 
         # Parse the 'columns' field to a dictionary
         columns_str = request.data.get("columns", "{}")  # Default to empty dict if missing
