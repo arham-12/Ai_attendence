@@ -175,7 +175,7 @@ class BulkTeacherInsertionAPIView(APIView):
         wrong_columns = [col for col in data.columns if col not in required_columns]
         if missing_columns or wrong_columns:
             return Response(
-                {"missing_columns": missing_columns, "required_columns": required_columns, "wrong_columns": wrong_columns},
+                {"existing_columns": data.columns, "required_columns": required_columns, "wrong_columns": wrong_columns},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         print("Data: ", data)

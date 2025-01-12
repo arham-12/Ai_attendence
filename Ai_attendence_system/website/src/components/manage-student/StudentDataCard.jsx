@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import DeleteDialogBox from "./dialog-boxes/deleteDialogBox";
-import EditStudentBox from "./dialog-boxes/editStudentBox";
+import DeleteDialogBox from "../dialog-boxes/deleteDialogBox";
+import EditStudentBox from "../dialog-boxes/editStudentBox";
 
-const StudentDataCard = ({ student,name, email, id, semester, section }) => {
+
+const StudentDataCard = ({ student,name, email, id, semester, section,degreeprogram }) => {
   const [showDeleteBox, setshowDeleteBox] = useState(false);
   const [showEditBox, setshowEditBox] = useState(false)
   return (
@@ -13,6 +14,7 @@ const StudentDataCard = ({ student,name, email, id, semester, section }) => {
       <td class="p-4 text-[15px] text-gray-800">{id}</td>
       <td class="p-4 text-[15px] text-gray-800">{name}</td>
       <td class="p-4 text-[15px] text-gray-800">{email}</td>
+      <td class="p-4 text-[15px] text-gray-800">{degreeprogram}</td>
       <td class="p-4 text-[15px] text-gray-800">{semester}</td>
       <td class="p-4 text-[15px] text-gray-800">{section}</td>
       <td class="p-4">

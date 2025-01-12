@@ -10,7 +10,7 @@ const Navbar = ({ tabs }) => {
 
   return (
     <div className="font-sans p-4 w-full flex flex-col items-center ">
-      <ul className="flex gap-4 bg-gray-100 rounded-2xl p-1 w-max overflow-hidden shadow-md">
+      <ul className="flex gap-4 bg-gray-100 rounded-lg p-1 w-max overflow-hidden shadow-md">
         {tabs.map((tab) => (
           <li
             key={tab.id}
@@ -18,7 +18,7 @@ const Navbar = ({ tabs }) => {
             className={`tab text-sm py-3 px-6 tracking-wide cursor-pointer rounded-md ${
               activeTab === tab.id
                 ? 'text-white font-bold bg-gradient-to-r bg-primary'
-                : 'text-gray-600 font-semibold'
+                : 'text-black text-[12px]'
             }`}
             onClick={() => handleTabClick(tab.id)}
           >

@@ -1,9 +1,9 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
-import AddStudentIDs from '../components/AddStudentIDs';
-// import DbCredential from '../components/DbCredential';
-import DatabaseCOnectionPage from './DatabaseConectionPage';
-import SearchStudent from '../components/SearchStudent';
+import SearchStudent from '../components/manage-student/SearchStudent';
+import AddStudentIDs from '../components/manage-student/AddStudentIDs';
+
+
 const ManageStudents = () => {
     const tabs = [
       {
@@ -15,11 +15,6 @@ const ManageStudents = () => {
           id: 'StudentIDsTab',
           label: 'Add Students',
           component: <AddStudentIDs />,
-        },
-        {
-          id: 'DbcredentialTab',
-          label: 'Import Data',
-          component: <DatabaseCOnectionPage/>,
         },
      
         

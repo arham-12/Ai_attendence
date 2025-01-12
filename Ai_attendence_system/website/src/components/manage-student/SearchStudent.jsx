@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import { IoSearchSharp } from "react-icons/io5";
-import StudentDataCard from "./StudentDataCard";
 import axios from "axios";
 import toast from "react-hot-toast";
-import { AuthContext } from "../context/auth";
+import { AuthContext } from "../../context/auth";
+import StudentDataCard from "./StudentDataCard";
 
 const SearchStudent = () => {
   // State for the input fields
@@ -36,7 +36,8 @@ const SearchStudent = () => {
     e.preventDefault();
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/students/${studentId}/`,{
+        `http://localhost:8000/api/students/${studentId}/`,
+        {
           headers: { Authorization: `Token ${authToken}` },
         }
       );
@@ -53,16 +54,16 @@ const SearchStudent = () => {
 
   return (
     <div className="flex flex-col justify-center items-center ">
-      <div className="flex z-10 top-0 left-0 justify-between py-3 items-center w-full gap-8 px-10 border border-black shadow-md rounded-md">
+      <div className="flex z-10 top-0 left-0 justify-between py-3 items-center w-full gap-8 px-4 shadow-md rounded-md">
         <form
           onSubmit={searchStudent}
           className="list-none text-lg flex gap-2 items-center rounded-lg text-center"
         >
-          <h1 className="font-semibold text-sm ">Student id:</h1>
+          <h1 className="font-semibold text-sm max-lg:hidden">Student id:</h1>
           <input
             name="studentId"
             placeholder="Enter Student ID"
-            className="px-2 py-1.5 text-sm border border-black outline-primary rounded"
+            className="px-2 py-1.5 text-sm border-b outline-none bg-transparent border-black"
             type="text"
             value={studentId}
             onChange={handleChange}
@@ -92,6 +93,9 @@ const SearchStudent = () => {
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Email
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-gray-800">
+                  Degree Program
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Semester
@@ -124,6 +128,7 @@ const SearchStudent = () => {
                     id={res.student_id}
                     name={res.student_name}
                     email={res.student_email}
+                    degreeprogram={res.degree_program}
                     semester={res.semester}
                     section={res.section}
                   />
