@@ -1,7 +1,7 @@
 teacher_name,teacher_email,teaching_type,degree_program
-John Doe,john.doe@example.com,visitor,bsit
+John Doe,john.doe@example.com,visitor,bba
 Jane Smith,jane.smith@example.com,permanent,bscs
-Emily Johnson,emily.johnson@example.com,visitor,bsit
+Emily Johnson,emily.johnson@example.com,visitor,BSIT
 Michael Brown,michael.brown@example.com,permanent,bscs
 Linda Davis,linda.davis@example.com,visitor,bsit
 David Wilson,david.wilson@example.com,permanent,bscs

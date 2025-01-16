@@ -15,12 +15,12 @@ class StudentAPIView(APIView):
 
     def get(self, request, student_id: str = None):
         if student_id:
-            # Fetch a specific student
-            try:
-                student = Student.objects.get(student_id=student_id)
-                serializer = self.serializer_class(student)
+            # Fetch students matching the partial student_id
+            students = Student.objects.filter(student_id__icontains=student_id)
+            if students.exists():
+                serializer = self.serializer_class(students, many=True)
                 return Response(serializer.data)
-            except Student.DoesNotExist:
+            else:
                 return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
         else:
             # Fetch all students
@@ -148,13 +148,21 @@ class BulkStudentInsertionAPIView(APIView):
         # Validate degree programs and prepare for bulk insertion
         invalid_rows = []
         valid_records = []
-        degree_program_cache = {dp.program_name: dp for dp in DegreeProgram.objects.all()}  # Cache existing programs
 
         for index, row in data.iterrows():
-            degree_program_name = row.get("degree_program")
-            if degree_program_name not in degree_program_cache.keys():
+            degree_program_name = row.get("degree_program", "").strip()
+            print("Degree Program Name from file: ", degree_program_name)
+
+            try:
+                # Query the DegreeProgram table for a matching program
+                matched_program = DegreeProgram.objects.get(program_name__icontains=degree_program_name)
+            except DegreeProgram.DoesNotExist:
+                # Add invalid row to the list if no match is found
                 invalid_rows.append({"row": index + 1, "degree_program": degree_program_name})
                 continue
+
+            # Replace the degree program name in the row with the exact match from the database
+            row["degree_program"] = matched_program.program_name
 
             # Prepare valid student record
             valid_records.append(
@@ -162,12 +170,11 @@ class BulkStudentInsertionAPIView(APIView):
                     student_name=row["student_name"],
                     student_id=row["student_id"],
                     student_email=row["student_email"],
-                    degree_program=degree_program_cache[degree_program_name],
+                    degree_program=matched_program,  # Use the matched program directly
                     semester=row["semester"],
                     section=row["section"],
                 )
             )
-
         # Handle invalid rows
         if invalid_rows:
             return Response(

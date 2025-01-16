@@ -183,23 +183,29 @@ class BulkTeacherInsertionAPIView(APIView):
         # Validate degree programs and prepare for bulk insertion
         invalid_rows = []
         valid_records = []
-        degree_program_cache = {dp.program_name: dp for dp in DegreeProgram.objects.all()}  # Cache existing programs
-        print("Degree Program Cache: ", degree_program_cache)
-        
+
         for index, row in data.iterrows():
-            degree_program_name = row.get("degree_program")
-            print("Degree Program Name: ", degree_program_name)
-            # Check if the degree program exists in the cache
-            if degree_program_name not in degree_program_cache.keys():
+            degree_program_name = row.get("degree_program", "").strip()
+            print("Degree Program Name from file: ", degree_program_name)
+
+            try:
+                # Query the DegreeProgram table for a matching program
+                matched_program = DegreeProgram.objects.get(program_name__icontains=degree_program_name)
+            except DegreeProgram.DoesNotExist:
+                # Add invalid row to the list if no match is found
                 invalid_rows.append({"row": index + 1, "degree_program": degree_program_name})
                 continue
+
+            # Replace the degree program name in the row with the exact match from the database
+            row["degree_program"] = matched_program.program_name
 
             # Create valid teacher record
             valid_records.append(
                 Teachers(
                     teacher_name=row["teacher_name"],
                     teacher_email=row["teacher_email"],
-                    degree_program=degree_program_cache.get(degree_program_name)  # Set the foreign key
+                    degree_program=matched_program,  # Set the foreign key
+                    teaching_type=row["teaching_type"]
                 )
             )
 
