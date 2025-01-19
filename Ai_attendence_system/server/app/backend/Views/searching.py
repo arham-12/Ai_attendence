@@ -1,52 +1,69 @@
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+# views.py
+from django.http import JsonResponse
 from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from backend.models import Student, Teachers
-from drf_spectacular.utils import extend_schema, OpenApiParameter
+from drf_spectacular.utils import extend_schema,OpenApiParameter
+# List of degree programs
+degree_programs = [
+    "Bachelor of Medicine, Bachelor of Surgery (MBBS)",
+    "Bachelor of Dental Surgery (BDS)",
+    "Doctor of Physical Therapy (DPT)",
+    "Pharmacy (Pharm.D)",
+    "Bachelor of Science in Engineering (B.Sc. Engg.)",
+    "Bachelor of Science in Computer Science (BSCS)",
+    "Bachelor of Software Engineering (BSSE)",
+    "Bachelor of Science in Information Technology (BSIT)",
+    "Master of Science in Computer Science (MSCS)",
+    "Bachelor of Business Administration (BBA)",
+    "Master of Business Administration (MBA)",
+    "Bachelor of Commerce (B.Com)",
+    "Bachelor of Arts (BA)",
+    "Bachelor of Science (B.Sc.)",
+    "Master of Arts (MA)",
+    "Master of Science (M.Sc.)",
+    "Bachelor of Fine Arts (BFA)",
+    "Bachelor of Design (B.Des)",
+    "Master of Fine Arts (MFA)",
+    "Bachelor of Education (B.Ed)",
+    "Master of Education (M.Ed)",
+    "Bachelor of Laws (LL.B)",
+    "Master of Laws (LL.M)",
+    "Bachelor of Science in Agriculture (B.Sc. Agri.)",
+    "Doctor of Veterinary Medicine (DVM)",
+    "Bachelor of Media Studies (BMS)",
+    "Bachelor of Journalism (BJ)",
+    "Bachelor of Science in Environmental Sciences (BSES)",
+    "Master of Science in Environmental Sciences (MSES)",
+    "Bachelor of Architecture (B.Arch)",
+    "Bachelor of Design (B.Des)",
+    "Bachelor of Science in Engineering Technology (B.Sc. Engg. Tech.)"
+]
 
-class StudentSearchView(APIView):
-    """View to search students by student_name, student_id, or student_email using case-insensitive LIKE query."""
-
+class DegreeProgramSuggestionView(APIView):
     @extend_schema(
         parameters=[
-            OpenApiParameter(name="query", type=str, location=OpenApiParameter.QUERY, description="The search query.")
-        ]
+            OpenApiParameter(
+                name="query",
+                type=str,)
+        ],
+        responses={
+            200: {
+                "type": "object",
+                "properties": {
+                    "sugessted_degrees": {
+                        "type": "array",
+                        "items": {"type": "string"}
+                    }
+                }
+            }
+        },
     )
     def get(self, request):
-        query = request.query_params.get('query', '').strip()  # Get the search query from request
-        if query:
-            # Perform a case-insensitive search using `icontains`
-            students = Student.objects.filter(
-                student_id__icontains=query  # Search for the query as a substring in the student_id field
-            )
+        query = request.GET.get('query', '').strip()
 
-            # Return the student_ids of the matching students
-            student_ids = [student.student_id for student in students]
-            return Response(student_ids, status=status.HTTP_200_OK)
+        if not query:
+            return JsonResponse({"matching_degrees": []}, status=200)
 
-        return Response({"message": "Please provide a search query."}, status=status.HTTP_400_BAD_REQUEST)
-    
+        # Perform case-insensitive matching using a list comprehension
+        matching_degrees = [degree for degree in degree_programs if query.lower() in degree.lower()]
 
-class TeacherSearchView(APIView):
-    """View to search teachers by teacher_email using a case-insensitive LIKE query."""
-
-    @extend_schema(
-        parameters=[
-            OpenApiParameter(name="query", type=str, location=OpenApiParameter.QUERY, description="The search query.")
-        ]
-    )
-    def get(self, request):
-        query = request.query_params.get('query', '').strip()  # Get the search query from request
-
-        if query:
-            # Perform a case-insensitive search using `icontains` for teacher_email
-            teachers = Teachers.objects.filter(
-                teacher_email__icontains=query  # Search by teacher_email field
-            )
-
-            # Return the list of teacher emails that matched the query
-            teacher_emails = [teacher.teacher_email for teacher in teachers]
-            return Response(teacher_emails, status=status.HTTP_200_OK)
-
-        return Response({"message": "Please provide a search query."}, status=status.HTTP_400_BAD_REQUEST)
+        return JsonResponse({"sugessted_degrees": matching_degrees})

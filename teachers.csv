@@ -1,5 +1,5 @@
 teacher_name,teacher_email,teaching_type,degree_program
-John Doe,john.doe@example.com,visitor,bba
+John Doe,john.doe@example.com,visitor,string
 Jane Smith,jane.smith@example.com,permanent,bscs
 Emily Johnson,emily.johnson@example.com,visitor,BSIT
 Michael Brown,michael.brown@example.com,permanent,bscs

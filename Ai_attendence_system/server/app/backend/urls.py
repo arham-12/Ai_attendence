@@ -1,9 +1,9 @@
 from django.urls import path
 from django.views.decorators.http import require_http_methods
 from backend.Views.user import UserManagementAPIView
-from  backend.Views.schedule import GenerateScheduleView
+# from  backend.Views.schedule import GenerateScheduleView
 from  backend.Views.course import CourseView
-from backend.Views.searching import StudentSearchView, TeacherSearchView
+from  backend.Views.searching import DegreeProgramSuggestionView
 from backend.Views.students import(
     StudentAPIView,
     BulkStudentInsertionAPIView
@@ -14,6 +14,8 @@ from backend.Views.teachers import(
     TeacherPasswordView,
     BulkTeacherInsertionAPIView
 ) 
+
+from  backend.Views.schedule import GenerateScheduleView
 
 urlpatterns = [
     #user authentication api endpoints
@@ -90,16 +92,10 @@ urlpatterns = [
         require_http_methods(["GET", "PUT", "DELETE"])(CourseView.as_view()),
         name='course_detail',
     ),
-    # Student search API Endpoints
+    # DegreeProgramSuggestion  API Endpoints
     path(
-        'students-search/',
-        StudentSearchView.as_view(),  # No need for require_http_methods here, as it's handled by Django REST Framework
-        name='student_search',
-    ),
-    # teacher search API Endpoints
-    path(
-        'teachers-search/',
-        TeacherSearchView.as_view(),  # No need for require_http_methods here, as it's handled by Django REST Framework
-        name='teacher_search',
+        "program-suggestion/",
+        require_http_methods(["GET"])(DegreeProgramSuggestionView.as_view()),
+        name="degree_program_suggestion",
     ),
 ]

@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.models import Course
-from backend.serializer import CourseSerializer
+from backend.Models.CourseModels import Course
+from backend.Serializers.CourseSerializer import CourseSerializer
 from drf_spectacular.utils import extend_schema,extend_schema_view
 
 

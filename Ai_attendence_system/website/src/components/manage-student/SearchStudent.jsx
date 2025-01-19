@@ -12,9 +12,32 @@ const SearchStudent = () => {
   const [searchedStudent, setsearchedStudent] = useState(null);
   const [response, setresponse] = useState([]);
 
+  const searchStudent = async (e) => {
+   setStudentId(e.target.value);
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/students/${e.target.value}/`,
+        {
+          headers: { Authorization: `Token ${authToken}` },
+        }
+      );
+      console.log(response.data);
+      
+      if (response.status === 200) {
+        setsearchedStudent(response.data);
+      
+      }
+    } catch (error) {
+      console.log(error);
+   
+      setsearchedStudent(null); // Reset searched student if not found
+    }
+  };
+
   // Handle input changes
   const handleChange = (e) => {
     setStudentId(e.target.value);
+
   };
 
   useEffect(() => {
@@ -32,28 +55,10 @@ const SearchStudent = () => {
     fetchData();
   }, []);
 
-  const searchStudent = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/students/${studentId}/`,
-        {
-          headers: { Authorization: `Token ${authToken}` },
-        }
-      );
-      if (response.status === 200) {
-        toast.success("Student exists!");
-        setsearchedStudent(response.data);
-      }
-    } catch (error) {
-      console.log(error);
-      toast.error("Student not found!");
-      setsearchedStudent(null); // Reset searched student if not found
-    }
-  };
+
 
   return (
-    <div className="flex flex-col justify-center items-center ">
+    <div className="flex flex-col justify-center items-center overflow-scroll">
       <div className="flex z-10 top-0 left-0 justify-between py-3 items-center w-full gap-8 px-4 shadow-md rounded-md">
         <form
           onSubmit={searchStudent}
@@ -66,7 +71,7 @@ const SearchStudent = () => {
             className="px-2 py-1.5 text-sm border-b outline-none bg-transparent border-black"
             type="text"
             value={studentId}
-            onChange={handleChange}
+            onChange={searchStudent}
           />
         </form>
 
@@ -80,7 +85,7 @@ const SearchStudent = () => {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-auto">
         {response ? (
           <table className="w-full bg-white">
             <thead className="bg-gray-100 whitespace-nowrap">
@@ -109,8 +114,9 @@ const SearchStudent = () => {
               </tr>
             </thead>
 
-            <tbody>
+            <tbody className="overflow-auto h-auto">
               {searchedStudent ? (
+                searchedStudent.map((searchedStudent) => (
                 <StudentDataCard
                   student={searchedStudent}
                   key={searchedStudent.id}
@@ -118,8 +124,10 @@ const SearchStudent = () => {
                   name={searchedStudent.student_name}
                   email={searchedStudent.student_email}
                   semester={searchedStudent.semester}
+                  degreeprogram={searchedStudent.degree_program}
                   section={searchedStudent.section}
                 />
+              ))
               ) : (
                 response.map((res) => (
                   <StudentDataCard

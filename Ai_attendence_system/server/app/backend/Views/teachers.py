@@ -1,8 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.models import Teachers,TeacherPasswords,DegreeProgram
-from backend.serializer import TeacherSerializer,TeacherPasswordSerializer
+from backend.Models.TeachersModels import Teachers
+from backend.Models.DegreeProgramModels import DegreeProgram
+from backend.Serializers.TeacherSerializers import TeacherSerializer, TeacherPasswordSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework.renderers import JSONRenderer
 import pandas as pd
@@ -17,8 +18,8 @@ class TeacherAPIView(APIView):
         if teacher_email:
             # Fetch a specific teacher
             try:
-                teacher = Teachers.objects.get(teacher_email=teacher_email)
-                serializer = self.serializer_class(teacher)
+                teacher = Teachers.objects.filter(teacher_email__icontains=teacher_email)
+                serializer = self.serializer_class(teacher,many=True)
                 return Response(serializer.data)
             except Teachers.DoesNotExist:
                 return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)

@@ -1,75 +1,100 @@
-from datetime import datetime, timedelta
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework import status
-from rest_framework.exceptions import ValidationError
-from backend.models import Schedule, Lecture
-from drf_spectacular.utils import extend_schema
-from backend.serializer import ScheduleSerializer
+from datetime import timedelta
+from django.utils import timezone
 from django.db.models import Q
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework import status
+from backend.Models.DegreeProgramModels import DegreeProgram
+from backend.Models.CourseModels import Course
+from backend.Models.TeachersModels import Teachers
+from backend.Models.SchedulingModels import GeneratedSchedule
+from backend.Serializers.ScheduleSerializer import ScheduleInputSerializer, GeneratedScheduleSerializer
+from  drf_spectacular.utils import extend_schema
 
 class GenerateScheduleView(APIView):
-    @extend_schema(request=ScheduleSerializer)
-    def post(self, request):
+    @extend_schema(request=ScheduleInputSerializer)
+    def post(self, request, *args, **kwargs):
+        # Validate input data
+        serializer = ScheduleInputSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        # Extract validated data
+        data = serializer.validated_data
+        degree_program_name = data['degree_program']
+        course_name = data['course']
+        teacher_name = data['teacher_name']
+        semester_starting_date = data['semester_starting_date']
+        semester_ending_date = data['semester_ending_date']
+        no_of_lectures_per_semester = data['no_of_lectures_per_semester']
+        lecture_starting_time = data['lecture_starting_time']
+        lecture_ending_time = data['lecture_ending_time']
+        preferred_weekday = data['preferred_weekday'].capitalize()
+
+        # Fetch database objects
         try:
-            start_date = datetime.strptime(request.data['start_date'], "%Y-%m-%d")
-            end_date = datetime.strptime(request.data['end_date'], "%Y-%m-%d")
-            starting_time = datetime.strptime(request.data['starting_time'], '%I:%M %p').time()
-        except ValueError:
-            raise ValidationError("Invalid date format. Use 'YYYY-MM-DD'.")
+            degree_program = DegreeProgram.objects.get(program_name=degree_program_name)
+            course = Course.objects.get(course_name=course_name)
+            teacher = Teachers.objects.get(teacher_name=teacher_name)
+        except (DegreeProgram.DoesNotExist, Course.DoesNotExist, Teachers.DoesNotExist):
+            return Response({"error": "Degree program, course, or teacher not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if start_date >= end_date:
-            raise ValidationError("Start date must be before end date.")
-        
-        if request.data['num_lectures'] <= 0:
-            raise ValidationError("Number of lectures must be positive.")
-        
-        preferred_weekdays = request.data.get('preferred_weekdays', ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"])
-        valid_weekdays = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
-        
-        if not all(day in valid_weekdays for day in preferred_weekdays):
-            raise ValidationError("Invalid weekday(s) provided.")
+        # Align the starting date with the preferred weekday
+        start_date = semester_starting_date
+        while start_date.strftime('%A') != preferred_weekday:
+            start_date += timedelta(days=1)
 
+        # Track scheduled lectures
+        generated_schedules = []
         current_date = start_date
-        lecture_dates = []
-        lecture_days = []
-        
-        while len(lecture_dates) < request.data['num_lectures'] and current_date <= end_date:
-            if current_date.strftime("%A") in preferred_weekdays:
-                lecture_dates.append(current_date.strftime("%Y-%m-%d"))
-                lecture_days.append(current_date.strftime("%A"))
-            current_date += timedelta(days=1)
 
-        if len(lecture_dates) < request.data['num_lectures']:
-            raise ValidationError("Could not schedule all lectures within the given time range and weekday constraints.")
-        
-        # Check for scheduling conflicts with the instructor's existing schedules
-        conflicts = Schedule.objects.filter(
-            Q(instructor_id=request.data['instructor_id']),
-            Q(lectures__date__in=lecture_dates)
-        ).exists()
-        
-        if conflicts:
-            raise ValidationError("Scheduling conflict detected with existing schedule.")
-        
-        # Add the new schedule if no conflicts are detected
-        new_schedule = Schedule(
-            instructor_name=request.data['instructor_name'],
-            instructor_id=request.data['instructor_id'],
-            degree_program=request.data['degree_program'],
-            semester=request.data['semester'],
-            course_name=request.data['course_name'],
-            course_code=request.data['course_code'],
-            class_type=request.data['class_type'],
-        )
-        
-        new_schedule.save()
+        for _ in range(no_of_lectures_per_semester):
+            if current_date > semester_ending_date:
+                break  # Stop if semester ends before completing lectures
 
-        # Add lecture details
-        for date, day in zip(lecture_dates, lecture_days):
-            lecture = Lecture(date=datetime.strptime(date, "%Y-%m-%d"), day=day, schedule=new_schedule, starting_time=starting_time)
-            lecture.save()
+            # Check for conflicts
+            conflicts = GeneratedSchedule.objects.filter(
+                lecture_date=current_date
+            ).filter(
+                Q(start_time__lt=lecture_ending_time, end_time__gt=lecture_starting_time) & 
+                (
+                    Q(degree_program=degree_program) |  # Prevent overlapping in the same program
+                    (Q(teacher=teacher) & ~Q(course=course))  # Allow the teacher to teach different courses
+                )
+            )
 
-        # Serialize and return the response
-        schedule_data = ScheduleSerializer(new_schedule)
-        return Response(schedule_data.data, status=status.HTTP_201_CREATED)
+            if conflicts.exists():
+                conflict_details = []
+                for conflict in conflicts:
+                    if conflict.teacher == teacher and conflict.course != course:
+                        conflict_details.append(f"Teacher {teacher.name} is already teaching {conflict.course.name} at this time.")
+                    if conflict.degree_program == degree_program:
+                        conflict_details.append(f"Degree program {degree_program.name} already has a lecture.")
+
+                return Response(
+                    {
+                        "error": f"Conflict detected on {current_date} from {lecture_starting_time} to {lecture_ending_time}.",
+                        "conflict_details": conflict_details,
+                        "suggestion": "Please choose a different time slot or day."
+                    },
+                    status=status.HTTP_409_CONFLICT
+                )
+
+            # Create the schedule if no conflicts
+            schedule_data = {
+                "degree_program": degree_program,
+                "course": course,
+                "teacher": teacher,
+                "lecture_date": current_date,
+                "start_time": lecture_starting_time,
+                "end_time": lecture_ending_time
+            }
+            generated_schedule = GeneratedSchedule.objects.create(**schedule_data)
+            generated_schedules.append(generated_schedule)
+
+            # Move to the next week's preferred weekday
+            current_date += timedelta(weeks=1)
+
+        # Serialize and return the generated schedule data
+        response_data = GeneratedScheduleSerializer(generated_schedules, many=True).data
+        return Response({"detail": "Schedule generated successfully", "schedules": response_data}, status=status.HTTP_201_CREATED)

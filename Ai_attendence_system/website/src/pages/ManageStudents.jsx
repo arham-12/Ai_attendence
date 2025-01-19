@@ -21,7 +21,7 @@ const ManageStudents = () => {
       ];
     
       return (
-        <div className="font-sans relative h-screen overflow-hidden w-full flex flex-col items-center lg:ml-[18%] bg-gray-100">
+        <div className="font-sans relative min-h-screen overflow-hidden w-full flex flex-col items-center lg:ml-[18%] bg-gray-100">
           <Navbar tabs={tabs} />
         </div>
       )

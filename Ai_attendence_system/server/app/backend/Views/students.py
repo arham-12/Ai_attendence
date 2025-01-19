@@ -3,8 +3,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.models import Student, DegreeProgram
-from backend.serializer import StudentSerializer
+from backend.Models.StudentsModels import Student
+from backend.Models.DegreeProgramModels import DegreeProgram
+from backend.Serializers.StudentSerializers import StudentSerializer
 from drf_spectacular.utils import extend_schema
 from rest_framework.renderers import JSONRenderer
 import pandas as pd
