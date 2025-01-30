@@ -6,12 +6,14 @@ from  backend.Views.course import CourseView
 from  backend.Views.searching import DegreeProgramSuggestionView
 from backend.Views.students import(
     StudentAPIView,
+    StudentCountView,
     BulkStudentInsertionAPIView
 )
 from backend.Views.degree_program import DegreeProgramAPIView
 from backend.Views.teachers import(
     TeacherAPIView,
     TeacherPasswordView,
+    TeacherCountView,
     BulkTeacherInsertionAPIView
 ) 
 
@@ -98,4 +100,14 @@ urlpatterns = [
         require_http_methods(["GET"])(DegreeProgramSuggestionView.as_view()),
         name="degree_program_suggestion",
     ),
+    path(
+        "student-count/",
+        require_http_methods(["GET"])(StudentCountView.as_view()),
+        name="student_count",
+    ),
+    path(
+        "teacher-count/",
+        require_http_methods(["GET"])(TeacherCountView.as_view()),
+        name="teacher_count",
+    )
 ]

@@ -1,8 +1,7 @@
 import React from 'react'
 import Navbar from '../components/Navbar'
 import ScheduleManager from '../components/ExisitingSchedule';
-import StepForm from '../components/SetNewSchedule';
-import ScheduleForm from '../components/SschduleForm';
+import ScheduleForm from '../components/SchduleForm';
 const SchedulePage = () => {
   const tabs = [
     {

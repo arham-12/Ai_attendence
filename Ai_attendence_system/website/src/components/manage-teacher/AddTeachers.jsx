@@ -9,6 +9,7 @@ import UploadTeachersFile from "../dialog-boxes/UploadTeachersFile";
 
 const AddTeacherIDs = () => {
   const [dropdownValue, setdropdownValue] = useState("");
+  const [teacherType, setTeacherType] = useState(""); // New state for teacher type
   const [formData, setFormData] = useState({
     teacher_name: null,
     teacher_email: null,
@@ -47,6 +48,10 @@ const AddTeacherIDs = () => {
     }));
   };
 
+  const handleTeacherTypeChange = (event) => {
+    setTeacherType(event.target.value); // Handle change for teacher type
+  };
+
   const handleSubmitData = async (e) => {
     e.preventDefault();
 
@@ -55,6 +60,7 @@ const AddTeacherIDs = () => {
         teacher_name: formData.teacher_name,
         teacher_email: formData.teacher_email,
         degree_program: dropdownValue,
+        teaching_type: teacherType, // Send the selected teacher type
       };
 
       const response = await axios.post(
@@ -77,6 +83,7 @@ const AddTeacherIDs = () => {
           section: null,
           semester: null,
         });
+        setTeacherType(""); // Reset teacher type
       }
     } catch (error) {
       console.error("Error adding Teacher:", error);
@@ -96,12 +103,11 @@ const AddTeacherIDs = () => {
         className="font-[sans-serif] w-full mx-auto"
         onSubmit={handleSubmitData}
       >
-          <div className="py-5 text-center w-full">
-            <h1 className="text-4xl font-medium">Add new user</h1>
-            <p className="text-sm">you can add new student</p>
-          </div>
+        <div className="py-5 text-center w-full">
+          <h1 className="text-4xl font-medium">Add new user</h1>
+          <p className="text-sm">you can add new student</p>
+        </div>
         <div className="grid sm:grid-cols-2 gap-4">
-        
           <div className="relative flex items-center">
             <input
               type="text"
@@ -123,22 +129,26 @@ const AddTeacherIDs = () => {
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
             />
           </div>
+
           <DropDown
             degreePrograms={degreePrograms}
             value={dropdownValue}
             setValue={setdropdownValue}
           />
-          {/* 
-<div className="relative flex items-center">
-            <input
-              type="number"
-              name="degree_program"
-              value={formData.degree_program}
-              onChange={handleInputChange}
-              placeholder="Email"
+
+          {/* Teacher type dropdown */}
+          <div className="relative flex items-center">
+            <select
+              name="teacher_type"
+              value={teacherType}
+              onChange={handleTeacherTypeChange}
               className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
-            />
-          </div> */}
+            >
+              <option value="">Select Teacher Type</option>
+              <option value="permanent">Permanent</option>
+              <option value="visitor">Visitor</option>
+            </select>
+          </div>
         </div>
 
         <div className="mt-4 flex gap-2">

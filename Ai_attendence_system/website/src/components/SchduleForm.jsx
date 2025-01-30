@@ -4,6 +4,7 @@ import MultiInput from './MultiplyInput';
 import axios from 'axios';
 
 const ScheduleForm = () => {
+  const APIURL = import.meta.env.VITE_API_URL;
   // State to hold form values
   const [formData, setFormData] = useState({
     instructor_name: '',
@@ -33,7 +34,7 @@ const ScheduleForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:8000/generate-schedule', formData, {
+      const response = await axios.post(`${APIURL}http://localhost:8000/generate-schedule`, formData, {
         headers: {
           'Content-Type': 'application/json',
         },

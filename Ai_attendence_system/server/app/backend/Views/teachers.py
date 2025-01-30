@@ -227,3 +227,11 @@ class BulkTeacherInsertionAPIView(APIView):
             {"detail": f"Successfully added {len(valid_records)} teachers."},
             status=status.HTTP_201_CREATED,
         )
+    
+
+
+class TeacherCountView(APIView):
+    def get(self, request):
+        """Retrieve the total number of teachers."""
+        count = Teachers.objects.count()
+        return Response({"teacher_count": count})

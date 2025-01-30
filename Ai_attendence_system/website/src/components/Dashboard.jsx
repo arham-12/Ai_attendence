@@ -1,11 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import StatsCard from '../cards/StatsCard';
 import Chart from '../charts/BarCharts';
 import PieChart from '../charts/PeiChart';
 import { FaUserGraduate, FaChalkboardTeacher, FaUsers, FaChartBar } from 'react-icons/fa';
+import { AuthContext } from '../context/auth';
 
 const Dashboard = () => {
+  const { authToken } = useContext(AuthContext);
   const [totalStudents, setTotalStudents] = useState(0);
   const [totalClasses, setTotalClasses] = useState(0);
   const [totalTeachers, setTotalTeachers] = useState(0);
@@ -16,28 +18,40 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const studentsResponse = await axios.get('/api/total-students');
-        const classesResponse = await axios.get('/api/total-classes');
-        const teachersResponse = await axios.get('/api/total-teachers');
-        const attendanceResponse = await axios.get('/api/attendance-rate');
-        const attendanceChartResponse = await axios.get('/api/attendance-chart-data');
-        const pieChartResponse = await axios.get('/api/pie-chart-data');
+        const studentsResponse = await axios.get(
+          'http://localhost:8000/api/student-count/',
+          {
+            headers: { Authorization: `Token ${authToken}` },
+          }
+        );
+        // const classesResponse = await axios.get('/api/total-classes');
+        const teachersResponse = await axios.get(
+          'http://localhost:8000/api/teacher-count/',
+          {
+            headers: { Authorization: `Token ${authToken}` },
+          }
+        );
+        console.log(teachersResponse);
 
-        setTotalStudents(studentsResponse.data.total);
-        setTotalClasses(classesResponse.data.total);
-        setTotalTeachers(teachersResponse.data.total);
-        setAttendanceRate(attendanceResponse.data.rate);
-        setAttendanceData({
-          labels: attendanceChartResponse.data.labels,
-          datasets: [
-            {
-              label: 'Attendance',
-              data: attendanceChartResponse.data.values,
-              backgroundColor: 'rgba(75, 192, 192, 0.6)',
-            },
-          ],
-        });
-        setPieChartData(pieChartResponse.data.values || []); // Ensure pieChartData is always an array
+        // const attendanceResponse = await axios.get('/api/attendance-rate');
+        // const attendanceChartResponse = await axios.get('/api/attendance-chart-data');
+        // const pieChartResponse = await axios.get('/api/pie-chart-data');
+
+        setTotalStudents(studentsResponse.data.student_count);
+        // setTotalClasses(classesResponse.data.total);
+        setTotalTeachers(teachersResponse.data.teacher_count);
+        // setAttendanceRate(attendanceResponse.data.rate);
+        // setAttendanceData({
+        //   labels: attendanceChartResponse.data.labels,
+        //   datasets: [
+        //     {
+        //       label: 'Attendance',
+        //       data: attendanceChartResponse.data.values,
+        //       backgroundColor: 'rgba(75, 192, 192, 0.6)',
+        //     },
+        //   ],
+        // });
+        // setPieChartData(pieChartResponse.data.values || []); // Ensure pieChartData is always an array
       } catch (error) {
         console.error("Error fetching dashboard data", error);
       }

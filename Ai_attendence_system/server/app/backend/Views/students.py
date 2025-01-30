@@ -193,3 +193,12 @@ class BulkStudentInsertionAPIView(APIView):
             {"detail": f"Successfully added {len(valid_records)} students."},
             status=status.HTTP_201_CREATED,
         )
+    
+
+
+class  StudentCountView(APIView):
+    def get(self, request):
+        """Returns the total number of students."""
+        students_count = Student.objects.count()
+      
+        return Response({"student_count": students_count})

@@ -1,0 +1,17 @@
+version: '3'
+services:
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: arham
+      POSTGRES_PASSWORD: arham-12
+      POSTGRES_DB: Ai-atendence
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  postgres_data:

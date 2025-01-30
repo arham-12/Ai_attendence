@@ -6,74 +6,96 @@ import TeacherDataCard from "./TeacherDataCard";
 import { AuthContext } from "../../context/auth";
 
 const ManageAllTeachers = () => {
-  // State for the input fields
   const { authToken } = useContext(AuthContext);
-  const [teacherId, setteacherId] = useState("");
-  const [searchedStudent, setsearchedStudent] = useState(null);
-  const [response, setresponse] = useState([]);
+  const [teacherEmail, setTeacherEmail] = useState("");
+  const [teachers, setTeachers] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-  // Handle input changes
+  // Handle input change for teacher email
   const handleChange = (e) => {
-    setteacherId(e.target.value);
+    setTeacherEmail(e.target.value);
   };
 
+  // Fetch all teachers initially
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true);
         const res = await axios.get("http://localhost:8000/api/teachers/", {
           headers: { Authorization: `Token ${authToken}` },
         });
-        setresponse(res.data);
-        console.log(res.data);
+        setTeachers(res.data);
       } catch (error) {
         console.log(error);
+        setError("Error fetching teachers");
+      } finally {
+        setLoading(false);
       }
     };
-
     fetchData();
-  }, []);
+  }, [authToken]);
 
-  const SearchTeachers = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.get(
-        `http://localhost:8000/api/teachers/${teacherId}/`,
-        {
-          headers: { Authorization: `Token ${authToken}` },
+  // Fetch teachers based on email (debounced API call)
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(async () => {
+      if (teacherEmail.trim() !== "") {
+        try {
+          setLoading(true);
+          console.log("Searching teachers with email:", teacherEmail); // Log email to check
+          
+          const response = await axios.get(
+            `http://localhost:8000/api/teachers/${teacherEmail}/`, // Change API endpoint to match URL format
+            {
+              headers: { Authorization: `Token ${authToken}` },
+            }
+          );
+          console.log("Teacher(s) found:", response.data); // Log response data to check
+
+          if (response.data) {
+            setTeachers(response.data); // Set found teacher(s)
+          } else {
+            setTeachers([]);
+            setError("No teacher found with that email.");
+          }
+        } catch (error) {
+          console.log(error);
+          setTeachers([]); // Empty list if not found
+          setError("No teacher found");
+        } finally {
+          setLoading(false);
         }
-      );
-      if (response.status === 200) {
-        toast.success("Student exists!");
-        setsearchedStudent(response.data);
+      } else {
+        // Reset to all teachers when input is cleared
+        const res = await axios.get("http://localhost:8000/api/teachers/", {
+          headers: { Authorization: `Token ${authToken}` },
+        });
+        setTeachers(res.data);
       }
-    } catch (error) {
-      console.log(error);
-      toast.error("Student not found!");
-      setsearchedStudent(null); // Reset searched student if not found
-    }
-  };
+    }, 500); // 500ms debounce delay
+
+    return () => clearTimeout(delayDebounceFn); // Cleanup timeout on input change
+  }, [teacherEmail, authToken]);
+
+  console.log("Teachers array:", teachers); // Log the teachers array
 
   return (
     <div className="flex flex-col justify-center items-center ">
       <div className="flex z-10 top-0 left-0 justify-between py-3 items-center w-full gap-8 px-4 shadow-md rounded-md">
-        <form
-          onSubmit={SearchTeachers}
-          className="list-none text-lg flex gap-2 items-center rounded-lg text-center"
-        >
-          <h1 className="font-semibold text-sm ">Teacher id:</h1>
+        <form className="list-none text-lg flex gap-2 items-center rounded-lg text-center">
+          <h1 className="font-semibold text-sm">Teacher Email:</h1>
           <input
-            name="teacherId"
-            placeholder="Enter teacher id"
+            name="teacherEmail"
+            placeholder="Enter teacher email"
             className="px-2 py-1.5 text-sm border-b border-black bg-transparent"
             type="text"
-            value={teacherId}
+            value={teacherEmail}
             onChange={handleChange}
           />
         </form>
-
-        <div className="list-none text-sm rounded-lg text-center">
+        <div className="list-none text-lg rounded-lg text-center">
           <button
-            onClick={SearchTeachers}
+            onClick={() => {}}
             className="bg-primary px-6 py-1 rounded-md text-white flex items-center gap-2"
           >
             <IoSearchSharp /> Search
@@ -81,13 +103,15 @@ const ManageAllTeachers = () => {
         </div>
       </div>
 
-      <div className="w-full overflow-x-auto">
-        {response ? (
-          <table className="w-full bg-white">
+      <div className="w-full overflow-x-auto max-h-screen overflow-y-auto pb-24 scrollbar-hide ">
+        {loading ? (
+          <p className="text-center mt-20 text-sm">Loading...</p>
+        ) : teachers.length > 0 ? (
+          <table className="w-full bg-white ">
             <thead className="bg-gray-100 whitespace-nowrap">
               <tr>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
-                  Teacher id
+                  Teacher ID
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Name
@@ -96,39 +120,34 @@ const ManageAllTeachers = () => {
                   Email
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
-                  Degree program
+                  Degree Program
+                </th>
+                <th className="p-4 text-left text-xs font-semibold text-gray-800">
+                  Teacher Type
                 </th>
                 <th className="p-4 text-left text-xs font-semibold text-gray-800">
                   Actions
                 </th>
               </tr>
             </thead>
-
             <tbody>
-              {searchedStudent ? (
+              {teachers.map((teacher) => (
                 <TeacherDataCard
-                  teacher={searchedStudent}
-                  key={searchedStudent.id}
-                  id={searchedStudent.id}
-                  name={searchedStudent.teacher_name}
-                  email={searchedStudent.teacher_email}
+                  teacher={teacher}
+                  key={teacher.id}
+                  id={teacher.id}
+                  teacher_type={teacher.teaching_type}
+                  name={teacher.teacher_name}
+                  email={teacher.teacher_email}
+                  degree_program={teacher.degree_program}
                 />
-              ) : (
-                response.map((res, index) => (
-                  <TeacherDataCard
-                    teacher={res}
-                    key={index}
-                    id={index}
-                    name={res.teacher_name}
-                    email={res.teacher_email}
-                    degree_program={res.degree_program}
-                  />
-                ))
-              )}
+              ))}
             </tbody>
           </table>
         ) : (
-          <p className="text-center mt-20 text-sm">No students found!</p>
+          <p className="text-center mt-20 text-sm text-red-500">
+            {error || "No teachers found!"}
+          </p>
         )}
       </div>
     </div>

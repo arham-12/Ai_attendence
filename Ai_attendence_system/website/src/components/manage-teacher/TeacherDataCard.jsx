@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import DeleteDialogBox from "../dialog-boxes/deleteDialogBox";
 import EditTeacherBox from "../dialog-boxes/EditTeacherBox";
 
-const TeacherDataCard = ({ teacher, name, email, id, degree_program }) => {
+const TeacherDataCard = ({ teacher, name, email,teacher_type, id, degree_program }) => {
   const [showDeleteBox, setshowDeleteBox] = useState(false);
   const [showEditBox, setshowEditBox] = useState(false);
   return (
@@ -17,11 +17,12 @@ const TeacherDataCard = ({ teacher, name, email, id, degree_program }) => {
         Show={showEditBox}
         SetShow={setshowEditBox}
       />
-      <tr class="hover:bg-gray-50 rounded-lg">
+      <tr class="hover:bg-gray-50 rounded-lg scrollbar-hidden">
         <td class="p-4 text-[15px] text-gray-800">{id}</td>
         <td class="p-4 text-[15px] text-gray-800">{name}</td>
         <td class="p-4 text-[15px] text-gray-800">{email}</td>
         <td class="p-4 text-[15px] text-gray-800">{degree_program}</td>
+        <td class="p-4 text-[15px] text-gray-800">{teacher_type}</td>
         <td class="p-4">
           <button
             onClick={() => setshowEditBox(true)}
