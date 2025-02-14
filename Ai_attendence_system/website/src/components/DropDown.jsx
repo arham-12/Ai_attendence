@@ -11,7 +11,7 @@ const DropDown = ({ value,setValue,degreePrograms }) => {
           setprogramsDrop(!programsDrop);
         }}
         id="dropdownToggle"
-        class="px-5 py-2.5 w-full border text-left border-black text-gray-800 text-sm outline-none bg-transparent hover:bg-gray-50"
+        class="px-5 py-2.5 w-full flex justify-between items-center border text-left border-black text-gray-800 text-sm outline-none bg-transparent hover:bg-gray-50"
       >
         {dropdownValue}
         <svg

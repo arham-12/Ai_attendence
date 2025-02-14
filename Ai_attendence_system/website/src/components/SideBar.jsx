@@ -76,6 +76,12 @@ function SideBar() {
                                     <span>Manage Fucality</span>
                                 </Link>
                             </li>
+                            <li>
+                                <Link to="/manage-programs&courses" className="text-[#333] text-sm flex items-center hover:text-primary transition-all">
+                                    <FiUserPlus className="w-4 h-4 mr-4" />
+                                    <span>Manage Programs & Courses</span>
+                                </Link>
+                            </li>
                         </ul>
                     </div>
 

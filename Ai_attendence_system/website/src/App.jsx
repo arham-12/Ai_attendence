@@ -16,6 +16,7 @@ import AddProgramProtected from './components/Protected/addProgramProtected';
 import UpdateAuthSettings from './pages/AdminSettingPage';
 import AuthProtected from './components/Protected/authProtected';
 import ManageTeachers from './pages/ManageTeachers';
+import ManageDegreeAndCourse from './pages/ManageDegreeAndCourse';
 // import AttendenceAnalytics from './components/pages/AttendenceAnalytics';
 const App = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -41,6 +42,7 @@ const App = () => {
       <Route path="/set-schedule" element={<AuthProtected Component={SchedulePage} />} />
       <Route path="/manage-students" element={<AuthProtected Component={ManageStudents} />} />
       <Route path="/manage-teachers" element={<AuthProtected Component={ManageTeachers} />} />
+      <Route path="/manage-programs&courses" element={<AuthProtected Component={ManageDegreeAndCourse} />} />
       {/* Settings with nested routes */}
       <Route path="/settings" element={<AuthProtected Component={UpdateAuthSettings} />}>
         {/* Add nested routes here if needed */}
