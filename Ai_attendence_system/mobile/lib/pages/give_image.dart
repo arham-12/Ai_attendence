@@ -6,6 +6,8 @@ import '../controlors/form_controller.dart';
 import 'dart:io';
 
 class GiveImagePage extends StatefulWidget {
+  const GiveImagePage({super.key});
+
   @override
   _GiveImagePageState createState() => _GiveImagePageState();
 }
@@ -87,10 +89,10 @@ class _GiveImagePageState extends State<GiveImagePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(color: Colors.white),
+        decoration: const BoxDecoration(color: Colors.white),
         child: Center(
           child: ListView(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             children: [
               Column(
                 children: [
@@ -110,21 +112,21 @@ class _GiveImagePageState extends State<GiveImagePage> {
                   ),
                 ],
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Obx(() {
                 // Proper use of Obx with observable variables
                 if (showCapturedImage.value && controller.imagePath.value.isNotEmpty) {
                   return Column(
                     children: [
-                      Container(
+                      SizedBox(
                         width: 300,
                         height: 300,
                         child: Image.file(File(controller.imagePath.value)),
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: _retakeImage,
-                        child: Row(
+                        child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Icon(Icons.camera_alt),
@@ -136,10 +138,10 @@ class _GiveImagePageState extends State<GiveImagePage> {
                     ],
                   );
                 } else {
-                  return Text('No image selected.');
+                  return const Text('No image selected.');
                 }
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Obx(() {
                 // Proper use of Obx for camera preview
                 if (isCameraInitialized.value && !showCapturedImage.value) {
@@ -155,21 +157,21 @@ class _GiveImagePageState extends State<GiveImagePage> {
                           ),
                         );
                       } else {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       }
                     },
                   );
                 } else {
-                  return SizedBox.shrink(); // Empty space when conditions are not met
+                  return const SizedBox.shrink(); // Empty space when conditions are not met
                 }
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Obx(() {
                 // Proper use of Obx for Capture Image button
                 if (isCameraInitialized.value && !showCapturedImage.value) {
                   return ElevatedButton(
                     onPressed: _captureImage,
-                    child: Row(
+                    child: const Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Icon(Icons.camera_alt),
@@ -179,10 +181,10 @@ class _GiveImagePageState extends State<GiveImagePage> {
                     ),
                   );
                 } else {
-                  return SizedBox.shrink();
+                  return const SizedBox.shrink();
                 }
               }),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               ElevatedButton(
                 style: Theme.of(context).elevatedButtonTheme.style,
                 onPressed: () {
@@ -196,9 +198,9 @@ class _GiveImagePageState extends State<GiveImagePage> {
                         'Please fill all required fields correctly');
                   }
                 },
-                child: Text('Submit'),
+                child: const Text('Submit'),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
             ],
           ),
         ),

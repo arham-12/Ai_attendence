@@ -5,7 +5,7 @@ import '../widgets/custom_text_field.dart';
 import '../controlors/form_controller.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+  const LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -98,7 +98,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(16),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black12,
                           blurRadius: 8,
@@ -121,13 +121,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           isStudent = index == 0;
                         });
                       },
-                      children: [
+                      children: const [
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text('Student'),
                         ),
                         Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          padding: EdgeInsets.symmetric(horizontal: 16.0),
                           child: Text('Teacher'),
                         ),
                       ],
@@ -162,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () {
                         Get.toNamed('/second');
                       },
-                      child: Text(
+                      child: const Text(
                         "CREATE PROFILE",
                         // style: TextStyle(color: Colors.blue),
                       ),

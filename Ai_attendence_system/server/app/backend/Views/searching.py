@@ -38,6 +38,8 @@ degree_programs = [
     "Bachelor of Science in Engineering Technology (B.Sc. Engg. Tech.)"
 ]
 
+
+@extend_schema(tags=["Degree Program APIs"])
 class DegreeProgramSuggestionView(APIView):
     @extend_schema(
         parameters=[

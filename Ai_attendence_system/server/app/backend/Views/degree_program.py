@@ -6,7 +6,7 @@ from rest_framework import status
 from backend.Models.DegreeProgramModels import DegreeProgram
 from backend.Serializers.DegreeProgramSerilizer import DegreeProgramSerializer
 from drf_spectacular.utils import extend_schema,OpenApiParameter
-
+@extend_schema(tags=["Degree Program APIs"])
 class DegreeProgramAPIView(APIView):
     serializer_class = DegreeProgramSerializer
 

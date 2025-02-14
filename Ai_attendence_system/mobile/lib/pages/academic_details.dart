@@ -6,7 +6,7 @@ import '../widgets/custom_text_field.dart';
 class AcademicDetailsPage extends StatefulWidget {
   final PageController pageController;
 
-  AcademicDetailsPage({required this.pageController});
+  const AcademicDetailsPage({super.key, required this.pageController});
 
   @override
   _AcademicDetailsPageState createState() => _AcademicDetailsPageState();
@@ -51,7 +51,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
       resizeToAvoidBottomInset: true,
       body: Container(
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           
           color: Colors.white,
         ),
@@ -78,7 +78,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
+            const SizedBox(height: 16),
             Column(
               children: [
                 // SizedBox(height: 16),
@@ -92,7 +92,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                       //       fontSize: 10, fontWeight: FontWeight.bold),
                       // ),
                       // SizedBox(height: 10),
-                      Container(
+                      SizedBox(
                         width: MediaQuery.of(context).size.width,
                         child: Obx(
                           () => DropdownButtonFormField<String>(
@@ -100,13 +100,13 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                             value: controller.degreeProgram.value.isEmpty
                                 ? null
                                 : controller.degreeProgram.value,
-                            hint: Text('Select Degree Program'),
+                            hint: const Text('Select Degree Program'),
                             decoration: InputDecoration(
                               filled: true,
                               fillColor: _isFocused
                                   ? Theme.of(context).colorScheme.secondary
                                   : Colors.grey[200], // Change fill color on focus
-                              contentPadding: EdgeInsets.symmetric(
+                              contentPadding: const EdgeInsets.symmetric(
                                   vertical: 12, horizontal: 16),
                               enabledBorder: OutlineInputBorder(
                                 borderSide: BorderSide(
@@ -132,7 +132,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                             iconSize: 28,
                             elevation: 16,
                             dropdownColor: Colors.white,
-                            style: TextStyle(color: Colors.black, fontSize: 16),
+                            style: const TextStyle(color: Colors.black, fontSize: 16),
                             items: degreePrograms.map((program) {
                               return DropdownMenuItem<String>(
                                 value: program['name'],
@@ -142,7 +142,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                                       program['icon'],
                                       color: Theme.of(context).colorScheme.primary,
                                     ),
-                                    SizedBox(width: 10),
+                                    const SizedBox(width: 10),
                                     Text(program['name']),
                                   ],
                                 ),
@@ -161,7 +161,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                       // SizedBox(height: 20),r
                     ],
                   ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 CustomTextField(
                   label: 'Roll No',
                   keyboardType: TextInputType.name,
@@ -189,7 +189,7 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                     }
                   },
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 ElevatedButton(
                   style: Theme.of(context).elevatedButtonTheme.style,
                     
@@ -197,14 +197,14 @@ class _AcademicDetailsPageState extends State<AcademicDetailsPage> {
                   onPressed: () {
                     if (controller.isAcademicDetailsValid()) {
                       widget.pageController.nextPage(
-                        duration: Duration(milliseconds: 300),
+                        duration: const Duration(milliseconds: 300),
                         curve: Curves.easeIn,
                       );
                     } else {
                       Get.snackbar('Error', 'Please fill all fields correctly.');
                     }
                   },
-                  child: Text('Next'),
+                  child: const Text('Next'),
                 ),
               ],
             ),

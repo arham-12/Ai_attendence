@@ -6,7 +6,7 @@ from backend.Serializers.CourseSerializer import CourseSerializer
 from drf_spectacular.utils import extend_schema,extend_schema_view
 
 
-
+@extend_schema(tags=["Course APIs"])
 class CourseView(APIView):
     """View to handle all CRUD operations for Course."""
     course_serializer = CourseSerializer

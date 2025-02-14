@@ -11,6 +11,7 @@ from rest_framework.renderers import JSONRenderer
 import pandas as pd
 import json
 # View for handling Students
+@extend_schema(tags=["Student's APIs"])
 class StudentAPIView(APIView):
     serializer_class = StudentSerializer
 
@@ -66,6 +67,7 @@ class StudentAPIView(APIView):
             return Response({"detail": "Not found."}, status=status.HTTP_404_NOT_FOUND)
 
 # Bulk Student insertion view 
+@extend_schema(tags=["Student's APIs"])
 class BulkStudentInsertionAPIView(APIView):
     @extend_schema(
         request={
@@ -195,7 +197,7 @@ class BulkStudentInsertionAPIView(APIView):
         )
     
 
-
+@extend_schema(tags=["Student's APIs"])
 class  StudentCountView(APIView):
     def get(self, request):
         """Returns the total number of students."""

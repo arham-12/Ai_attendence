@@ -8,7 +8,7 @@ class PersonalDetailsPage extends StatelessWidget {
   final PageController pageController;
   final FormController controller = Get.put(FormController());
 
-  PersonalDetailsPage({required this.pageController});
+  PersonalDetailsPage({super.key, required this.pageController});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class PersonalDetailsPage extends StatelessWidget {
       resizeToAvoidBottomInset: true,
       // appBar: AppBar(title: Text('Personal Details')),
       body: Container(
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: Colors.white,
               // boxShadow: [
               //   BoxShadow(
@@ -47,7 +47,7 @@ class PersonalDetailsPage extends StatelessWidget {
                   ),
                   Column(
                     children: [
-                       SizedBox(height: 16),
+                       const SizedBox(height: 16),
                   CustomTextField(
                     label: 'Name',
                     keyboardType: TextInputType.name,
@@ -70,20 +70,20 @@ class PersonalDetailsPage extends StatelessWidget {
                     obscureText: true,
                     onChanged: (value) => controller.confirmPassword.value = value,
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     style: Theme.of(context).elevatedButtonTheme.style,
                     onPressed: () {
                       if (controller.isPersonalDetailsValid()) {
                         pageController.nextPage(
-                          duration: Duration(milliseconds: 300),
+                          duration: const Duration(milliseconds: 300),
                           curve: Curves.easeIn,
                         );
                       } else {
                         Get.snackbar('Error', 'Please fill all fields correctly.');
                       }
                     },
-                    child: Text('Next'),
+                    child: const Text('Next'),
                   ),
                       
                     ],

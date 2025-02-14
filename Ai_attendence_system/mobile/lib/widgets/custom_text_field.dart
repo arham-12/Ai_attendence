@@ -6,7 +6,7 @@ class CustomTextField extends StatefulWidget {
   final Function(String) onChanged;
   final TextInputType keyboardType;
 
-  CustomTextField({
+  const CustomTextField({super.key, 
     required this.label,
     this.obscureText = false,
     required this.onChanged,

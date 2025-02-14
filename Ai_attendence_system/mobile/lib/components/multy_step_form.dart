@@ -9,6 +9,8 @@ class MultiStepFormPage extends StatelessWidget {
   final PageController _pageController = PageController();
   final FormController controller = Get.put(FormController());
 
+  MultiStepFormPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,11 +49,11 @@ class MultiStepFormPage extends StatelessWidget {
                             
                           ),
                         ),
-                        SizedBox(height: 16,),
+                        const SizedBox(height: 16,),
                          Center(
                 child: Container(
             
-                  padding: EdgeInsets.all(32.0),
+                  padding: const EdgeInsets.all(32.0),
                   height: MediaQuery.of(context).size.height * 0.7,
                   width: MediaQuery.of(context).size.width * 0.9,
                   decoration: BoxDecoration(
@@ -62,13 +64,13 @@ class MultiStepFormPage extends StatelessWidget {
                         color: Colors.grey.withOpacity(0.5),
                         spreadRadius: 2,
                         blurRadius: 5,
-                        offset: Offset(0, 3),
+                        offset: const Offset(0, 3),
                       ),
                     ] 
                   ),
                   child: PageView(
                       controller: _pageController,
-                      physics: NeverScrollableScrollPhysics(), // Disable swiping
+                      physics: const NeverScrollableScrollPhysics(), // Disable swiping
                       children: [
                         PersonalDetailsPage(pageController: _pageController),
                         AcademicDetailsPage(pageController: _pageController),

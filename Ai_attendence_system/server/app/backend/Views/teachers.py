@@ -9,7 +9,9 @@ from rest_framework.renderers import JSONRenderer
 import pandas as pd
 import json
 
+
 # View for handling Teachers
+@extend_schema(tags=['Teacher API'])
 class TeacherAPIView(APIView):
     serializer_class = TeacherSerializer
 
@@ -89,6 +91,7 @@ class TeacherAPIView(APIView):
 
 
 # View for handling TeacherPasswords
+@extend_schema(tags=['Teacher API'])
 class TeacherPasswordView(APIView):
     serializer_class = TeacherPasswordSerializer
     @extend_schema(request=TeacherPasswordSerializer)
@@ -108,6 +111,7 @@ class TeacherPasswordView(APIView):
 
 
 # View for handling bulk teacher insertion
+@extend_schema(tags=['Teacher API'])
 class BulkTeacherInsertionAPIView(APIView):
     @extend_schema(
         request={
@@ -229,7 +233,7 @@ class BulkTeacherInsertionAPIView(APIView):
         )
     
 
-
+@extend_schema(tags=['Teacher API'])
 class TeacherCountView(APIView):
     def get(self, request):
         """Retrieve the total number of teachers."""

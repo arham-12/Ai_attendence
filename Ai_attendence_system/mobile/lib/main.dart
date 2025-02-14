@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
       getPages: [
-        GetPage(name: '/', page: () => LoginScreen()), // Home route
+        GetPage(name: '/', page: () => const LoginScreen()), // Home route
         GetPage(name: '/second', page: () => MultiStepFormPage(),transition: Transition.fade, ),
          // Second page route
       ],
@@ -208,7 +208,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return Scaffold(
+    return const Scaffold(
       // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
