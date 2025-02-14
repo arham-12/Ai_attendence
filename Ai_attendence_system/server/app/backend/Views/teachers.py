@@ -234,6 +234,17 @@ class BulkTeacherInsertionAPIView(APIView):
     
 
 @extend_schema(tags=['Teacher API'])
+class TeacherDegreeProgramView(APIView):
+    def get(self, request, degree_program: str):
+        """Retrieve only the teacher names for a specific degree program."""
+        teachers = Teachers.objects.filter(degree_program__program_name__icontains=degree_program)
+        serializer = TeacherSerializer(teachers, many=True)
+        print("Teachers: ", serializer.data)
+        # Extract just the teacher names into a list
+        teacher_names = [teacher["teacher_name"] for teacher in serializer.data]
+        return Response({"teacher_names":teacher_names})
+
+@extend_schema(tags=['Teacher API'])
 class TeacherCountView(APIView):
     def get(self, request):
         """Retrieve the total number of teachers."""

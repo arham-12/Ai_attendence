@@ -13,6 +13,7 @@ from backend.Views.degree_program import DegreeProgramAPIView
 from backend.Views.teachers import(
     TeacherAPIView,
     TeacherPasswordView,
+    TeacherDegreeProgramView,
     TeacherCountView,
     BulkTeacherInsertionAPIView
 ) 
@@ -20,6 +21,7 @@ from backend.Views.teachers import(
 from  backend.Views.schedule import GenerateScheduleView
 
 urlpatterns = [
+
     #user authentication api endpoints
     path(
         "login/",
@@ -41,6 +43,11 @@ urlpatterns = [
         "teachers_bulk_insertion/",
         require_http_methods(["POST"])(BulkTeacherInsertionAPIView.as_view()),
         name="teacher_bulk_insertion",
+    ),
+    path(
+        "filter-teachers/<str:degree_program>/",
+        require_http_methods(["GET"])(TeacherDegreeProgramView.as_view()),
+        name="teacher_degree_program",
     ),
 
     # Teacher Password API Endpoints
