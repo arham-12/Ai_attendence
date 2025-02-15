@@ -2,7 +2,7 @@ from django.urls import path
 from django.views.decorators.http import require_http_methods
 from backend.Views.user import UserManagementAPIView
 # from  backend.Views.schedule import GenerateScheduleView
-from  backend.Views.course import CourseView
+from  backend.Views.course import CourseView,CourseByDegreeProgram
 from  backend.Views.searching import DegreeProgramSuggestionView
 from backend.Views.students import(
     StudentAPIView,
@@ -116,5 +116,10 @@ urlpatterns = [
         "teacher-count/",
         require_http_methods(["GET"])(TeacherCountView.as_view()),
         name="teacher_count",
-    )
+    ),
+    path(
+        "course-by-degree-program/<str:degree_program>/<int:semester>/",
+        require_http_methods(["GET"])(CourseByDegreeProgram.as_view()),
+        name="course_by_degree_program",
+    ),
 ]

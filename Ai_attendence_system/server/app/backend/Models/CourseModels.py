@@ -5,6 +5,7 @@ from  backend.Models.DegreeProgramModels import DegreeProgram
 class Course(models.Model):
     course_code = models.CharField(max_length=50, unique=True)  # Course code
     course_name = models.CharField(max_length=255)
+    semester = models.IntegerField(default=1)   # Semester in which this course is taught
     degree_program = models.ForeignKey(
         DegreeProgram, on_delete=models.CASCADE, related_name="courses"
     )  # Each course belongs to a degree program

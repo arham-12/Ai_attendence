@@ -11,7 +11,7 @@ class CourseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ['id', 'course_name', 'course_code', 'degree_program', 'teacher']
+        fields = ['id', 'course_name', 'course_code','semester', 'degree_program', 'teacher']
 
     def to_representation(self, instance):
         """Customize representation for GET requests."""

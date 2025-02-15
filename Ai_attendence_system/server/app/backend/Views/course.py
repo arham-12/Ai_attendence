@@ -56,3 +56,22 @@ class CourseView(APIView):
             return Response({"message": "Course deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
         except Course.DoesNotExist:
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
+
+# filter courses by degree program  
+@extend_schema(tags=["Course APIs"])
+class CourseByDegreeProgram(APIView):
+    course_serializer = CourseSerializer
+    def get(self, request, degree_program=None , semester=None):
+        """Retrieve a course based on the degree program."""
+        try:
+            courses = Course.objects.filter(degree_program__program_name__icontains=degree_program, semester=semester)
+            serializer = self.course_serializer(courses, many=True)
+            course_names = [course["course_name"] for course in serializer.data]
+            course_names_with_teacher = {course["course_name"]: course["teacher"] for course in serializer.data}
+            return Response({"course_names":course_names,"cource_details":course_names_with_teacher}, status=status.HTTP_200_OK)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
+
+
