@@ -93,14 +93,14 @@ const AddCourse = () => {
   };
 
   return (
-    <form className="font-[sans-serif] h-screen mt-24 max-w-2xl mx-auto">
+    <form className="font-[sans-serif] h-screen mt-16 max-w-2xl mx-auto">
 
       <div className="py-2 text-center w-full">
         <h1 className="text-4xl font-medium">Add new course</h1>
         <p className="text-sm">You can add a new course</p>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="mt-5 grid sm:grid-cols-2 gap-4">
 
         <div className="relative flex items-center">
           <input
@@ -109,7 +109,7 @@ const AddCourse = () => {
             value={inputs.course_name}
             onChange={handleInputChange}
             placeholder="Course Name"
-            className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+            className="px-4 py-3 focus:bg-transparent text-black w-full text-sm border border-black rounded transition-all"
           />
         </div>
 
@@ -120,7 +120,7 @@ const AddCourse = () => {
             value={inputs.course_code}
             onChange={handleInputChange}
             placeholder="Enter Course Code"
-            className="px-4 py-3 bg-[#f0f1f2] focus:bg-transparent text-black w-full text-sm border border-black outline-[#007bff] rounded transition-all"
+            className="px-4 py-3 focus:bg-transparent text-black w-full text-sm border border-black rounded transition-all"
           />
         </div>
 
@@ -129,7 +129,7 @@ const AddCourse = () => {
             type="button"
             onClick={() => setdegreeDropdown(!degreeDropdown)}
             id="dropdownToggle"
-            className="px-5 py-2.5 w-full rounded flex justify-between items-center  text-sm font-semibold border-2 outline-none border-primary"
+            className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-black"
           >
             {selectedDegreeProgram == ""
               ? "Select program"
@@ -176,7 +176,7 @@ const AddCourse = () => {
             onClick={() => {
               setteacherDropdown(!teacherDropdown);
             }}
-            className="px-5 py-2.5 w-full flex items-center justify-between rounded text-sm font-semibold border-2 outline-none border-primary "
+            className="px-5 py-2.5 w-full flex items-center justify-between rounded text-sm border border-black"
           >
             {selectedRelatedTeacher == ""
               ? "Select teacher"
@@ -226,7 +226,7 @@ const AddCourse = () => {
             type="button"
             onClick={() => setsemesterDropdown(!semesterDropdown)}
             id="dropdownToggle"
-            className="px-5 py-2.5 w-full rounded flex justify-between items-center  text-sm font-semibold border-2 outline-none border-primary"
+            className="px-5 py-2.5 w-full rounded flex justify-between items-center  text-sm border outline-none border-black"
           >
             {selectedSemester == null
               ? "Select semester"
