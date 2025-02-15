@@ -16,6 +16,9 @@ const AddCourse = () => {
   const [teacherDropdown, setteacherDropdown] = useState(false);
   const [releventTeachers, setreleventTeachers] = useState([]);
   const [selectedRelatedTeacher, setselectedRelatedTeacher] = useState("");
+  const [semesterDropdown, setsemesterDropdown] = useState(false);
+  const [semesters, setsemesters] = useState([1,2,3,4,5,6,7,8]);
+  const [selectedSemester, setselectedSemester] = useState(null);
 
   useEffect(() => {
     const getPrograms = async () => {
@@ -52,6 +55,7 @@ const AddCourse = () => {
           course_code: inputs.course_code,
           degree_program: selectedDegreeProgram,
           teacher: selectedRelatedTeacher,
+          semester:selectedSemester
         },
         {
           headers: {
@@ -65,6 +69,7 @@ const AddCourse = () => {
       }
     } catch (error) {
       console.log(error);
+      toast.error(error.response.data.course_code[0])
     }
   };
 
@@ -88,12 +93,15 @@ const AddCourse = () => {
   };
 
   return (
-    <form className="font-[sans-serif] h-screen max-w-2xl mx-auto">
+    <form className="font-[sans-serif] h-screen mt-24 max-w-2xl mx-auto">
+
       <div className="py-2 text-center w-full">
         <h1 className="text-4xl font-medium">Add new course</h1>
         <p className="text-sm">You can add a new course</p>
       </div>
+
       <div className="grid sm:grid-cols-2 gap-4">
+
         <div className="relative flex items-center">
           <input
             type="text"
@@ -212,6 +220,51 @@ const AddCourse = () => {
             )}
           </ul>
         </div>
+
+        <div class="relative font-[sans-serif] w-full mx-auto">
+          <button
+            type="button"
+            onClick={() => setsemesterDropdown(!semesterDropdown)}
+            id="dropdownToggle"
+            className="px-5 py-2.5 w-full rounded flex justify-between items-center  text-sm font-semibold border-2 outline-none border-primary"
+          >
+            {selectedSemester == null
+              ? "Select semester"
+              : selectedSemester}
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="w-3 inline ml-3"
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                clip-rule="evenodd"
+                data-original="#000000"
+              />
+            </svg>
+          </button>
+
+          <ul
+            id="dropdownMenu"
+            class={`absolute ${
+              semesterDropdown ? "block" : "hidden"
+            } shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto`}
+          >
+            {semesters.map((item) => (
+              <li
+                onClick={() => {
+                  setselectedSemester(item);
+                  setsemesterDropdown(false)
+                }}
+                class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+              >
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+
       </div>
 
       <div className="mt-4 flex gap-2">
@@ -223,6 +276,7 @@ const AddCourse = () => {
           Add Course
         </button>
       </div>
+      
     </form>
   );
 };

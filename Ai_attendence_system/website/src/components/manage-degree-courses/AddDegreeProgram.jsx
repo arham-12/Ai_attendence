@@ -65,7 +65,7 @@ const AddDegreeProgram = () => {
       <form class="mx-auto flex items-start justify-between mt-4">
         <div className="w-[85%]">
           <input
-            type="email"
+            type="text"
             value={query}
             onChange={SearchAvailablePrograms}
             placeholder="Enter Degree Program"

@@ -10,7 +10,7 @@ const ManageDegreeAndCourse = () => {
   };
 
   return (
-    <div className="font-sans flex justify-end w-full p-4">
+    <div className="font-sans flex justify-end max-lg:justify-center w-full p-4">
       <div className="w-[80%]">
         <ul className="flex bg-gray-100 mx-10">
           <li

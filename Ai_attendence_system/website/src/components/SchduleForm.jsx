@@ -1,237 +1,169 @@
 // src/ScheduleForm.js
-import React, { useState } from 'react';
-import MultiInput from './MultiplyInput';
-import axios from 'axios';
+import React, { useState } from "react";
+import axios from "axios";
 
 const ScheduleForm = () => {
-  const APIURL = import.meta.env.VITE_API_URL;
-  // State to hold form values
-  const [formData, setFormData] = useState({
-    instructor_name: '',
-    instructor_id: '',
-    degree_program: '',
-    semester: '',
-    course_name: '',
-    course_code: '',
-    class_type: 'Theory',
-    start_date: '',
-    end_date: '',
-    starting_time: '',  // Ensure this matches with your time input field
-    num_lectures: 1,
-    preferred_weekdays: [],
-  });
-
-  // Handle input changes
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await axios.post(`${APIURL}http://localhost:8000/generate-schedule`, formData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (response.status === 200) {
-        alert('Form submitted successfully');
-      } else {
-        alert('Failed to submit the form', response.data);
-      }
-    } catch (error) {
-      alert('Error:', error);
-    }
-  };
-
+  const apiURL = import.meta.env.VITE_API_URL;
+  const [semesterDropdown, setsemesterDropdown] = useState(false);
+  const [semesters, setsemesters] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
+  const [selectedSemester, setselectedSemester] = useState(null);
   return (
-    <div className="max-w-4xl mx-auto p-10 bg-blue-100 shadow-lg rounded-lg mt-10">
-      <h1 className="text-4xl font-extrabold mb-8 text-center text-blue-800 tracking-tight">Schedule Classes</h1>
-
-      <form className="space-y-8" onSubmit={handleSubmit}>
-        {/* Instructor Information */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Instructor Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Instructor Name</label>
-              <input
-                type="text"
-                name="instructor_name"
-                value={formData.instructor_name}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                placeholder="Enter name"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Instructor ID</label>
-              <input
-                type="text"
-                name="instructor_id"
-                value={formData.instructor_id}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                placeholder="Enter ID"
-                required
-              />
-            </div>
-          </div>
-        </section>
-
-        {/* Degree Program Information */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Degree Program Information</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Degree Program</label>
-              <select
-                name="degree_program"
-                value={formData.degree_program}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                required
-              >
-                <option value="">Select Degree Program</option>
-                <option value="BSc Computer Science">BSc Computer Science</option>
-                <option value="MSc Physics">MSc Physics</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-600">Semester Number</label>
-              <select
-                name="semester"
-                value={formData.semester}
-                onChange={handleChange}
-                className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                required
-              >
-                <option value="">Select Semester Number</option>
-                {Array.from({ length: 8 }, (_, i) => (
-                  <option key={i + 1} value={i + 1}>
-                    {i + 1}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-        </section>
-
-        {/* Course Details */}
-        <section>
-          <h2 className="text-2xl font-semibold mb-4 text-gray-700">Course Details</h2>
-          <div className="space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Course Name</label>
-                <input
-                  type="text"
-                  name="course_name"
-                  value={formData.course_name}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                  placeholder="Enter course name"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Course Code</label>
-                <input
-                  type="text"
-                  name="course_code"
-                  value={formData.course_code}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                  placeholder="Enter course code"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Class Type</label>
-                <select
-                  name="class_type"
-                  value={formData.class_type}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                >
-                  <option value="Lecture">Theory</option>
-                  <option value="Lab">Lab</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Start Date</label>
-                <input
-                  type="date"
-                  name="start_date"
-                  value={formData.start_date}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">End Date</label>
-                <input
-                  type="date"
-                  name="end_date"
-                  value={formData.end_date}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-600">Time</label>
-                <input
-                  type="time"
-                  name="starting_time"
-                  value={formData.starting_time}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-                  required
-                />
-              </div>
-            </div>
-
-            {/* Preferred Weekdays Input */}
-            <MultiInput
-              values={formData.preferred_weekdays}
-              setValues={(values) => setFormData({ ...formData, preferred_weekdays: values })}
-              label="Preferred Weekdays"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-600">Number of Lectures</label>
+    <div className="h-screen max-w-4xl mx-auto mt-10">
+      <div>
+        <h1 className="text-center text-3xl font-bold">Make Schedule</h1>
+        <p className="text-sm text-gray-600 text-center">
+          Lets make Schedule according to your choice
+        </p>
+      </div>
+      <div className="mt-5 flex flex-col items-center">
+        <div className="flex w-full justify-between gap-5">
+          <div className="w-full grid grid-cols-2 gap-5">
             <input
-              type="number"
-              name="num_lectures"
-              value={formData.num_lectures}
-              onChange={handleChange}
-              className="mt-1 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-300 focus:ring-opacity-50 p-3"
-              min="1"
-              max="50"
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
+            />
+            <input
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
             />
           </div>
-        </section>
+          <button
+            type="button"
+            onClick={() => AddDegree(query)}
+            class="px-6 w-[20%] py-2.5 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
+          >
+            Add Program
+          </button>
+        </div>
+      </div>
+      <div className="mt-5 flex flex-col items-center">
+        <div className="flex w-full justify-between gap-5">
+          <div class="relative font-[sans-serif] w-full mx-auto">
+            <button
+              type="button"
+              onClick={() => setsemesterDropdown(!semesterDropdown)}
+              id="dropdownToggle"
+              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+            >
+              {selectedSemester == null ? "Select semester" : selectedSemester}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-3 inline ml-3"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                  clip-rule="evenodd"
+                  data-original="#000000"
+                />
+              </svg>
+            </button>
 
-        <button
-          type="submit"
-          className="w-full bg-blue-600 text-white p-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+            <ul
+              id="dropdownMenu"
+              class={`absolute ${
+                semesterDropdown ? "block" : "hidden"
+              } shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto`}
+            >
+              {semesters.map((item) => (
+                <li
+                  onClick={() => {
+                    setselectedSemester(item);
+                    setsemesterDropdown(false);
+                  }}
+                  class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            type="button"
+            onClick={() => AddDegree(query)}
+            class="px-6 w-[20%] py-2.5 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
+          >
+            Add Program
+          </button>
+        </div>
+      </div>
+        <div className="mt-5 flex flex-col w-full justify-between gap-5">
+          <div className="w-full grid grid-cols-2 gap-5">
+            <input
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
+            />
+            <input
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
+            />
+               <input
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
+            />
+            <input
+              type="text"
+              placeholder="Enter Degree Program"
+              class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
+            />
+          </div>
+          <div class="relative font-[sans-serif] w-full mx-auto">
+            <button
+              type="button"
+              onClick={() => setsemesterDropdown(!semesterDropdown)}
+              id="dropdownToggle"
+              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+            >
+              {selectedSemester == null ? "Select semester" : selectedSemester}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-3 inline ml-3"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                  clip-rule="evenodd"
+                  data-original="#000000"
+                />
+              </svg>
+            </button>
+
+            <ul
+              id="dropdownMenu"
+              class={`absolute ${
+                semesterDropdown ? "block" : "hidden"
+              } shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto`}
+            >
+              {semesters.map((item) => (
+                <li
+                  onClick={() => {
+                    setselectedSemester(item);
+                    setsemesterDropdown(false);
+                  }}
+                  class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+                >
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+          <button
+            type="button"
+            onClick={() => AddDegree(query)}
+            class="px-6 w-full py-2.5 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
+          >
+            Add Program
+          </button>
+        </div>
+      </div>
+
   );
 };
 
