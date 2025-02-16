@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { AuthContext } from "../context/auth";
 import toast from "react-hot-toast";
+import moment from "moment";
 
 const ScheduleForm = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -14,11 +15,13 @@ const ScheduleForm = () => {
     new Date().toISOString().split("T")[0]
   );
   const [startingTime, setstartingTime] = useState(
-    new Date().toTimeString().slice(0, 5)
+    moment().format("HH:mm:ss")
   );
   const [endingTime, setendingTime] = useState(
-    new Date().toTimeString().slice(0, 5)
+    moment().format("HH:mm:ss")
   );
+  console.log(endingTime);
+  
   const [semesterDropdown, setsemesterDropdown] = useState(false);
   const [semesters, setsemesters] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
   const [selectedSemester, setselectedSemester] = useState(null);
@@ -43,7 +46,7 @@ const ScheduleForm = () => {
     "Sunday",
   ];
   const [weekdayDropdown, setweekdayDropdown] = useState(false);
-  console.log(values);
+
 
   const handleAdd = () => {
     if (selectedValue && !values.includes(selectedValue)) {
@@ -319,8 +322,9 @@ const ScheduleForm = () => {
               <p className="text-sm">Lecture Ending Time</p>
               <input
                 type="time"
+                step={'60'}
                 value={endingTime}
-                onChange={(e) => setendingTime(e.target.valu)}
+                onChange={(e) => setendingTime(e.target.value)}
                 placeholder="Enter Degree Program"
                 class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
               />
