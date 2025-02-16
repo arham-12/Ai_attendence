@@ -18,7 +18,7 @@ from backend.Views.teachers import(
     BulkTeacherInsertionAPIView
 ) 
 
-from  backend.Views.schedule import GenerateScheduleView
+from  backend.Views.schedule import GenerateScheduleView, GetFilteredScheduleView
 
 urlpatterns = [
 
@@ -122,4 +122,9 @@ urlpatterns = [
         require_http_methods(["GET"])(CourseByDegreeProgram.as_view()),
         name="course_by_degree_program",
     ),
+    path(
+        "filtered-schedule/<str:degree_program>/<int:semester>/<str:teacher_name>/",
+        require_http_methods(["GET"])(GetFilteredScheduleView.as_view()),
+        name="filtered_schedule",
+    )
 ]

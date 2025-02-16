@@ -13,11 +13,6 @@ from  drf_spectacular.utils import extend_schema
 
 class GenerateScheduleView(APIView):
 
-    def get(self, request, *args, **kwargs):
-        # Fetch all generated schedules
-        schedules = GeneratedSchedule.objects.all()
-        serializer = GeneratedScheduleSerializer(schedules, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(request=ScheduleInputSerializer)
     def post(self, request, *args, **kwargs):
@@ -106,3 +101,22 @@ class GenerateScheduleView(APIView):
         response_data = GeneratedScheduleSerializer(generated_schedules, many=True).data
         return Response({"detail": "Schedule generated successfully", "schedules": response_data}, status=status.HTTP_201_CREATED)
 
+
+
+class GetFilteredScheduleView(APIView):
+    def get(self, request, degree_program, semester, teacher_name, *args, **kwargs):
+        # Convert semester to integer; return an error if it fails.
+        try:
+            semester = int(semester)
+        except ValueError:
+            return Response({"error": "Invalid semester value"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter using case-insensitive lookups.
+        schedules = GeneratedSchedule.objects.filter(
+            degree_program__program_name__iexact=degree_program,
+            semester=semester,
+            teacher__teacher_name__iexact=teacher_name
+        )
+        
+        serializer = GeneratedScheduleSerializer(schedules, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
