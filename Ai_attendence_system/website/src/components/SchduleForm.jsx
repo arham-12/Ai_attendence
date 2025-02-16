@@ -138,7 +138,7 @@ const ScheduleForm = () => {
               type="button"
               onClick={() => setdegreeDropdown(!degreeDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-[12px] font-semibold border outline-none border-primary"
+              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-[12px] border outline-none border-primary"
             >
               {selectedDegreeProgram == ""
                 ? "Select Degree Program"
@@ -181,7 +181,7 @@ const ScheduleForm = () => {
               type="button"
               onClick={() => setsemesterDropdown(!semesterDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             >
               {selectedSemester == null ? "Select semester" : selectedSemester}
               <svg
@@ -236,7 +236,7 @@ const ScheduleForm = () => {
               type="button"
               onClick={() => setcourseDropdown(!courseDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             >
               {selectedCourse == "" ? "Select Course" : selectedCourse}
               <svg
@@ -274,7 +274,7 @@ const ScheduleForm = () => {
             </ul>
           </div>
           <input
-            className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+            className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             type="text"
             value={selectedTeacher}
             readOnly
@@ -359,7 +359,7 @@ const ScheduleForm = () => {
                   type="button"
                   onClick={() => setweekdayDropdown(!weekdayDropdown)}
                   id="dropdownToggle"
-                  className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+                  className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
                 >
                   {selectedValue == "" ? "Select Course" : selectedValue}
                   <svg
