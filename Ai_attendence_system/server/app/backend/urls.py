@@ -87,7 +87,7 @@ urlpatterns = [
     # Schedule API Endpoints
     path(
         "generate-schedule/",
-        require_http_methods(["POST"])(GenerateScheduleView.as_view()),
+        require_http_methods(["POST","GET"])(GenerateScheduleView.as_view()),
         name="generate_schedule",
     ),
     # Course API Endpoints

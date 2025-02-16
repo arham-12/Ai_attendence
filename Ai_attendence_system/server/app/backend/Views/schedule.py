@@ -12,6 +12,13 @@ from backend.Serializers.ScheduleSerializer import ScheduleInputSerializer, Gene
 from  drf_spectacular.utils import extend_schema
 
 class GenerateScheduleView(APIView):
+
+    def get(self, request, *args, **kwargs):
+        # Fetch all generated schedules
+        schedules = GeneratedSchedule.objects.all()
+        serializer = GeneratedScheduleSerializer(schedules, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     @extend_schema(request=ScheduleInputSerializer)
     def post(self, request, *args, **kwargs):
         # Validate input data
@@ -98,3 +105,4 @@ class GenerateScheduleView(APIView):
         # Serialize and return the generated schedule data
         response_data = GeneratedScheduleSerializer(generated_schedules, many=True).data
         return Response({"detail": "Schedule generated successfully", "schedules": response_data}, status=status.HTTP_201_CREATED)
+

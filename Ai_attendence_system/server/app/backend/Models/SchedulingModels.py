@@ -7,6 +7,7 @@ from backend.Models.TeachersModels import Teachers
 
 class GeneratedSchedule(models.Model):
     degree_program = models.ForeignKey(DegreeProgram, on_delete=models.CASCADE)
+    semester = models.IntegerField(default=1)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     teacher = models.ForeignKey(Teachers, on_delete=models.CASCADE)
     lecture_date = models.DateField()

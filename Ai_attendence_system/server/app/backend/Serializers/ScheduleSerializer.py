@@ -7,6 +7,7 @@ from backend.Models.SchedulingModels import GeneratedSchedule
 # Serializer for accepting input but not saving to the database
 class ScheduleInputSerializer(serializers.Serializer):
     degree_program = serializers.CharField(max_length=100)
+    semester= serializers.IntegerField()
     course = serializers.CharField(max_length=100)
     teacher_name = serializers.CharField(max_length=100)
     semester_starting_date = serializers.DateField()
@@ -25,4 +26,4 @@ class GeneratedScheduleSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = GeneratedSchedule
-        fields = ['id', 'degree_program', 'course', 'teacher', 'lecture_date', 'start_time', 'end_time', 'created_at']
+        fields = ['id', 'degree_program','semester', 'course', 'teacher', 'lecture_date', 'start_time', 'end_time', 'created_at']
