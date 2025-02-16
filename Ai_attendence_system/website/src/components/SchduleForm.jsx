@@ -42,7 +42,8 @@ const ScheduleForm = () => {
     "Saturday",
     "Sunday",
   ];
-console.log(values);
+  const [weekdayDropdown, setweekdayDropdown] = useState(false);
+  console.log(values);
 
   const handleAdd = () => {
     if (selectedValue && !values.includes(selectedValue)) {
@@ -101,6 +102,7 @@ console.log(values);
           degree_program: selectedDegreeProgram,
           course: selectedCourse,
           teacher_name: selectedTeacher,
+          semester: selectedSemester,
           semester_starting_date: startingDate,
           semester_ending_date: endingDate,
           no_of_lectures_per_semester: selectedSemester,
@@ -122,7 +124,7 @@ console.log(values);
     }
   };
   return (
-    <div className="h-screen max-w-4xl mx-auto mt-10">
+    <div className="h-auto min-h-screen max-w-4xl mx-auto mt-10">
       <div>
         <h1 className="text-center text-3xl font-bold">Make Schedule</h1>
         <p className="text-sm text-gray-600 text-center">
@@ -167,7 +169,7 @@ console.log(values);
                     setselectedDegreeProgram(item.program_name);
                     setdegreeDropdown(false);
                   }}
-                  class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+                  class="py-2.5 px-5 hover:bg-primary hover:text-white text-black text-sm cursor-pointer"
                 >
                   {item.program_name}
                 </li>
@@ -208,7 +210,7 @@ console.log(values);
                     setselectedSemester(item);
                     setsemesterDropdown(false);
                   }}
-                  class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+                  class="py-2.5 px-5 hover:bg-primary hover:text-white text-black text-sm cursor-pointer"
                 >
                   {item}
                 </li>
@@ -264,7 +266,7 @@ console.log(values);
                     setselectedTeacher(relatedTeachers[item]);
                     setcourseDropdown(false);
                   }}
-                  class="py-2.5 px-5 hover:bg-blue-50 text-black text-sm cursor-pointer"
+                  class="py-2.5 px-5 hover:bg-primary hover:text-white text-black text-sm cursor-pointer"
                 >
                   {item}
                 </li>
@@ -336,9 +338,6 @@ console.log(values);
           </div>
 
           <div className="flex flex-col">
-            {/* <label className="block text-sm font-medium text-gray-600">
-              dsvxdv
-            </label> */}
             <div className="flex flex-wrap border border-gray-300 rounded-lg p-2 mt-1">
               {values.map((value) => (
                 <span
@@ -355,22 +354,52 @@ console.log(values);
                   </button>
                 </span>
               ))}
-              <select
-                value={selectedValue}
-                onChange={(e) => setSelectedValue(e.target.value)}
-                className="border-none focus:outline-none flex-grow p-2"
-              >
-                <option value="">Select a weekday</option>
-                {weekdays.map((day) => (
-                  <option key={day} value={day}>
-                    {day}
-                  </option>
-                ))}
-              </select>
+              <div class="relative font-[sans-serif] flex-grow mx-auto">
+                <button
+                  type="button"
+                  onClick={() => setweekdayDropdown(!weekdayDropdown)}
+                  id="dropdownToggle"
+                  className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm font-semibold border outline-none border-primary"
+                >
+                  {selectedValue == "" ? "Select Course" : selectedValue}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-3 inline ml-3"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
+                      clip-rule="evenodd"
+                      data-original="#000000"
+                    />
+                  </svg>
+                </button>
+
+                <ul
+                  id="dropdownMenu"
+                  class={`absolute ${
+                    weekdayDropdown ? "block" : "hidden"
+                  } shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto -top-[300px]`}
+                >
+                  {weekdays.map((item) => (
+                    <li
+                      onClick={() => {
+                        setSelectedValue(item);
+                        setweekdayDropdown(false);
+                      }}
+                      class="py-2.5 px-5 hover:bg-primary hover:text-white text-black text-sm cursor-pointer"
+                    >
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <button
                 type="button"
                 onClick={handleAdd}
-                className="bg-blue-500 text-white rounded-lg px-3 py-1 ml-2"
+                className="bg-primary text-white rounded-lg px-3 py-1 ml-2"
               >
                 Add
               </button>
