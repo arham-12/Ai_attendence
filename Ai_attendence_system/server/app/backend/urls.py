@@ -124,7 +124,7 @@ urlpatterns = [
     ),
     path(
         "filtered-schedule/<str:degree_program>/<int:semester>/<str:teacher_name>/",
-        require_http_methods(["GET"])(GetFilteredScheduleView.as_view()),
+        require_http_methods(["GET","DELETE"])(GetFilteredScheduleView.as_view()),
         name="filtered_schedule",
     )
 ]

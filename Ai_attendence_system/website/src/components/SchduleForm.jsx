@@ -111,7 +111,7 @@ const ScheduleForm = () => {
           no_of_lectures_per_semester: selectedSemester,
           lecture_starting_time: startingTime,
           lecture_ending_time: endingTime,
-          preferred_weekday: values,
+          preferred_weekdays: values,
         },
         {
           headers: {

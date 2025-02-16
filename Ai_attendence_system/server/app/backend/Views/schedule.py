@@ -67,11 +67,11 @@ class GenerateScheduleView(APIView):
                     for conflict in conflicts:
                         if conflict.teacher == teacher and conflict.course != course:
                             conflict_details.append(
-                                f"Teacher {teacher.name} is already teaching {conflict.course.name} at this time."
+                                f"Teacher {teacher.teacher_name} is already teaching {conflict.course.course_name} at this time."
                             )
                         if conflict.degree_program == degree_program:
                             conflict_details.append(
-                                f"Degree program {degree_program.name} already has a lecture."
+                                f"Degree program {degree_program.program_name} already has a lecture."
                             )
 
                     return Response(
@@ -129,3 +129,9 @@ class GetFilteredScheduleView(APIView):
         
         serializer = GeneratedScheduleSerializer(schedules, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+    def delete(self, request, *args, **kwargs):
+        # Delete all schedules
+        GeneratedSchedule.objects.all().delete()
+        return Response({"detail": "All schedules deleted"}, status=status.HTTP_200_OK)
