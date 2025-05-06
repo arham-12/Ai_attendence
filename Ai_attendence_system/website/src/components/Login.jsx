@@ -5,16 +5,14 @@ import { toast } from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/auth";
 import { useCookies } from "react-cookie";
-// skip_pages
+
 const Login = () => {
-  const [cookies, setCookie, removeCookie] = useCookies(["user"]);
-  console.log(cookies.authToken);
+  const [cookies, setCookie] = useCookies(["user"]);
   const navigate = useNavigate();
   const { setisLogin, setisAddProgram, setauthToken } = useContext(AuthContext);
-  const [formData, setFormData] = useState({
-    username: "",
-    password: "",
-  });
+
+  const [formData, setFormData] = useState({ username: "", password: "" });
+  const [loading, setLoading] = useState(false); // loading state
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -23,39 +21,48 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/login/",
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/login/`, formData, {
+        headers: { "Content-Type": "application/json" },
+      });
 
       if (response.status === 200) {
+        const { access_token, detail, user } = response.data;
+
         setisLogin(true);
-        setauthToken(response.data.access_token);
+        setauthToken(access_token);
         setisAddProgram(true);
-        navigate("/");
-        setCookie("authToken", response.data.access_token, {
+
+        // Save token and optional user data in cookies
+        setCookie("authToken", access_token, {
           path: "/",
           maxAge: 3600,
         });
-        // Display success toast
-        toast.success(response.data.detail, {
-          position: "top-right",
-        });
-        console.log("Login Successful:", response.data);
+
+        toast.success(detail || "Login successful!", { position: "top-right" });
+
+        // Optional: Save additional user info if needed
+        if (user) {
+          setCookie("user", JSON.stringify(user), {
+            path: "/",
+            maxAge: 3600,
+          });
+        }
+
+        navigate("/");
       }
     } catch (error) {
-      // Display error toast
-      toast.error("Login Failed! Please try again.", {
-        position: "top-right",
-      });
       console.error("Login Failed:", error);
+      const errMsg =
+        error.response?.data?.detail ||
+        error.response?.data?.message ||
+        "Login Failed! Please try again.";
+
+      toast.error(errMsg, { position: "top-right" });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,20 +71,14 @@ const Login = () => {
       <div className="min-h-screen flex flex-col items-center justify-center py-6 px-4">
         <div className="max-w-md w-full">
           <div className="text-center mb-12">
-            <h1 className="text-3xl font-bold text-gray-800 mb-4">
-              Welcome Back
-            </h1>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">Welcome Back</h1>
             <p className="text-gray-600">Login to the Admin Account</p>
           </div>
           <div className="p-8 rounded-2xl bg-white shadow">
-            <h2 className="text-gray-800 text-center text-2xl font-bold">
-              Login
-            </h2>
+            <h2 className="text-gray-800 text-center text-2xl font-bold">Login</h2>
             <form className="mt-8 space-y-4" onSubmit={handleSubmit}>
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">
-                  Email
-                </label>
+                <label className="text-gray-800 text-sm mb-2 block">Email</label>
                 <div className="relative flex items-center">
                   <input
                     name="username"
@@ -86,16 +87,14 @@ const Login = () => {
                     value={formData.username}
                     onChange={handleInputChange}
                     className="w-full text-gray-800 text-sm border border-gray-300 px-4 py-3 rounded-md outline-primary"
-                    placeholder="Enter user name"
+                    placeholder="Enter username"
                   />
                   <FaEnvelope className="absolute right-3 text-gray-300" />
                 </div>
               </div>
 
               <div>
-                <label className="text-gray-800 text-sm mb-2 block">
-                  Password
-                </label>
+                <label className="text-gray-800 text-sm mb-2 block">Password</label>
                 <div className="relative flex items-center">
                   <input
                     name="password"
@@ -121,9 +120,12 @@ const Login = () => {
               <div className="!mt-8">
                 <button
                   type="submit"
-                  className="w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white bg-primary hover:bg-cyan-300 hover:text-gray-800 focus:outline-none"
+                  disabled={loading}
+                  className={`w-full py-3 px-4 text-sm tracking-wide rounded-lg text-white ${
+                    loading ? "bg-gray-400 cursor-not-allowed" : "bg-primary hover:bg-cyan-300 hover:text-gray-800"
+                  } focus:outline-none`}
                 >
-                  Sign in
+                  {loading ? "Signing in..." : "Sign in"}
                 </button>
               </div>
             </form>

@@ -1,6 +1,10 @@
 // src/ScheduleForm.js
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
+
+import { TimePicker, ConfigProvider, DatePicker } from "antd";
+import "antd/dist/reset.css";
+import dayjs from "dayjs";
 import { AuthContext } from "../context/auth";
 import toast from "react-hot-toast";
 import moment from "moment";
@@ -14,14 +18,10 @@ const ScheduleForm = () => {
   const [endingDate, setendingDate] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [startingTime, setstartingTime] = useState(
-    moment().format("HH:mm:ss")
-  );
-  const [endingTime, setendingTime] = useState(
-    moment().format("HH:mm:ss")
-  );
+  const [startingTime, setstartingTime] = useState(moment().format("HH:mm:ss"));
+  const [endingTime, setendingTime] = useState(moment().format("HH:mm:ss"));
   console.log(endingTime);
-  
+
   const [semesterDropdown, setsemesterDropdown] = useState(false);
   const [semesters, setsemesters] = useState([1, 2, 3, 4, 5, 6, 7, 8]);
   const [selectedSemester, setselectedSemester] = useState(null);
@@ -36,6 +36,8 @@ const ScheduleForm = () => {
   const [no_of_semester, setno_of_semester] = useState(0);
   const [selectedValue, setSelectedValue] = useState("");
   const [values, setValues] = useState([]);
+
+  
   const weekdays = [
     "Monday",
     "Tuesday",
@@ -46,7 +48,6 @@ const ScheduleForm = () => {
     "Sunday",
   ];
   const [weekdayDropdown, setweekdayDropdown] = useState(false);
-
 
   const handleAdd = () => {
     if (selectedValue && !values.includes(selectedValue)) {
@@ -62,12 +63,9 @@ const ScheduleForm = () => {
   useEffect(() => {
     const getPrograms = async () => {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/degree-programs/",
-          {
-            headers: { Authorization: `Token ${authToken}` },
-          }
-        );
+        const response = await axios.get(`${apiUrl}/api/degree-programs/`, {
+          headers: { Authorization: `Token ${authToken}` },
+        });
         setDegreePrograms(response.data.degree_programs); // State is updated here
       } catch (error) {
         console.error("Error fetching degree programs:", error);
@@ -88,12 +86,22 @@ const ScheduleForm = () => {
           },
         }
       );
-      console.log(res);
-      setrelatedCourses(res.data.course_names);
-      setrelatedTeachers(res.data.cource_details);
+      console.log("Course API Response:", res);
+
+      const courseNames = res?.data?.course_names || [];
+      const courseDetails = res?.data?.cource_details || {}; // typo might be in your backend: "cource_details" vs "course_details"
+
+      if (courseNames.length === 0 || Object.keys(courseDetails).length === 0) {
+        toast.error(
+          "There are no courses for the selected degree and semester."
+        );
+      } else {
+        setrelatedCourses(courseNames);
+        setrelatedTeachers(courseDetails);
+      }
     } catch (error) {
-      console.log(error);
-      toast.error(error.message);
+      console.error("Error fetching related courses:", error);
+      toast.error("Failed to fetch related courses.");
     }
   };
 
@@ -111,7 +119,7 @@ const ScheduleForm = () => {
           no_of_lectures_per_semester: selectedSemester,
           lecture_starting_time: startingTime,
           lecture_ending_time: endingTime,
-          preferred_weekday: values,
+          preferred_weekdays: values,
         },
         {
           headers: {
@@ -141,7 +149,7 @@ const ScheduleForm = () => {
               type="button"
               onClick={() => setdegreeDropdown(!degreeDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-[12px] border outline-none border-primary"
+              className="px-3 py-2 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             >
               {selectedDegreeProgram == ""
                 ? "Select Degree Program"
@@ -184,7 +192,7 @@ const ScheduleForm = () => {
               type="button"
               onClick={() => setsemesterDropdown(!semesterDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
+              className="px-3 py-2 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             >
               {selectedSemester == null ? "Select semester" : selectedSemester}
               <svg
@@ -226,109 +234,162 @@ const ScheduleForm = () => {
           onClick={() =>
             getRelatedCourses(selectedDegreeProgram, selectedSemester)
           }
-          class="px-6 w-[20%] py-2.5 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
+          class="px-6 w-[20%] py-2 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
         >
           Add Program
         </button>
       </div>
 
-      {relatedCourses.length != 0 && (
+      {Array.isArray(relatedCourses) && relatedCourses.length !== 0 && (
         <div className="mt-5 grid grid-cols-2 w-full justify-between gap-5">
-          <div class="relative font-[sans-serif] w-full mx-auto">
+          {/* Course Selection */}
+          <div className="relative font-[sans-serif] w-full mx-auto">
+            <label className="block text-xs font-medium">Select Course</label>
             <button
               type="button"
               onClick={() => setcourseDropdown(!courseDropdown)}
               id="dropdownToggle"
-              className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
+              className="px-3 py-2 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
             >
-              {selectedCourse == "" ? "Select Course" : selectedCourse}
+              {selectedCourse === "" ? "Select Course" : selectedCourse}
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                class="w-3 inline ml-3"
+                className="w-3 inline ml-3"
                 viewBox="0 0 24 24"
               >
                 <path
-                  fill-rule="evenodd"
+                  fillRule="evenodd"
                   d="M11.99997 18.1669a2.38 2.38 0 0 1-1.68266-.69733l-9.52-9.52a2.38 2.38 0 1 1 3.36532-3.36532l7.83734 7.83734 7.83734-7.83734a2.38 2.38 0 1 1 3.36532 3.36532l-9.52 9.52a2.38 2.38 0 0 1-1.68266.69734z"
-                  clip-rule="evenodd"
-                  data-original="#000000"
+                  clipRule="evenodd"
                 />
               </svg>
             </button>
 
             <ul
               id="dropdownMenu"
-              class={`absolute ${
+              className={`absolute ${
                 courseDropdown ? "block" : "hidden"
               } shadow-lg bg-white py-2 z-[1000] min-w-full w-max rounded max-h-96 overflow-auto`}
             >
               {relatedCourses.map((item) => (
                 <li
+                  key={item}
                   onClick={() => {
                     setselectedCourse(item);
                     setselectedTeacher(relatedTeachers[item]);
                     setcourseDropdown(false);
                   }}
-                  class="py-2.5 px-5 hover:bg-primary hover:text-white text-black text-sm cursor-pointer"
+                  className="py-2 text-sm px-5 hover:bg-primary hover:text-white text-black cursor-pointer"
                 >
                   {item}
                 </li>
               ))}
             </ul>
           </div>
-          <input
-            className="px-5 py-2.5 w-full rounded flex justify-between items-center text-sm border outline-none border-primary"
-            type="text"
-            value={selectedTeacher}
-            readOnly
-          />
+
+          {/* Course Teacher */}
+          <div className="w-full">
+            <label className="block text-xs font-medium">Course Teacher</label>
+            <input
+              className="px-3 py-2 w-full rounded text-sm bg-transparent border outline-none border-primary"
+              type="text"
+              value={selectedTeacher}
+              readOnly
+            />
+          </div>
         </div>
       )}
 
-      {relatedCourses.length != 0 && (
+      {Array.isArray(relatedCourses) && relatedCourses.length != 0 && (
         <div className="mt-5 flex flex-col w-full justify-between gap-5">
           <div className="w-full grid grid-cols-2 gap-5">
-            <div>
-              <p className="text-sm">Semester Starting Date</p>
-              <input
-                type="date"
-                value={startingDate}
-                onChange={(e) => setstartingDate(e.target.value)}
-                placeholder="Enter Degree Program"
-                class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
-              />
-            </div>
-            <div>
-              <p className="text-sm">Semester Ending Date</p>
-              <input
-                type="date"
-                value={endingDate}
-                onChange={(e) => setendingDate(e.target.value)}
-                placeholder="Enter Degree Program"
-                class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
-              />
-            </div>
-            <div>
-              <p className="text-sm">Lecture Starting Time</p>
-              <input
-                type="time"
-                value={startingTime}
-                onChange={(e) => setstartingTime(e.target.value)}
-                placeholder="Enter Degree Program"
-                class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
-              />
-            </div>
-            <div>
-              <p className="text-sm">Lecture Ending Time</p>
-              <input
-                type="time"
-                step={'60'}
-                value={endingTime}
-                onChange={(e) => setendingTime(e.target.value)}
-                placeholder="Enter Degree Program"
-                class="px-4 py-2.5 bg-gray-200 w-full text-sm outline-none rounded transition-all"
-              />
-            </div>
+          
+              {/* Semester Starting Date */}
+              <div>
+                <label className="block text-xs font-medium">
+                  Semester Starting Date
+                </label>
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#02c5cc",
+                    },
+                  }}
+                >
+                  <DatePicker
+                    format="YYYY-MM-DD"
+                    value={startingDate ? dayjs(startingDate) : null}
+                    onChange={(date, dateString) => setstartingDate(dateString)}
+                    className="w-full py-2"
+                  />
+                </ConfigProvider>
+              </div>
+
+              {/* Semester Ending Date */}
+              <div>
+                <label className="block text-xs font-medium">
+                  Semester Ending Date
+                </label>
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#02c5cc",
+                    },
+                  }}
+                >
+                  <DatePicker
+                    format="YYYY-MM-DD"
+                    value={endingDate ? dayjs(endingDate) : null}
+                    onChange={(date, dateString) => setendingDate(dateString)}
+                    className="w-full py-2"
+                  />
+                </ConfigProvider>
+              </div>
+
+              {/* Lecture Starting Time */}
+              <div>
+                <label className="block text-xs font-medium">
+                  Lecture Starting Time
+                </label>
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#02c5cc",
+                    },
+                  }}
+                >
+                  <TimePicker
+                    use12Hours={false}
+                    format="HH:mm"
+                    value={startingTime ? dayjs(startingTime, "HH:mm") : null}
+                    onChange={(time, timeString) => setstartingTime(timeString)}
+                    className="w-full py-2"
+                  />
+                </ConfigProvider>
+              </div>
+
+              {/* Lecture Ending Time */}
+              <div>
+                <label className="block text-xs font-medium">
+                  Lecture Ending Time
+                </label>
+                <ConfigProvider
+                  theme={{
+                    token: {
+                      colorPrimary: "#02c5cc",
+                    },
+                  }}
+                >
+                  <TimePicker
+                    use12Hours={false}
+                    format="HH:mm"
+                    value={endingTime ? dayjs(endingTime, "HH:mm") : null}
+                    onChange={(time, timeString) => setendingTime(timeString)}
+                    className="w-full py-2"
+                  />
+                </ConfigProvider>
+              </div>
+      
             <div>
               <p>Enter number of lectures per semester</p>
               <input
