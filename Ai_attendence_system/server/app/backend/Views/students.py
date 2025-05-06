@@ -2,11 +2,24 @@
 
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import status
-from backend.Models.StudentsModels import Student
-from backend.Models.DegreeProgramModels import DegreeProgram
-from backend.Serializers.StudentSerializers import StudentSerializer
-from drf_spectacular.utils import extend_schema
+from backend.Serializers.CourseSerializer import CourseSerializer
+from backend.models.StudentsModels import Student ,StudentCredential,StudentToken
+from rest_framework.authtoken.models import Token
+from backend.models.DegreeProgramModels import DegreeProgram
+from rest_framework.parsers import MultiPartParser, FormParser
+from backend.Serializers.StudentSerializers import StudentSerializer,StudentRegistrationSerializer,StudentLoginSerializer
+from django.contrib.auth.hashers import check_password
+from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample, inline_serializer,extend_schema_field
+from drf_spectacular.types import OpenApiTypes
+from rest_framework import serializers
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from datetime import date
+from backend.models.CourseModels import Course
+from backend.models.SchedulingModels import GeneratedSchedule
+from backend.authentication import StudentTokenAuth
 from rest_framework.renderers import JSONRenderer
 import pandas as pd
 import json
@@ -204,3 +217,188 @@ class  StudentCountView(APIView):
         students_count = Student.objects.count()
       
         return Response({"student_count": students_count})
+    
+
+
+# 👇 Define a custom schema for the ImageField
+@extend_schema_field(field=OpenApiTypes.BINARY)
+class CustomImageField(serializers.ImageField):
+    pass
+
+@extend_schema(
+    tags=["Student's APIs"],
+    request=inline_serializer(
+        name="StudentRegistrationSerializer",
+        fields={
+            "student_id": serializers.CharField(),
+            "password": serializers.CharField(write_only=True),
+            "confirm_password": serializers.CharField(write_only=True),
+            # 👇 Use the custom field with schema override
+            "face_image": CustomImageField(style={"base_template": "file.html"}),
+        },
+    ),
+    examples=[
+        OpenApiExample(
+            "Example Request",
+            value={
+                "student_id": "ST002",
+                "password": "YourSecret123",
+                "confirm_password": "YourSecret123",
+                "face_image": None,  # Example value for binary
+            },
+            request_only=True,
+            media_type="multipart/form-data",
+        )
+    ],
+    responses={201: ...},
+)
+class StudentRegistrationView(APIView):
+    permission_classes = [AllowAny]
+    parser_classes = [MultiPartParser, FormParser]
+
+
+    def post(self, request, *args, **kwargs):
+        serializer = StudentRegistrationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Student registered successfully."}, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@extend_schema(tags=["Student's APIs"])
+class StudentLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(
+        request=inline_serializer(
+            name="StudentLoginSerializer",
+            fields={
+                "student_id": serializers.CharField(),
+                "password": serializers.CharField(write_only=True),
+            },
+        ),
+        responses={200: ...},
+    )
+
+    def post(self, request):
+        student_id = request.data.get("student_id")
+        password = request.data.get("password")
+
+        try:
+            student = Student.objects.get(student_id=student_id)
+        except Student.DoesNotExist:
+            return Response({"error": "Invalid student ID"}, status=400)
+
+        # Check password against hashed one from StudentCredential
+        if not check_password(password, student.credential.password):
+            return Response({"error": "Invalid password"}, status=400)
+
+        token_obj, created = StudentToken.objects.get_or_create(student=student)
+ 
+        return Response({
+            "message": "Login successful",
+            "student_id": student.student_id,
+            "token": token_obj.token,
+            "student_id": student.student_id,
+            "name": student.student_name,
+            "degree_program": student.degree_program.program_name,
+            "semester": student.semester,
+            "section": student.section,
+        })
+    
+
+
+
+
+
+@extend_schema(tags=["Student's APIs"])
+class GetTodayStudentSchedulesView(APIView):
+    authentication_classes = [StudentTokenAuth]
+
+    permission_classes = [IsAuthenticated]
+    def get(self, request, degree_program_name, semester):
+        try:
+            degree_program = DegreeProgram.objects.get(program_name=degree_program_name)
+        except DegreeProgram.DoesNotExist:
+            return Response(
+                {"error": "Degree program not found."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        today = date.today()
+        schedules = GeneratedSchedule.objects.select_related('teacher', 'course', 'degree_program').filter(
+            degree_program=degree_program,
+            semester=semester,
+            lecture_date=today
+        )
+
+        schedule_list = []
+        for sched in schedules:
+            schedule_list.append({
+                "teacher_name": sched.teacher.teacher_name,
+                "teaching_type": sched.teacher.teaching_type,
+                "degree_program": sched.degree_program.program_name,
+                "semester": sched.semester,
+                "course_name": sched.course.course_name,
+                "lecture_date": sched.lecture_date,
+                "start_time": sched.start_time,
+                "end_time": sched.end_time,
+            })
+
+        return Response(schedule_list, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=["Student's APIs"])
+class GetSchedulesByCourseCodeView(APIView):
+    authentication_classes = [StudentTokenAuth]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request,course_code:str):
+        # course_code = request.query_params.get('course_code')
+
+        if not course_code:
+            return Response(
+                {"error": "course_code query parameter is required."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        schedules = GeneratedSchedule.objects.select_related('teacher', 'course', 'degree_program').filter(
+            course__course_code=course_code
+        )
+
+        schedule_list = []
+        for sched in schedules:
+            schedule_list.append({
+                "teacher_name": sched.teacher.teacher_name,
+                "teaching_type": sched.teacher.teaching_type,
+                "degree_program": sched.degree_program.program_name,
+                "semester": sched.semester,
+                "course_name": sched.course.course_name,
+                "course_code": sched.course.course_code,
+                "lecture_date": sched.lecture_date,
+                "start_time": sched.start_time,
+                "end_time": sched.end_time,
+            })
+
+        return Response(schedule_list, status=status.HTTP_200_OK)
+
+
+
+# filter courses by degree program  
+@extend_schema(tags=["student APIs"])
+class CourseByDegreeProgramForStudents(APIView):
+    authentication_classes = [StudentTokenAuth]
+
+    permission_classes = [IsAuthenticated]
+
+    course_serializer = CourseSerializer
+    def get(self, request, degree_program=None , semester=None):
+        """Retrieve a course based on the degree program."""
+        try:
+            courses = Course.objects.filter(degree_program__program_name__icontains=degree_program, semester=semester)
+            serializer = self.course_serializer(courses, many=True)
+            course_code = [course["course_code"] for course in serializer.data]
+            course_names_with_teacher = {course["course_name"]: course["teacher"] for course in serializer.data}
+            return Response({"course_codes":course_code,"cource_details":course_names_with_teacher}, status=status.HTTP_200_OK)
+        except Course.DoesNotExist:
+            return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)

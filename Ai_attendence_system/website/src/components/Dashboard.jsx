@@ -9,11 +9,28 @@ import { AuthContext } from '../context/auth';
 const Dashboard = () => {
   const { authToken } = useContext(AuthContext);
   const [totalStudents, setTotalStudents] = useState(0);
-  const [totalClasses, setTotalClasses] = useState(0);
+  const [totalClasses, setTotalClasses] = useState(5); // Optional: Set static class count
   const [totalTeachers, setTotalTeachers] = useState(0);
-  const [attendanceRate, setAttendanceRate] = useState(0);
-  const [attendanceData, setAttendanceData] = useState(null);
-  const [pieChartData, setPieChartData] = useState([]); // Initialize as empty array
+  const [attendanceRate, setAttendanceRate] = useState(85); // Set default attendance rate
+
+  // Static bar chart data (Attendance over weekdays)
+  const [attendanceData, setAttendanceData] = useState({
+    labels: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+    datasets: [
+      {
+        label: 'Attendance',
+        data: [75, 82, 68, 91, 87],
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      },
+    ],
+  });
+
+  // Static pie chart data (Attendance breakdown)
+  const [pieChartData, setPieChartData] = useState([
+    { name: 'Present', value: 70, color: '#4CAF50' },
+    { name: 'Absent', value: 20, color: '#F44336' },
+    { name: 'Late', value: 10, color: '#FF9800' },
+  ]);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -24,34 +41,16 @@ const Dashboard = () => {
             headers: { Authorization: `Token ${authToken}` },
           }
         );
-        // const classesResponse = await axios.get('/api/total-classes');
+
         const teachersResponse = await axios.get(
           'http://localhost:8000/api/teacher-count/',
           {
             headers: { Authorization: `Token ${authToken}` },
           }
         );
-        console.log(teachersResponse);
-
-        // const attendanceResponse = await axios.get('/api/attendance-rate');
-        // const attendanceChartResponse = await axios.get('/api/attendance-chart-data');
-        // const pieChartResponse = await axios.get('/api/pie-chart-data');
 
         setTotalStudents(studentsResponse.data.student_count);
-        // setTotalClasses(classesResponse.data.total);
         setTotalTeachers(teachersResponse.data.teacher_count);
-        // setAttendanceRate(attendanceResponse.data.rate);
-        // setAttendanceData({
-        //   labels: attendanceChartResponse.data.labels,
-        //   datasets: [
-        //     {
-        //       label: 'Attendance',
-        //       data: attendanceChartResponse.data.values,
-        //       backgroundColor: 'rgba(75, 192, 192, 0.6)',
-        //     },
-        //   ],
-        // });
-        // setPieChartData(pieChartResponse.data.values || []); // Ensure pieChartData is always an array
       } catch (error) {
         console.error("Error fetching dashboard data", error);
       }
@@ -61,9 +60,9 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-5 bg-gray-100">
+    <div className="container mx-auto p-5 bg-gray-100 min-h-screen">
       <h1 className="text-3xl text-center font-bold mb-5">Attendance Dashboard</h1>
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
         <StatsCard 
           title="Total Students" 
@@ -87,18 +86,18 @@ const Dashboard = () => {
         />
       </div>
 
-      <div className="bg-white shadow-lg rounded-lg p-5 flex">
-        {/* Left side: Pie Chart */}
-        <div className="w-1/2 p-2 flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-5 flex flex-col lg:flex-row">
+        {/* Pie Chart */}
+        <div className="lg:w-1/2 p-2 flex items-center justify-center">
           <div className="h-96 w-full">
-            {pieChartData.length > 0 ? <PieChart data={pieChartData} /> : <p>Loading Pie Chart...</p>}
+            <PieChart data={pieChartData} />
           </div>
         </div>
 
-        {/* Right side: Bar Chart */}
-        <div className="w-1/2 p-2 flex items-center justify-center">
+        {/* Bar Chart */}
+        <div className="lg:w-1/2 p-2 flex items-center justify-center">
           <div className="h-96 w-full">
-            {attendanceData ? <Chart data={attendanceData} /> : <p>Loading Bar Chart...</p>}
+            <Chart data={attendanceData} />
           </div>
         </div>
       </div>

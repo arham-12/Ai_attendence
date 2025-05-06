@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from  backend.Models.TeachersModels import Teachers, TeacherPasswords
-from  backend.Models.DegreeProgramModels import DegreeProgram
+from  backend.models.TeachersModels import Teachers, TeacherPasswords
+from  backend.models.DegreeProgramModels import DegreeProgram
 from  django.contrib.auth.hashers import make_password
 
 
@@ -98,3 +98,8 @@ class TeacherPasswordSerializer(serializers.ModelSerializer):
         
         return TeacherPasswords.objects.create(teacher=teacher, **validated_data)
     
+
+
+class TeacherLoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField(write_only=True)

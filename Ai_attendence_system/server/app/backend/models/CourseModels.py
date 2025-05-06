@@ -1,5 +1,5 @@
 from  django.db import models
-from  backend.Models.DegreeProgramModels import DegreeProgram
+from  backend.models.DegreeProgramModels import DegreeProgram
 
 
 class Course(models.Model):

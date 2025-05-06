@@ -28,9 +28,11 @@ SECRET_KEY = 'django-insecure-$mf!x+3tvqu-3v5&ea9$h%tbg03-r!c2w)ch%wwjzksn_l+r5f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['182.255.48.42', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
-
+INSTITUTE_LATITUDE = 24.8607   # Example institute location
+INSTITUTE_LONGITUDE = 67.0011
+GEOFENCE_RADIUS_METERS = 100  
 
 # Application definition
 
@@ -46,12 +48,15 @@ INSTALLED_APPS = [
     'drf_spectacular',
     'corsheaders',
     'rest_framework.authtoken',
+    
 ]
 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
+        'backend.authentication.TeacherTokenAuth',   # updated path
+        'backend.authentication.StudentTokenAuth',  # Custom JWT authentication
     ],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',  # Require authentication by default
@@ -60,16 +65,14 @@ REST_FRAMEWORK = {
     
 }
 
-
-# SPECTACULAR_SETTINGS = {
-#     "TITLE": "LOBBY AI",
-#     "DESCRIPTION": "LOBBY AI PROJECT",
-#     "VERSION": "1.0.0",
-#     "SERVE_INCLUDE_SCHEMA": False,
-#     "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"],
-#     "COMPONENT_SPLIT_REQUEST": True,
-# }
-
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Your API',
+    'DESCRIPTION': 'API documentation',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'SECURITY': [{'BearerAuth': []}],  # 👈 This will apply globally
+    'COMPONENT_SPLIT_REQUEST': True,
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -108,6 +111,11 @@ TEMPLATES = [
         },
     },
 ]
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
 
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
@@ -173,3 +181,7 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+
+
+

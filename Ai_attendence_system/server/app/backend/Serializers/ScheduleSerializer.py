@@ -1,5 +1,5 @@
 from  rest_framework import serializers
-from backend.Models.SchedulingModels import GeneratedSchedule
+from backend.models.SchedulingModels import GeneratedSchedule
 
 
 
@@ -13,10 +13,12 @@ class ScheduleInputSerializer(serializers.Serializer):
     semester_starting_date = serializers.DateField()
     semester_ending_date = serializers.DateField()
     no_of_lectures_per_semester = serializers.IntegerField()
-    lecture_starting_time = serializers.TimeField()
-    lecture_ending_time = serializers.TimeField()
-    preferred_weekday = serializers.CharField(max_length=20)
-
+    lecture_starting_time = serializers.TimeField(format="%H:%M:%S")
+    lecture_ending_time = serializers.TimeField(format="%H:%M:%S")
+    preferred_weekdays = serializers.ListField(
+        child=serializers.CharField(max_length=20),
+        help_text="List of preferred weekdays, e.g., ['Monday', 'Wednesday']"
+    )
 
 
 class GeneratedScheduleSerializer(serializers.ModelSerializer):

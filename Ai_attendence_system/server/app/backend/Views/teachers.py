@@ -1,15 +1,22 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.Models.TeachersModels import Teachers
-from backend.Models.DegreeProgramModels import DegreeProgram
-from backend.Serializers.TeacherSerializers import TeacherSerializer, TeacherPasswordSerializer
+from rest_framework.permissions import IsAuthenticated, AllowAny
+from backend.models.TeachersModels import Teachers,TeacherPasswords, TeacherToken
+from backend.models.SchedulingModels import GeneratedSchedule
+from rest_framework.authtoken.models import Token
+from backend.models.DegreeProgramModels import DegreeProgram
+from backend.Serializers.TeacherSerializers import TeacherSerializer, TeacherPasswordSerializer, TeacherLoginSerializer
 from drf_spectacular.utils import extend_schema
+from django.contrib.auth.hashers import make_password, check_password
 from rest_framework.renderers import JSONRenderer
+import secrets
+from datetime import date
 import pandas as pd
 import json
-
-
+from rest_framework.authentication import BaseAuthentication
+from rest_framework.exceptions import AuthenticationFailed
+from backend.authentication import TeacherTokenAuth
 # View for handling Teachers
 @extend_schema(tags=['Teacher API'])
 class TeacherAPIView(APIView):
@@ -250,3 +257,148 @@ class TeacherCountView(APIView):
         """Retrieve the total number of teachers."""
         count = Teachers.objects.count()
         return Response({"teacher_count": count})
+    
+
+
+@extend_schema(tags=['Teacher API'])
+class TeacherLoginView(APIView):
+    permission_classes = [AllowAny]
+
+    @extend_schema(request=TeacherLoginSerializer)
+    def post(self, request):
+        serializer = TeacherLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            email = serializer.validated_data['email']
+            password = serializer.validated_data['password']
+
+            try:
+                teacher = Teachers.objects.get(teacher_email=email)
+
+                # Check if password is already set
+                if hasattr(teacher, 'password_details'):
+                    stored_hashed_password = teacher.password_details.password
+                    if check_password(password, stored_hashed_password):
+                        token = secrets.token_hex(20)  # 40 chars
+                        # Create or update token
+                        TeacherToken.objects.update_or_create(
+                            teacher=teacher,
+                            defaults={"token": token}
+                        )
+                        return Response({
+                            "message": "Login successful",
+                            "token": token,
+                            "teacher_name": teacher.teacher_name,
+                            "teacher_id": teacher.id
+                        }, status=status.HTTP_200_OK)
+                    else:
+                        return Response({"error": "Invalid password"}, status=status.HTTP_401_UNAUTHORIZED)
+                else:
+                    # First time password set
+                    hashed_password = make_password(password)
+                    TeacherPasswords.objects.create(teacher=teacher, password=hashed_password)
+                    token = secrets.token_hex(20)
+                    TeacherToken.objects.update_or_create(
+                        teacher=teacher,
+                        defaults={"token": token}
+                    )
+                    return Response({
+                        "message": "Password set and login successful",
+                        "token": token,
+                        "teacher_name": teacher.teacher_name,
+                        "teacher_id": teacher.id
+                    }, status=status.HTTP_200_OK)
+
+            except Teachers.DoesNotExist:
+                return Response({"error": "Unauthorized: Email not recognized"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    
+@extend_schema(tags=['Teacher API'])
+class GetTeacherScheduleView(APIView):
+    authentication_classes = [TeacherTokenAuth]
+    permission_classes = [IsAuthenticated]
+    def get(self, request, teacher_id: int):
+        try:
+            teacher = Teachers.objects.get(id=teacher_id)
+            today = date.today()
+
+            schedules = GeneratedSchedule.objects.filter(
+                teacher=teacher,
+                lecture_date=today
+            ).select_related('course', 'degree_program')
+
+            schedule_list = []
+            for sched in schedules:
+                schedule_list.append({
+                    "course_name": sched.course.course_name,
+                    "degree_program": sched.degree_program.program_name,
+                    "semester": sched.semester,
+                    "lecture_date": sched.lecture_date,
+                    "start_time": sched.start_time,
+                    "end_time": sched.end_time,
+                })
+
+            return Response({
+                "teacher_name": teacher.teacher_name,
+                "teaching_type": teacher.teaching_type,
+                "all_schedule": schedule_list
+            }, status=status.HTTP_200_OK)
+
+        except Teachers.DoesNotExist:
+            return Response({"error": "Teacher not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+@extend_schema(tags=['Teacher API'])
+class GetAllTeacherSchedulesView(APIView):
+    authentication_classes = [TeacherTokenAuth]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, teacher_id: int):
+        try:
+            teacher = Teachers.objects.get(id=teacher_id)
+
+            schedules = GeneratedSchedule.objects.filter(
+                teacher=teacher
+            ).select_related('course', 'degree_program')
+
+            schedule_list = []
+            for sched in schedules:
+                schedule_list.append({
+                    "course_name": sched.course.course_name,
+                    "degree_program": sched.degree_program.program_name,
+                    "semester": sched.semester,
+                    "lecture_date": sched.lecture_date,
+                    "start_time": sched.start_time,
+                    "end_time": sched.end_time,
+                })
+
+            return Response({
+                "teacher_name": teacher.teacher_name,
+                "teaching_type": teacher.teaching_type,
+                "all_schedules": schedule_list
+            }, status=status.HTTP_200_OK)
+
+        except Teachers.DoesNotExist:
+            return Response({"error": "Teacher not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+
+@extend_schema(tags=['Teacher API'])
+class GetAllSchedulesView(APIView):
+
+    def get(self, request):
+        schedules = GeneratedSchedule.objects.select_related('teacher', 'course', 'degree_program').all()
+
+        schedule_list = []
+        for sched in schedules:
+            schedule_list.append({
+                "teacher_name": sched.teacher.teacher_name,
+                "teaching_type": sched.teacher.teaching_type,
+                "degree_program": sched.degree_program.program_name,
+                "semester": sched.semester,
+                "course_name": sched.course.course_name,
+                "lecture_date": sched.lecture_date,
+                "start_time": sched.start_time,
+                "end_time": sched.end_time,
+            })
+
+        return Response(schedule_list, status=status.HTTP_200_OK)

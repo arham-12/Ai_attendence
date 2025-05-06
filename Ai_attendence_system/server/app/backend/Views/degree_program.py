@@ -3,7 +3,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.Models.DegreeProgramModels import DegreeProgram
+from backend.models.DegreeProgramModels import DegreeProgram
 from backend.Serializers.DegreeProgramSerilizer import DegreeProgramSerializer
 from drf_spectacular.utils import extend_schema,OpenApiParameter
 @extend_schema(tags=["Degree Program APIs"])
