@@ -1,10 +1,10 @@
 from django.contrib import admin
-from  backend.Models.DegreeProgramModels import DegreeProgram
-from  backend.Models.CourseModels import Course
-from  backend.Models.TeachersModels import Teachers
+from  backend.models.DegreeProgramModels import DegreeProgram
+from  backend.models.CourseModels import Course
+from  backend.models.TeachersModels import Teachers
 # from  backend.Models.AttendanceModels import Attendance
-from  backend.Models.StudentsModels import Student
-from  backend.Models.SchedulingModels import GeneratedSchedule
+from  backend.models.StudentsModels import Student
+from  backend.models.SchedulingModels import GeneratedSchedule
 
 # Register your models here.
 admin.site.register(DegreeProgram)

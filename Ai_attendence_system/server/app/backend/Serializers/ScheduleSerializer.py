@@ -1,5 +1,5 @@
 from  rest_framework import serializers
-from backend.Models.SchedulingModels import GeneratedSchedule
+from backend.models.SchedulingModels import GeneratedSchedule
 
 
 

@@ -1,7 +1,7 @@
 from rest_framework import serializers
-from backend.Models.CourseModels import Course
-from backend.Models.DegreeProgramModels import DegreeProgram
-from backend.Models.TeachersModels import Teachers
+from backend.models.CourseModels import Course
+from backend.models.DegreeProgramModels import DegreeProgram
+from backend.models.TeachersModels import Teachers
 
 
 

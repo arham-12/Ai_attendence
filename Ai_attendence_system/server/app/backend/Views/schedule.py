@@ -4,10 +4,10 @@ from django.db.models import Q
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
-from backend.Models.DegreeProgramModels import DegreeProgram
-from backend.Models.CourseModels import Course
-from backend.Models.TeachersModels import Teachers
-from backend.Models.SchedulingModels import GeneratedSchedule
+from backend.models.DegreeProgramModels import DegreeProgram
+from backend.models.CourseModels import Course
+from backend.models.TeachersModels import Teachers
+from backend.models.SchedulingModels import GeneratedSchedule
 from backend.Serializers.ScheduleSerializer import ScheduleInputSerializer, GeneratedScheduleSerializer
 from  drf_spectacular.utils import extend_schema
 

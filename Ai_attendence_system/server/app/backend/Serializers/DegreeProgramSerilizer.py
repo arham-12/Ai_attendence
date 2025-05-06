@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from backend.Models.DegreeProgramModels import DegreeProgram
+from backend.models.DegreeProgramModels import DegreeProgram
 
 
 

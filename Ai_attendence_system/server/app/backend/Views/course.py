@@ -1,10 +1,11 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from backend.Models.CourseModels import Course
+from backend.models.CourseModels import Course
 from backend.Serializers.CourseSerializer import CourseSerializer
 from drf_spectacular.utils import extend_schema,extend_schema_view
-
+from rest_framework.permissions import IsAuthenticated
+from backend.authentication import StudentTokenAuth
 
 @extend_schema(tags=["Course APIs"])
 class CourseView(APIView):
@@ -62,15 +63,19 @@ class CourseView(APIView):
 # filter courses by degree program  
 @extend_schema(tags=["Course APIs"])
 class CourseByDegreeProgram(APIView):
+    # authentication_classes = [StudentTokenAuth]
+
+    # permission_classes = [IsAuthenticated]
+
     course_serializer = CourseSerializer
     def get(self, request, degree_program=None , semester=None):
         """Retrieve a course based on the degree program."""
         try:
             courses = Course.objects.filter(degree_program__program_name__icontains=degree_program, semester=semester)
             serializer = self.course_serializer(courses, many=True)
-            course_names = [course["course_name"] for course in serializer.data]
+            course_name = [course["course_name"] for course in serializer.data]
             course_names_with_teacher = {course["course_name"]: course["teacher"] for course in serializer.data}
-            return Response({"course_names":course_names,"cource_details":course_names_with_teacher}, status=status.HTTP_200_OK)
+            return Response({"course_names":course_name,"cource_details":course_names_with_teacher}, status=status.HTTP_200_OK)
         except Course.DoesNotExist:
             return Response({"error": "Course not found."}, status=status.HTTP_404_NOT_FOUND)
 
