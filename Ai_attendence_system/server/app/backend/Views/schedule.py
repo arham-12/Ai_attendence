@@ -10,107 +10,95 @@ from backend.models.TeachersModels import Teachers
 from backend.models.SchedulingModels import GeneratedSchedule
 from backend.Serializers.ScheduleSerializer import ScheduleInputSerializer, GeneratedScheduleSerializer
 from  drf_spectacular.utils import extend_schema
-
+from dateutil.rrule import rrule, DAILY
+from django.db import transaction
 class GenerateScheduleView(APIView):
-
     @extend_schema(request=ScheduleInputSerializer)
     def post(self, request, *args, **kwargs):
-        # Validate input data
         serializer = ScheduleInputSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-        # Extract validated data
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        degree_program_name = data['degree_program']
-        course_name = data['course']
-        teacher_name = data['teacher_name']
-        semester_starting_date = data['semester_starting_date']
-        semester_ending_date = data['semester_ending_date']
-        no_of_lectures_per_semester = data['no_of_lectures_per_semester']
-        lecture_starting_time = data['lecture_starting_time']
-        lecture_ending_time = data['lecture_ending_time']
-        # Normalize each preferred weekday (e.g., "monday" -> "Monday")
-        preferred_weekdays = [day.capitalize() for day in data['preferred_weekdays']]
-
-        # Fetch database objects
+        print(data)
+        # Map names to objects
         try:
-            degree_program = DegreeProgram.objects.get(program_name=degree_program_name)
-            course = Course.objects.get(course_name=course_name)
-            teacher = Teachers.objects.get(teacher_name=teacher_name)
+            degree_program = DegreeProgram.objects.get(program_name=data['degree_program'])
+            course = Course.objects.get(course_name=data['course'])
+            teacher = Teachers.objects.get(teacher_name=data['teacher_name'])
         except (DegreeProgram.DoesNotExist, Course.DoesNotExist, Teachers.DoesNotExist):
-            return Response({"error": "Degree program, course, or teacher not found"},
-                            status=status.HTTP_404_NOT_FOUND)
-
-        # Initialize schedule generation
-        generated_schedules = []
-        current_date = semester_starting_date
-        lectures_scheduled = 0
-
-        # Loop day-by-day until we either run out of days or reach the required number of lectures.
-        while current_date <= semester_ending_date and lectures_scheduled < no_of_lectures_per_semester:
-            # Check if current_date's day is in the list of preferred weekdays.
-            if current_date.strftime('%A') in preferred_weekdays:
-                # Check for conflicts on this day.
-                conflicts = GeneratedSchedule.objects.filter(
-                    lecture_date=current_date
-                ).filter(
-                    Q(start_time__lt=lecture_ending_time, end_time__gt=lecture_starting_time) &
-                    (
-                        Q(degree_program=degree_program) |  # Prevent overlapping lectures in the same program
-                        (Q(teacher=teacher) & ~Q(course=course))  # Allow teacher to teach different courses concurrently
-                    )
-                )
-
-                if conflicts.exists():
-                    conflict_details = []
-                    for conflict in conflicts:
-                        if conflict.teacher == teacher and conflict.course != course:
-                            conflict_details.append(
-                                f"Teacher {teacher.teacher_name} is already teaching {conflict.course.course_name} at this time."
-                            )
-                        if conflict.degree_program == degree_program:
-                            conflict_details.append(
-                                f"Degree program {degree_program.program_name} already has a lecture."
-                            )
-
-                    return Response(
-                        {
-                            "error": f"Conflict detected on {current_date} from {lecture_starting_time} to {lecture_ending_time}.",
-                            "conflict_details": conflict_details,
-                            "suggestion": "Please choose a different time slot or day."
-                        },
-                        status=status.HTTP_409_CONFLICT
-                    )
-
-                # No conflicts: create the schedule for this day.
-                schedule_data = {
-                    "degree_program": degree_program,
-                    "course": course,
-                    "teacher": teacher,
-                    "lecture_date": current_date,
-                    "start_time": lecture_starting_time,
-                    "end_time": lecture_ending_time
-                }
-                generated_schedule = GeneratedSchedule.objects.create(**schedule_data)
-                generated_schedules.append(generated_schedule)
-                lectures_scheduled += 1
-
-            # Move to the next day.
-            current_date += timedelta(days=1)
-
-        # If we could not schedule the desired number of lectures within the semester,
-        # you may want to return a warning or error.
-        if lectures_scheduled < no_of_lectures_per_semester:
             return Response(
-                {"error": f"Could only schedule {lectures_scheduled} lectures before the semester ended."},
+                {'error': 'Degree program, course, or teacher not found.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Prepare scheduling parameters
+        start_date = data['semester_starting_date']
+        end_date = data['semester_ending_date']
+        total_lectures = data['no_of_lectures_per_semester']
+        start_time = data['lecture_starting_time']
+        end_time = data['lecture_ending_time']
+        weekdays = {day.capitalize() for day in data['preferred_weekdays']}
+
+        # Early check: are there enough days?
+        possible_days = [dt.date() for dt in rrule(DAILY, dtstart=start_date, until=end_date) if dt.strftime('%A') in weekdays]
+        if len(possible_days) < total_lectures:
+            return Response(
+                {
+                    'error': (
+                        f"Not enough available days: {len(possible_days)} slots for {total_lectures} lectures."
+                    )
+                },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        # Serialize and return the generated schedule data.
-        response_data = GeneratedScheduleSerializer(generated_schedules, many=True).data
-        return Response({"detail": "Schedule generated successfully", "schedules": response_data},
-                        status=status.HTTP_201_CREATED)
+        created = []
+        # Bulk transactional creation
+        with transaction.atomic():
+            for lecture_date in possible_days[:total_lectures]:
+                # Conflict check for program or teacher
+                conflicts = GeneratedSchedule.objects.filter(
+                    lecture_date=lecture_date,
+                    start_time__lt=end_time,
+                    end_time__gt=start_time
+                ).filter(
+                    Q(degree_program=degree_program) |
+                    Q(teacher=teacher)
+                )
+                if conflicts.exists():
+                    for conflict in conflicts:
+                        if conflict.degree_program == degree_program:
+                            return Response(
+                                {'error': (
+                                    f"Degree program '{degree_program.program_name}' already has a lecture on {lecture_date}."
+                                )},
+                                status=status.HTTP_409_CONFLICT
+                            )
+                        if conflict.teacher == teacher and conflict.course != course:
+                            return Response(
+                                {'error': (
+                                    f"Teacher '{teacher.teacher_name}' is already teaching '{conflict.course.course_name}' at this time on {lecture_date}."
+                                )},
+                                status=status.HTTP_409_CONFLICT
+                            )
+
+
+                schedule = GeneratedSchedule(
+                    degree_program=degree_program,
+                    course=course,
+                    teacher=teacher,
+                    lecture_date=lecture_date,
+                    start_time=start_time,
+                    end_time=end_time
+                )
+                created.append(schedule)
+
+            # Bulk save
+            GeneratedSchedule.objects.bulk_create(created)
+
+        serialized = GeneratedScheduleSerializer(created, many=True)
+        return Response(
+            {'detail': 'Schedule generated successfully.', 'schedules': serialized.data},
+            status=status.HTTP_201_CREATED
+        )
 
 class GetFilteredScheduleView(APIView):
     def get(self, request, degree_program, semester, teacher_name, *args, **kwargs):

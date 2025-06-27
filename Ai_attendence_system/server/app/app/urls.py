@@ -19,12 +19,14 @@ from django.urls import path, include
 from drf_spectacular.views import SpectacularSwaggerView , SpectacularAPIView
 from django.conf.urls.static import static
 from django.conf import settings
-
+from django.urls import re_path
+from backend.consumers import ClassroomConsumer
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('backend.urls')),
+
     path("schema/", SpectacularAPIView.as_view(), name="schema"),
     path(
         "docs/",

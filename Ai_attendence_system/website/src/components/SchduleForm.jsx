@@ -116,7 +116,7 @@ const ScheduleForm = () => {
           semester: selectedSemester,
           semester_starting_date: startingDate,
           semester_ending_date: endingDate,
-          no_of_lectures_per_semester: selectedSemester,
+          no_of_lectures_per_semester: no_of_semester,
           lecture_starting_time: startingTime,
           lecture_ending_time: endingTime,
           preferred_weekdays: values,
@@ -131,7 +131,7 @@ const ScheduleForm = () => {
       console.log(res);
     } catch (error) {
       console.log(error);
-      toast.error(error.message);
+      toast.error(error.response.data.error);
     }
   };
   return (
@@ -236,7 +236,7 @@ const ScheduleForm = () => {
           }
           class="px-6 w-[20%] py-2 text-sm font-medium bg-primary hover:bg-[#222] text-white rounded"
         >
-          Add Program
+          Set Schedule
         </button>
       </div>
 

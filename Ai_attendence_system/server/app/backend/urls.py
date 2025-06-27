@@ -4,7 +4,7 @@ from backend.Views.user import UserManagementAPIView
 # from  backend.Views.schedule import GenerateScheduleView
 from  backend.Views.course import CourseView,CourseByDegreeProgram
 from  backend.Views.searching import DegreeProgramSuggestionView
-from backend.Views.atendence import AttendanceMarkView,StartClassView
+from backend.Views.atendence import AttendanceMarkView,StartClassView,EndClassView
 from backend.Views.students import(
     StudentAPIView,
     StudentCountView,
@@ -143,11 +143,12 @@ urlpatterns = [
     path('studen-login/', StudentLoginView.as_view(), name='student-login'),
     path("teacher-login/", TeacherLoginView.as_view(), name="teacher-login"),
     path('teacher-schedule/<int:teacher_id>/', GetTeacherScheduleView.as_view(), name='teacher-schedule'),
-    path('student-schedules/<str:degree_program_name>/<int:semester>/', GetTodayStudentSchedulesView.as_view(), name='student-today-schedules'),   
+    path('student-schedules/<str:student_id>/<str:degree_program>/<int:semester>/', GetTodayStudentSchedulesView.as_view(), name='student-today-schedules'),   
     path('all-schedules/', GetAllSchedulesView.as_view(), name='all-schedules'),
     path('mark-attendance/', AttendanceMarkView.as_view(), name='mark-attendance'),
     path('start-class/', require_http_methods(["POST"])(StartClassView.as_view()), name='start-class'),
     path('teacher-schedules-all/<int:teacher_id>/', GetAllTeacherSchedulesView.as_view(), name='all-teacher-schedules'),
     path('schedules-by-course/<str:course_code>/', GetSchedulesByCourseCodeView.as_view(), name='schedules-by-course'),
+    path('end-class/', require_http_methods(["POST"])(EndClassView.as_view()), name='end-class'),
     path('course-of-students/<str:degree_program>/<int:semester>', CourseByDegreeProgramForStudents.as_view(), name='course-of-students')
 ]

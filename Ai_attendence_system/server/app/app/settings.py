@@ -28,12 +28,13 @@ SECRET_KEY = 'django-insecure-$mf!x+3tvqu-3v5&ea9$h%tbg03-r!c2w)ch%wwjzksn_l+r5f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.1.10','192.168.18.26']
 
-INSTITUTE_LATITUDE = 24.8607   # Example institute location
-INSTITUTE_LONGITUDE = 67.0011
-GEOFENCE_RADIUS_METERS = 100  
-
+# INSTITUTE_LATITUDE = 24.8607   # Example institute location
+# INSTITUTE_LONGITUDE = 67.0011
+GEOFENCE_RADIUS_METERS = 2
+TIME_ZONE = 'Asia/Karachi'
+USE_TZ = True
 # Application definition
 
 INSTALLED_APPS = [
@@ -47,9 +48,13 @@ INSTALLED_APPS = [
     'backend',
     'drf_spectacular',
     'corsheaders',
+    'channels',
+    'django_extensions',
     'rest_framework.authtoken',
     
 ]
+
+ASGI_APPLICATION = 'app.asgi.application'
 
 
 REST_FRAMEWORK = {
@@ -63,6 +68,13 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
     
+}
+
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # For development
+    },
 }
 
 SPECTACULAR_SETTINGS = {
@@ -87,7 +99,9 @@ MIDDLEWARE = [
 
 # Allow all origins
 CORS_ALLOW_ALL_ORIGINS = True
-
+CORS_ALLOWED_ORIGINS = [
+    "https://192.168.1.10:5173",  # React dev server on your laptop
+]
 # Or, allow only specific origins
 # CORS_ALLOWED_ORIGINS = [
 #     'https://example.com',

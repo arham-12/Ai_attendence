@@ -331,6 +331,7 @@ class GetTeacherScheduleView(APIView):
             schedule_list = []
             for sched in schedules:
                 schedule_list.append({
+                    "schedule_id":sched.id,
                     "course_name": sched.course.course_name,
                     "degree_program": sched.degree_program.program_name,
                     "semester": sched.semester,
@@ -342,7 +343,7 @@ class GetTeacherScheduleView(APIView):
             return Response({
                 "teacher_name": teacher.teacher_name,
                 "teaching_type": teacher.teaching_type,
-                "all_schedule": schedule_list
+                "all_schedules": schedule_list
             }, status=status.HTTP_200_OK)
 
         except Teachers.DoesNotExist:
@@ -364,6 +365,7 @@ class GetAllTeacherSchedulesView(APIView):
             schedule_list = []
             for sched in schedules:
                 schedule_list.append({
+                    "schedule_id":sched.id,
                     "course_name": sched.course.course_name,
                     "degree_program": sched.degree_program.program_name,
                     "semester": sched.semester,

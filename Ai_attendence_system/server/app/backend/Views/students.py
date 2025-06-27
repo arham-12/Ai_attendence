@@ -16,10 +16,12 @@ from drf_spectacular.types import OpenApiTypes
 from rest_framework import serializers
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from backend.models.AttendenceModels import Attendance
 from datetime import date
 from backend.models.CourseModels import Course
 from backend.models.SchedulingModels import GeneratedSchedule
 from backend.authentication import StudentTokenAuth
+from backend.models.AttendenceModels import Classroom
 from rest_framework.renderers import JSONRenderer
 import pandas as pd
 import json
@@ -314,27 +316,51 @@ class StudentLoginView(APIView):
 @extend_schema(tags=["Student's APIs"])
 class GetTodayStudentSchedulesView(APIView):
     authentication_classes = [StudentTokenAuth]
-
     permission_classes = [IsAuthenticated]
-    def get(self, request, degree_program_name, semester):
+
+    def get(self, request, student_id, degree_program, semester, *args, **kwargs):
+        if not student_id:
+            return Response({"error": "Student ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
         try:
-            degree_program = DegreeProgram.objects.get(program_name=degree_program_name)
+            student = Student.objects.get(student_id=student_id)
+        except Student.DoesNotExist:
+            return Response({"error": "Student not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        try:
+            degree_program_obj = DegreeProgram.objects.get(program_name=degree_program)
         except DegreeProgram.DoesNotExist:
-            return Response(
-                {"error": "Degree program not found."},
-                status=status.HTTP_404_NOT_FOUND
-            )
-        
+            return Response({"error": "Degree program not found."}, status=status.HTTP_404_NOT_FOUND)
+
         today = date.today()
+
+        # Check if class has started
+        class_exists = Classroom.objects.filter(
+            degree_program=degree_program_obj,
+            semester=semester,
+            start_time__date=today,
+            end_time__isnull=True
+        ).exists()
+
+        # Get today's schedules
         schedules = GeneratedSchedule.objects.select_related('teacher', 'course', 'degree_program').filter(
-            degree_program=degree_program,
+            degree_program=degree_program_obj,
             semester=semester,
             lecture_date=today
         )
 
-        schedule_list = []
-        for sched in schedules:
-            schedule_list.append({
+        # Prefetch attendance for performance
+        student_attendance = Attendance.objects.filter(student=student, date=today)
+        attendance_map = {
+            attendance.schedule_id: attendance.status == "Present"
+            for attendance in student_attendance
+        }
+
+        # Build schedule list with attendance status per schedule
+        schedule_list = [
+            {
+                "schedule_id": sched.id,
+                "teacher_id": sched.teacher.id,
                 "teacher_name": sched.teacher.teacher_name,
                 "teaching_type": sched.teacher.teaching_type,
                 "degree_program": sched.degree_program.program_name,
@@ -343,10 +369,15 @@ class GetTodayStudentSchedulesView(APIView):
                 "lecture_date": sched.lecture_date,
                 "start_time": sched.start_time,
                 "end_time": sched.end_time,
-            })
+                "attendance_status": attendance_map.get(sched.id, False)  # default to False if no record
+            }
+            for sched in schedules
+        ]
 
-        return Response(schedule_list, status=status.HTTP_200_OK)
-
+        return Response({
+            "class_started": class_exists,
+            "schedules": schedule_list
+        }, status=status.HTTP_200_OK)
 
 @extend_schema(tags=["Student's APIs"])
 class GetSchedulesByCourseCodeView(APIView):
